@@ -80,7 +80,8 @@ const request = require('request')
 const stream = require('stream')
 
 router.get('/image', async (req, res) => {
-    const r = fs.createReadStream('./TEST.png') // or any other way to get a readable stream
+    let pathImage = `${req.query.path}`
+    const r = fs.createReadStream(pathImage) // or any other way to get a readable stream
     const ps = new stream.PassThrough() // <---- this makes a trick with stream error handling
     stream.pipeline(
     r,
