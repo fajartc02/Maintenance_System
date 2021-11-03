@@ -10,13 +10,15 @@ var pool = mysql.createPool({
     multipleStatements: true,
     queueLimit: 0,
     waitForConnections: true,
-    connectionLimit: 10
+    connectionLimit: 10,
+    timezone: 'utc'
 });
 
 function cmdMultipleQuery(sql) {
     return new Promise((resolve, reject) => {
         pool.getConnection(function(err, connection) {
             if (err) {
+                console.log(err);
                 reject(err);
             }
             connection.query(sql, function(err, result) {

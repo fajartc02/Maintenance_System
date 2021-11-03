@@ -60,7 +60,10 @@ const {
     getTemperature,
     getParameterName,
     getAvailableMc,
-    getInverterData
+    getInverterData,
+    getAlarmHistory,
+    getActiveAlarm,
+    getDetailParam
 } = require('../controllers/controllerParameters')
 
 const { getAllCtMachines, getCtMcDashboard, getOneCtMachine } = require('../controllers/controllerCtMachine')
@@ -166,6 +169,10 @@ router.get('/temperature', getTemperature)
 router.get('/paramsName', getParameterName)
 router.get('/availableParamMc', getAvailableMc)
 router.get('/inverterData', getInverterData)
+router.get('/alarmHistory', getAlarmHistory)
+router.get('/activeAlarm', getActiveAlarm)
+router.get('/detailParam', getDetailParam)
+
 
 router.post('/addProblem', addProblem)
 router.get('/getDetailProblem', getDetailProblem)

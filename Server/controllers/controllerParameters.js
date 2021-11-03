@@ -118,4 +118,61 @@ module.exports = {
                 })
             });
     },
+    getAlarmHistory: (req, res) => {
+        // WHERE DATE(fdate) = DATE(NOW())
+        let q = `SELECT * FROM v_alarms_history`;
+        if(req.query.today) {
+            q += ` WHERE DATE(fdate) = DATE(NOW())`;
+        }
+        cmdMultipleQuery(q)
+            .then(result => {
+                console.log(result);
+                let mapData = result.map(item => {
+                    item.franged = `${item.WLL}~${item.WUL}`
+                    return item
+                })
+                res.status(200).json({
+                    message: 'OK',
+                    data: mapData
+                })
+            })
+            .catch(err => {
+                gettingError(res, err)
+            })
+    },
+    getActiveAlarm: (req, res) => {
+        let q = `SELECT * FROM tb_temperature_monitor WHERE isNormal = 0`
+        cmdMultipleQuery(q)
+        .then(data => {
+            let mapData = data.map(item => {
+                item.franged = `${item.WLL}~${item.WUL}`
+                return item
+            })
+            res.status(200).json({
+                message: 'OK',
+                data: mapData
+            })
+        })
+        .catch(err => {
+            gettingError(res, err)
+        })
+    },
+    getDetailParam: (req, res) => {
+        let q = `SELECT * FROM tb_temperature_log 
+            WHERE 
+                fmc_name = '${req.query.fmc_name}' AND 
+                ftemp_name = '${req.query.ftemp_name}' AND 
+                DATE(fupdate) = DATE(NOW()) ORDER BY fupdate DESC LIMIT 200`
+        cmdMultipleQuery(q)
+        .then(result => {
+            res.status(200).json({
+                message: 'ok',
+                data: result
+            })
+        })
+        .catch(err => {
+            gettingError(res, err)
+        })
+
+    }
 }
