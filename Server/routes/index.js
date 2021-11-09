@@ -124,6 +124,14 @@ router.get('/', function(req, res) {
 })
 router.post('/upload', uploadFile)
 
+// Quality Data
+const {addDataQuality, qualityData, groupDefect, groupWorstMachine, allDefectData} = require('../controllers/controllerQuality')
+
+router.post('/addDataQuality', addDataQuality)
+router.get('/qualityData', qualityData)
+router.get('/groupDefect', groupDefect)
+router.get('/groupWorstMachine', groupWorstMachine)
+router.get('/allDefectData', allDefectData)
 
 // SUMMARY
 router.get('/delayProblemCm', getSummaryWeekly)
