@@ -164,7 +164,6 @@ module.exports = {
                 }
             }
         }
-        let qAll = `SELECT * FROM tb_quality WHERE MONTH(fdate) = MONTH(NOW())`
         console.log(q);
         cmdMultipleQuery(`${q}`)
         .then(result => {
@@ -179,5 +178,6 @@ module.exports = {
                 err
             })
         })
-    }
+    },
+    
 }
