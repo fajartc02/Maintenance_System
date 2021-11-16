@@ -35,8 +35,7 @@ module.exports = {
     qualityData: async (req, res) => {
         let q = `SELECT * FROM tb_quality WHERE MONTH(fdate) = MONTH(${req.query.date})`
         let endDate = new Date(req.query.date.split('-')[0], req.query.date.split('-')[1][0] == '0' ? +req.query.date.split('-')[1][1] : +req.query.date.split('-')[1], 0 ).getDate()
-        console.log(req.query.date.split('-')[1][0]);
-        console.log(req.query.date.split('-')[1][0] == '0' ? Number(req.query.date.split('-')[1][1]) + 1 : Number(req.query.date.split('-')[1]) + 1);
+
         let containerCount = []
         let containerResult = [
             {
@@ -83,7 +82,6 @@ module.exports = {
             let qOk = `SELECT DATE(fdate) fdate, fline, SUM(totalDefect) totalCount
                 FROM tb_quality WHERE fline LIKE '%${line}%' AND MONTH(fdate) = MONTH('${req.query.fdate}')
                 GROUP BY DATE(fdate)`
-                console.log(qOk);
                 await cmdMultipleQuery(qOk)
                 .then(result => {
                     console.log(result);
@@ -164,7 +162,6 @@ module.exports = {
                 }
             }
         }
-        console.log(q);
         cmdMultipleQuery(`${q}`)
         .then(result => {
             res.status(200).json({
@@ -179,5 +176,61 @@ module.exports = {
             })
         })
     },
-    
+    getOneDefectData: (req, res) => {
+        let q = `SELECT * FROM tb_quality WHERE fid = ${req.query.v_}`
+        cmdMultipleQuery(q)
+            .then(result => {
+                res.status(200).json({
+                    message: 'ok',
+                    data: result
+                })
+            })
+            .catch(err => {
+                res.status(500).json({
+                    message: 'err',
+                    err
+                })
+            })
+    },
+    editDefectData: (req, res) => {
+        let inputData = req.body;
+        let containerInput = []
+        for (const key in inputData) {
+            const element = inputData[key]
+            if(element) {
+                containerInput.push(`${key} = '${element}'`)
+            }
+        }
+        let q = `UPDATE tb_quality SET ${containerInput.join(',')} WHERE fid = ${req.params.v_}`
+        console.log(q);
+        cmdMultipleQuery(q)
+            .then(result => {
+                res.status(201).json({
+                    message: 'OK',
+                    data: result
+                })
+            })
+            .catch(err => {
+                res.status(500).json({
+                    message: 'err',
+                    err
+                })
+            })
+    },
+    removeDefectData: (req, res) => {
+        let q = `DELETE FROM tb_quality WHERE fid = ${req.params.v_}`
+        cmdMultipleQuery(q)
+            .then((result) => {
+                res.status(201).json({
+                    message: 'Succcess to delete',
+                    data:result
+                })
+            })
+            .catch(err => {
+                res.status(500).json({
+                    message: 'err',
+                    err
+                })
+            })
+    }
 }

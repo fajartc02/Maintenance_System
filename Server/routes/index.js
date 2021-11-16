@@ -125,16 +125,25 @@ router.get('/', function(req, res) {
 router.post('/upload', uploadFile)
 
 // Quality Data
-const {addDataQuality, qualityData, groupDefect, groupWorstMachine, allDefectData} = require('../controllers/controllerQuality')
-const { addAnalisys } = require('../controllers/controllerQualityWhy')
+const {addDataQuality, qualityData, groupDefect, groupWorstMachine, allDefectData, getOneDefectData, editDefectData, removeDefectData} = require('../controllers/controllerQuality')
+const { addAnalisys, getAnalisys,editAnalisys, removeAnalisys } = require('../controllers/controllerQualityWhy')
+const {addCmQuality} = require('../controllers/controllerQualityCm')
 
 router.post('/addDataQuality', addDataQuality)
 router.get('/qualityData', qualityData)
 router.get('/groupDefect', groupDefect)
 router.get('/groupWorstMachine', groupWorstMachine)
 router.get('/allDefectData', allDefectData)
+router.get('/getOneDefectData', getOneDefectData)
+router.put('/editDefectData/:v_', editDefectData)
+router.delete('/removeDefectData/:v_', removeDefectData)
 
 router.post('/addAnalisys', addAnalisys)
+router.get('/getAnalisys', getAnalisys)
+router.put('/editAnalisys/:v_', editAnalisys)
+router.delete('/removeAnalisys/:v_', removeAnalisys)
+
+router.post('/addCmQuality', addCmQuality)
 
 
 // SUMMARY

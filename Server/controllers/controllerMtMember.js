@@ -3,9 +3,6 @@ const cmdMultipleQuery = require('../config/MultipleQueryConnection');
 module.exports = {
     getAllMtMember: (req, res) => {
         let q = `SELECT * FROM tb_mt_member`
-            // if (req.query) {
-
-        // }
         cmdMultipleQuery(q)
             .then((result) => {
                 res.status(200).json({
