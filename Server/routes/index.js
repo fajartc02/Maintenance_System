@@ -127,7 +127,7 @@ router.post('/upload', uploadFile)
 // Quality Data
 const {addDataQuality, qualityData, groupDefect, groupWorstMachine, allDefectData, getOneDefectData, editDefectData, removeDefectData} = require('../controllers/controllerQuality')
 const { addAnalisys, getAnalisys,editAnalisys, removeAnalisys } = require('../controllers/controllerQualityWhy')
-const {addCmQuality} = require('../controllers/controllerQualityCm')
+const {addCmQuality, getQualityCm} = require('../controllers/controllerQualityCm')
 
 router.post('/addDataQuality', addDataQuality)
 router.get('/qualityData', qualityData)
@@ -143,6 +143,7 @@ router.get('/getAnalisys', getAnalisys)
 router.put('/editAnalisys/:v_', editAnalisys)
 router.delete('/removeAnalisys/:v_', removeAnalisys)
 
+router.get('/getQualityCm/:v_', getQualityCm)
 router.post('/addCmQuality', addCmQuality)
 
 

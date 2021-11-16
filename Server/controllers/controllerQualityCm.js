@@ -16,9 +16,13 @@ module.exports = {
 
         for (const key in newData) {
             const element = newData[key];
-            containerColName.push(key)
+            if(element != 'null') {
+                containerColName.push(key)
+            }
             if(key == 'fdatePlan' || key == 'fdateActual') {
-                containerValues.push(`TIMESTAMP('${element}')`)
+                if(element != 'null') {
+                    containerValues.push(`TIMESTAMP('${element}')`)
+                }
             } else {
                 containerValues.push(`'${element}'`)
             }
@@ -29,5 +33,45 @@ module.exports = {
                 VALUES
             (${containerValues.join(',')})`
         console.log(q);
+        cmdMultipleQuery(q)
+            .then(result => {
+                res.status(201).json({
+                    message: 'ok',
+                    data: result
+                })
+            })
+            .catch(err => {
+                gettingError(res, err)
+            })
+    },
+    getQualityCm: (req, res) => {
+        let q = `SELECT * FROM tb_quality_cm WHERE fid_quality = ${req.params.v_}`
+        console.log(q);
+        cmdMultipleQuery(q)
+            .then(result => {
+                res.status(200).json({
+                    message: 'ok',
+                    data: result
+                })
+            })
+            .catch(err => {
+                gettingError(res, err)
+            })
+    },
+    editQualityCm: (req, res) => {
+        let data = req.body
+        let containerFields = []
+        for (const key in data) {
+            const element = data[key]
+            
+            if(key != 'isEdit') {
+                if(key != 'fupdate') {
+                    containerFields.push(`${key} = '${element}'`)
+                } else {
+                    containerFields.push(`${key} = CURRENT_TIMESTAMP()`)
+                }
+            }
+        }
+        let q = `UPDATE tb_quality_cm SET ${containerFields.join(',')} WHERE fid = ${req.params.v_}`
     }
 }
