@@ -529,8 +529,8 @@ module.exports = {
                     })
                 });
         } else {
-            await dbSingleQuery(qEditProb).then(({ data }) => { console.log(data) }).catch(err => { console.log(err) })
             await dbSingleQuery(qUpdateColDash).then(({ data }) => { console.log(data) }).catch(err => { console.log(err) })
+            await dbSingleQuery(qEditProb).then(({ data }) => { console.log(data) }).catch(err => { console.log(err) })
             await dbSingleQuery(qCloseNotif).then(({ data }) => {
                 res.status(200).json({
                     message: 'Success to edit problem',
@@ -638,6 +638,25 @@ module.exports = {
     poolEnd: (req, res) => {
         res.status(200).json({
             message: 'NOTHING TO DO',
+        })
+    },
+    getAllActiveProblem: (req, res) => {
+        let q = `select t1.*, ifnull( timestampdiff(minute , t1.fstart_time , t1.fend_time ) , timestampdiff(minute , t1.fstart_time , now() )) as fdur , t2.fop_desc
+        from v_current_error_2 t1 , tb_mc t2 
+        where t1.fend_time is null and t2.fmc_name = t1.fmc_name 
+        limit 5`
+        cmdMultipleQuery(q)
+        .then(result => {
+            res.status(200).json({
+                message: 'OK',
+                data: result
+            })
+        })
+        .catch(err => {
+            res.status(500).json({
+                message: 'ERR',
+                err
+            })
         })
     }
 }

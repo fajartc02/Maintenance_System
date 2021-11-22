@@ -16,6 +16,7 @@ const {
     editProblem,
     deleteProblem,
     getActiveProblem,
+    getAllActiveProblem,
     poolEnd
 } = require('../controllers/controllerProdAchievements')
 
@@ -174,6 +175,8 @@ router.get('/oeeLog', getOeeLog)
 router.get('/getTotalDailyProb', getTotalDailyProb)
 router.get('/paretoProblem', getParetoProblem)
 router.get('/activeProblem', getActiveProblem)
+router.get('/getAllActiveProblem', getAllActiveProblem)
+
 router.get('/problemTemporary', getProblemTemporary)
 router.get('/problemFreq', getProblemFreq)
 router.get('/problemLtb', getProblemLtb)

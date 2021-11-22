@@ -1,6 +1,5 @@
 const multer = require('multer');
 const path = require('path');
-const dbMultiQuery = require('../config/MultipleQueryConnection');
 
 module.exports = {
     uploadFile: (req, res, next) => {
@@ -19,7 +18,7 @@ module.exports = {
         });
 
         // Files name is inside functions single
-        let upload = multer({ storage: storage}).single('file');
+        let upload = multer({ storage: storage, limits: 20 * 1024 * 1024}).single('file');
         upload(req, res, function(err) {
                 // req.file contains information of uploaded file
                 // req.body contains information of text fields, if there were any
