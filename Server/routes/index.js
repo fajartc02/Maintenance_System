@@ -80,7 +80,6 @@ const {uploadFile} = require('../middleware/controllerUpload')
 
 
 const fs = require('fs')
-const request = require('request')
 const stream = require('stream')
 
 router.get('/image', async (req, res) => {
@@ -129,6 +128,13 @@ router.post('/upload', uploadFile)
 const {addDataQuality, qualityData, groupDefect, groupWorstMachine, allDefectData, getOneDefectData, editDefectData, removeDefectData} = require('../controllers/controllerQuality')
 const { addAnalisys, getAnalisys,editAnalisys, removeAnalisys } = require('../controllers/controllerQualityWhy')
 const {addCmQuality, getQualityCm} = require('../controllers/controllerQualityCm')
+
+const { addJobData, getJobData, bulkAddJobData, getOeeData } = require('../controllers/job/job')
+
+router.post('/addJobData', addJobData)
+router.post('/bulkAddJobData', bulkAddJobData)
+router.get('/getJobData', getJobData)
+router.get('/getOeeData', getOeeData)
 
 router.post('/addDataQuality', addDataQuality)
 router.get('/qualityData', qualityData)
@@ -218,10 +224,12 @@ router.post('/addNewMachine', addNewMachine)
 router.get('/poolEnd', poolEnd)
 
 
+
 const pca = require('./pca')
 const parameter = require('./parameterRoute')
 
 router.use('/pca', pca)
 router.use('/parameter', parameter)
+
 
 module.exports = router;

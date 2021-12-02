@@ -11,7 +11,8 @@ var pool = mysql.createPool({
     queueLimit: 0,
     waitForConnections: true,
     connectionLimit: 10,
-    timezone: 'utc'
+    timezone: 'utc',
+    connectTimeout: 60000
 });
 
 function cmdMultipleQuery(sql) {

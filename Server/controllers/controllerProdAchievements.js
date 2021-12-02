@@ -515,7 +515,7 @@ module.exports = {
             }
         }
         if (containerQuery.length <= 1) {
-            await dbSingleQuery(qEditProb)
+            await cmdMultipleQuery(qEditProb)
                 .then(({ data }) => {
                     res.status(200).json({
                         message: 'Success to edit problem',
@@ -529,9 +529,17 @@ module.exports = {
                     })
                 });
         } else {
-            await dbSingleQuery(qUpdateColDash).then(({ data }) => { console.log(data) }).catch(err => { console.log(err) })
-            await dbSingleQuery(qEditProb).then(({ data }) => { console.log(data) }).catch(err => { console.log(err) })
-            await dbSingleQuery(qCloseNotif).then(({ data }) => {
+            await cmdMultipleQuery(qUpdateColDash).then(({ data }) => { console.log(data) }).catch(err => { console.log(err) })
+            await cmdMultipleQuery(qEditProb).then(({ data }) => { console.log(data) }).catch(err => { console.log(err) })
+            await cmdMultipleQuery(qCloseNotif).then(async ({ data }) => {
+                let qUpdJob = `UPDATE tb_jobdesk SET fend_time = TIMESTAMP('${req.body['fend_time'][0]}', '${req.body['fend_time'][1]}') WHERE fproblem_id = ${req.params.v_}`
+                    await cmdMultipleQuery(qUpdJob)
+                        .then(res => {
+                            console.log(res);
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        })
                 res.status(200).json({
                     message: 'Success to edit problem',
                     data

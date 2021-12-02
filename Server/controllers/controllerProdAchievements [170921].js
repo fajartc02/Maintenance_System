@@ -508,6 +508,7 @@ module.exports = {
         let qCheckProblem = `SELECT fid FROM tb_status WHERE fid = ${fmc_id} AND fstatus = 0`
         let qAddProb = `insert into tb_error_log_2 (foperator, ferror_name, fstart_time, fmc_id) VALUES ( '${foperator}', '${ferror_name}', CURRENT_TIMESTAMP(), ${fmc_id})`
         let qUpdateColDash = `update tb_status set fstatus = 1, ferror_start = CURRENT_TIMESTAMP(), ferror_end = NULL where fid = ${fmc_id}`
+        let qGetProblemId = `SELECT fid FROM tb_error_log_2 EW`
         cmdQuery(qCheckProblem)
             .then((result) => {
                 if (result.length > 0) {

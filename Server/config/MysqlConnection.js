@@ -13,7 +13,8 @@ var pool = mysql.createPool({
     timezone: 'utc',
     waitForConnections: true,
     queueLimit: 0,
-    connectionLimit: 10
+    connectionLimit: 10,
+    acquireTimeout: 60000
 });
 
 function cmdQuery(sql) {
