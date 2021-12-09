@@ -1,5 +1,6 @@
 const { insertData, getData, bulkInsertData } = require('../../QueryFunction/queryModule')
 const formatDate = require('../../functions/formatDate')
+const cmdMultipleQuery = require('../../config/MultipleQueryConnection');
 const tableJob = 'tb_jobdesk'
 const ViewJob = 'v_jobdesk'
 const viewOee = 'v_prod'
@@ -50,23 +51,15 @@ module.exports = {
         let {fstart_time, fend_time, intervalDays} = req.body
         let dateAdd = new Date(fstart_time.split(" ")).setDate(intervalDays);
           fend_time = formatDate.YYYYMMDD_HHMM(new Date(dateAdd)).split(" ");
+          console.log(fstart_time);
           for (let d = 0; d < intervalDays; d++) {
-            let firstDate = new Date(this.fstart_time.join(" ")).getDate();
+            let firstDate = new Date(fstart_time.split(" ")).getDate();
         let calcDateInterval = firstDate + d;
         let setupDate = new Date().setDate(calcDateInterval);
         let setupTime = new Date(setupDate).setTime(
-          new Date(this.fstart_time.join(" ")).getTime()
+          new Date(fstart_time.split(" ")).getTime()
         );
         let dateRes = formatDate.YYYYMMDD_HHMM(new Date(setupTime))
-            
-            // 2021-12-02 15:48:18
-            // 2021-12-03 15:48:18
-            // 2021-12-04 15:48:18
-            // 2021-12-05 15:48:18
-            // 2021-12-06 15:48:18
-            // 2021-12-07 15:48:18
-            // 2021-12-08 15:48:18
-           
             if(containerCols.indexOf('fstart_time') == -1 || containerCols.indexOf('fend_time') == -1) {
                 containerCols.push('fstart_time')
                 containerCols.push('fend_time')
@@ -87,10 +80,8 @@ module.exports = {
             .catch(err => {
                 gettingError(res, err)
             })
-
-          
     },
-    getJobData: (req, res) => {
+    getJobData: async (req, res) => {
         let containerSomeCols = false
         let filterQuery = false
         if(req.query.someCols) {
@@ -103,21 +94,47 @@ module.exports = {
         if(req.query.filterQuery) {
             filterQuery = req.query.filterQuery
         }
-        getData(ViewJob, containerSomeCols, filterQuery)
-            .then(result => {
-                gettingSuccess(res, 200, result)
+        await getData(ViewJob, containerSomeCols, filterQuery)
+            .then(async result => {
+                await gettingSuccess(res, 200, result)
             })
-            .catch(err => {
-                gettingError(res, err)
+            .catch(async err => {
+                await gettingError(res, err)
             })
     },
-    getOeeData: (req, res) => {
-        getData(viewOee, false, false)
-            .then(result => {
-                gettingSuccess(res, 200, result)
+    getOeeData: async (req, res) => {
+        await getData(viewOee, false, false)
+            .then(async result => {
+                await gettingSuccess(res, 200, result)
             })
-            .catch(err => {
-                gettingError(res, err)
+            .catch(async err => {
+                await gettingError(res, err)
             })
+    },
+    getYamazumiData: async (req, res) => {
+        let containerQuery = []
+        let {members} = req.body
+        let filter = ''
+        if(req.query.filter == 'day') {
+            filter = ` AND DAY(fstart_time) = DAY(NOW())`
+        } else if(req.query.filter == 'week') {
+            filter = ` AND WEEK(fstart_time) = WEEK(NOW())`
+        } else if(req.query.filter == 'month') {
+            filter = ` AND MONTH(fstart_time) = MONTH(NOW())`
+        } else if(req.query.filter == 'year') {
+            filter = ` AND YEAR(fstart_time) = YEAR(NOW())`
+        }
+        members.forEach(member => {
+            let q = `SELECT foperator, fgroup, SUM(fdur) AS fdur FROM u5364194_smartand_tmmin3_qmms.v_jobdesk WHERE (fgroup LIKE '%Preventive%' OR fgroup LIKE '%training%' OR fgroup LIKE '%Repair%' OR fgroup LIKE '%Safety%' OR fgroup LIKE '%Project%' OR fgroup LIKE '%Others%') AND foperator LIKE '%${member}%'${filter} GROUP BY fgroup`
+            containerQuery.push(q)
+        })
+        console.log(containerQuery);
+        cmdMultipleQuery(containerQuery.join(';'))
+        .then(result => {
+            gettingSuccess(res, 200, result)
+        })
+        .catch(err => {
+            gettingError(res, err)
+        })
     }
 }

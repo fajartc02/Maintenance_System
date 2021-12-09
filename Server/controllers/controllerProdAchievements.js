@@ -490,7 +490,6 @@ module.exports = {
         let size = Object.size(req.body)
             // console.log(size);
         for (key in req.body) {
-            console.log(idx);
             idx++
             if (key == 'fstart_time' || key == 'fend_time') {
                 qEditProb += ` ${key}=TIMESTAMP('${req.body[key][0]}', '${req.body[key][1]}')`
@@ -513,6 +512,87 @@ module.exports = {
                 var qCloseNotif = `UPDATE tb_notif SET isSentLh = false, isSentSh = false, isSentAm = false, isSentDiv = false WHERE line LIKE '%${req.query.line}%'`
                 containerQuery.push(qCloseNotif)
             }
+            let qUpdateEndJob = `UPDATE tb_jobdesk SET 
+                fend_time = TIMESTAMP('${req.body['fend_time'][0]}', '${req.body['fend_time'][1]}'), 
+                fstart_time = TIMESTAMP('${req.body['fstart_time'][0]}', '${req.body['fstart_time'][1]}'),
+                fcommentLh = '${req.body.cmLhFeedback}',
+                fcommentSh = '${req.body.cmShFeedback}',
+                fcommentDph = '${req.body.cmDhFeedback}'
+                    WHERE fproblem_id = ${req.params.v_}`
+                    console.log(qUpdateEndJob);
+            await cmdMultipleQuery(qUpdateEndJob)
+                    .then(resIns => {
+                        console.log(resIns);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+        } else {
+            console.log('INI adalah Problem yang belum close');
+            console.log(req.body);
+            let arrMt = typeof req.body.foperator == 'string' ? [req.body.foperator] : req.body.foperator
+            let arrQueryCek = []
+            let qResMt = ''
+            arrMt.forEach(member => {
+                let qCekMtJob = `SELECT foperator FROM tb_jobdesk WHERE fproblem_id = ${req.params.v_} AND foperator = '${member}'`
+                arrQueryCek.push(qCekMtJob)
+            })
+            console.log(arrQueryCek);
+            qResMt = arrQueryCek.length > 1 ? arrQueryCek.join(';') : arrQueryCek[0]
+            await cmdMultipleQuery(qResMt)
+                .then(async res => {
+                    console.log(res);
+                    let mapMt = await res.map((itemJob, i) => {
+                        let element = itemJob.foperator ? itemJob : itemJob[0]
+                        if(element) {
+                            // nothing
+                        } else {
+                            return arrMt[i]
+                        }
+                        console.log(element);
+                    })
+                    console.log(mapMt);
+                    let containerQInstJob = []
+                    await mapMt.forEach(itmMtAfterMap => {
+                        if(itmMtAfterMap) {
+                            let qInstJob = `INSERT INTO tb_jobdesk (
+                                fline, 
+                                farea, 
+                                fproblem_id, 
+                                fjob_type, 
+                                fdesc, 
+                                fstart_time, 
+                                foperator, 
+                                fgroup,
+                                fcommentLh,
+                                fcommentSh,
+                                fcommentDph)
+                                VALUES 
+                                ('${req.query.fline}',
+                                '${req.query.fmc_name}',
+                                ${req.params.v_},
+                                'Repair', 
+                                '${req.body.ferror_name}',
+                                TIMESTAMP('${req.body['fstart_time'][0]}', '${req.body['fstart_time'][1]}'),
+                                '${itmMtAfterMap}',
+                                'Repair',
+                                '${req.body.cmLhFeedback}',
+                                '${req.body.cmShFeedback}',
+                                '${req.body.cmDhFeedback}')`
+                                containerQInstJob.push(qInstJob)
+                        }
+                    })
+                    await cmdMultipleQuery(containerQInstJob.join(';'))
+                    .then(resIns => {
+                        console.log(resIns);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+                })
+                .catch(err => {
+                    console.log(err);
+                })
         }
         if (containerQuery.length <= 1) {
             await cmdMultipleQuery(qEditProb)
@@ -532,7 +612,7 @@ module.exports = {
             await cmdMultipleQuery(qUpdateColDash).then(({ data }) => { console.log(data) }).catch(err => { console.log(err) })
             await cmdMultipleQuery(qEditProb).then(({ data }) => { console.log(data) }).catch(err => { console.log(err) })
             await cmdMultipleQuery(qCloseNotif).then(async ({ data }) => {
-                let qUpdJob = `UPDATE tb_jobdesk SET fend_time = TIMESTAMP('${req.body['fend_time'][0]}', '${req.body['fend_time'][1]}') WHERE fproblem_id = ${req.params.v_}`
+                let qUpdJob = `UPDATE tb_jobdesk SET fstart_time = TIMESTAMP('${req.body['fstart_time'][0]}', '${req.body['fstart_time'][1]}'), fend_time = TIMESTAMP('${req.body['fend_time'][0]}', '${req.body['fend_time'][1]}') WHERE fproblem_id = ${req.params.v_}`
                     await cmdMultipleQuery(qUpdJob)
                         .then(res => {
                             console.log(res);

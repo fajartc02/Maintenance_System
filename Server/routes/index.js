@@ -129,12 +129,14 @@ const {addDataQuality, qualityData, groupDefect, groupWorstMachine, allDefectDat
 const { addAnalisys, getAnalisys,editAnalisys, removeAnalisys } = require('../controllers/controllerQualityWhy')
 const {addCmQuality, getQualityCm} = require('../controllers/controllerQualityCm')
 
-const { addJobData, getJobData, bulkAddJobData, getOeeData } = require('../controllers/job/job')
+const { addJobData, getJobData, bulkAddJobData, getOeeData, getYamazumiData } = require('../controllers/job/job')
 
 router.post('/addJobData', addJobData)
 router.post('/bulkAddJobData', bulkAddJobData)
 router.get('/getJobData', getJobData)
 router.get('/getOeeData', getOeeData)
+router.get('/getAllMtMember', getAllMtMember)
+router.post('/getYamazumiData', getYamazumiData)
 
 router.post('/addDataQuality', addDataQuality)
 router.get('/qualityData', qualityData)

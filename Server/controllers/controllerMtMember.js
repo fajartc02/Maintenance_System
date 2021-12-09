@@ -2,7 +2,13 @@ const cmdMultipleQuery = require('../config/MultipleQueryConnection');
 
 module.exports = {
     getAllMtMember: (req, res) => {
-        let q = `SELECT * FROM tb_mt_member`
+        let q = `SELECT * FROM tb_mt_member WHERE farea IS NOT NULL`
+        if(req.query.shift) {
+            q += ` AND fshift = '${req.query.shift}'`
+        }
+        if(req.query.isMember) {
+            q += ` AND (frole = 'TM' OR frole = 'GH')`
+        }
         cmdMultipleQuery(q)
             .then((result) => {
                 res.status(200).json({

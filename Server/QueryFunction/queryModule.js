@@ -1,13 +1,14 @@
 const cmdMultipleQuery = require('../config/MultipleQueryConnection')
 
 function insertData(table_name, colsName, vals) {
+    console.log(table_name, colsName, vals);
     let q = `INSERT INTO ${table_name} 
         (${colsName.join(',')}) 
             VALUES
         (${vals.join(',')})`
         console.log(q);
-    return new Promise((resolve, reject) => {
-        cmdMultipleQuery(q)
+    return new Promise(async (resolve, reject) => {
+        await cmdMultipleQuery(q)
             .then(result => {
                 resolve(result)
             })
@@ -23,8 +24,8 @@ function bulkInsertData(table_name, colsName, vals) {
             VALUES
         ${vals.join(',')}`
         console.log(q);
-        return new Promise((resolve, reject) => {
-            cmdMultipleQuery(q)
+        return new Promise(async (resolve, reject) => {
+            await cmdMultipleQuery(q)
                 .then(result => {
                     resolve(result)
                 })
@@ -51,8 +52,8 @@ function getData(table_name, someCols = false, filterQuery) {
         q += ` ${filterQuery}`
     }
     console.log(q);
-    return new Promise((resolve, reject) => {
-        cmdMultipleQuery(q)
+    return new Promise(async (resolve, reject) => {
+        await cmdMultipleQuery(q)
             .then(result => {
                 resolve(result)
             })
