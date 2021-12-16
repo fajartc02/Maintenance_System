@@ -1,4 +1,4 @@
-const { insertData, getData, bulkInsertData } = require('../../QueryFunction/queryModule')
+const { insertData, getData, bulkInsertData, deleteQuery } = require('../../QueryFunction/queryModule')
 const formatDate = require('../../functions/formatDate')
 const cmdMultipleQuery = require('../../config/MultipleQueryConnection');
 const tableJob = 'tb_jobdesk'
@@ -135,6 +135,18 @@ module.exports = {
         })
         .catch(err => {
             gettingError(res, err)
+        })
+    },
+    deleteJobData: async (req, res) => {
+        let key = req.body.key
+        let operator = req.body.operator
+        let val = req.body.val
+        await deleteQuery(tableJob, key, operator, val)
+        .then(async result => {
+            await gettingSuccess(res, 200, result)
+        })
+        .catch(async err => {
+            await gettingError(res, err)
         })
     }
 }

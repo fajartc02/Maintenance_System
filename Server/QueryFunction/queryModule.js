@@ -63,8 +63,23 @@ function getData(table_name, someCols = false, filterQuery) {
     })
 }
 
+function deleteQuery(table_name, colName, operator, valueName) {
+    let q = `DELETE FROM ${table_name} WHERE ${colName} ${operator} ${valueName}`
+
+    return new Promise(async (resolve, reject) => {
+        await cmdMultipleQuery(q)
+            .then(result => {
+                resolve(result)
+            })
+            .catch(err => {
+                reject(err)
+            })
+    })
+}
+
 module.exports = {
     insertData,
     getData,
-    bulkInsertData
+    bulkInsertData,
+    deleteQuery
 }
