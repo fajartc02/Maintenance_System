@@ -63,7 +63,7 @@ function getData(table_name, someCols = false, filterQuery) {
     })
 }
 
-function deleteQuery(table_name, colName, operator, valueName) {
+function deleteQuery(table_name, colName, operator = '', valueName = '') {
     let q = `DELETE FROM ${table_name} WHERE ${colName} ${operator} ${valueName}`
 
     return new Promise(async (resolve, reject) => {
@@ -76,6 +76,8 @@ function deleteQuery(table_name, colName, operator, valueName) {
             })
     })
 }
+
+// function editQuery(table_name, colName, )
 
 module.exports = {
     insertData,

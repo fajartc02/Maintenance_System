@@ -131,6 +131,7 @@ module.exports = {
         console.log(containerQuery);
         cmdMultipleQuery(containerQuery.join(';'))
         .then(result => {
+            console.log(result);
             gettingSuccess(res, 200, result)
         })
         .catch(err => {
@@ -147,6 +148,29 @@ module.exports = {
         })
         .catch(async err => {
             await gettingError(res, err)
+            
         })
+    },
+    editJobData: async (req, res) => {
+        // fline, farea, fjob_type, fdesc, fstart_time, fend_time, foperator, fgroup, frole
+        let {fid, fline, farea, fjob_type, fdesc, fstart_time, fend_time, foperator, fgroup, frole} = req.body
+        let q = `UPDATE ${tableJob} SET 
+            fline = '${fline}', 
+            farea = '${farea}', 
+            fjob_type = '${fjob_type}',
+            fdesc = '${fdesc}',
+            fstart_time = '${fstart_time}',
+            fend_time = '${fend_time}',
+            foperator = '${foperator}',
+            fgroup = '${fgroup}',
+            frole = '${frole}'
+                WHERE fid = ${fid}`
+                await cmdMultipleQuery(q)
+                .then(result => {
+                    gettingSuccess(res, 200, result)
+                })
+                .catch(err => {
+                    gettingError(res, err)
+                })
     }
 }
