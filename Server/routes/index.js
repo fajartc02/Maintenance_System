@@ -131,6 +131,14 @@ const {addCmQuality, getQualityCm} = require('../controllers/controllerQualityCm
 
 const { addJobData, getJobData, bulkAddJobData, getOeeData, getYamazumiData, deleteJobData, editJobData } = require('../controllers/job/job')
 
+const {insertParam, getParameterList, getMachineParameter} = require('../controllers/symptomMc/parameterManual')
+
+const {ruleParamManual} = require('../middleware/rulesParameter')
+
+router.get('/parameterList', getParameterList)
+router.get('/machineParameter', getMachineParameter)
+router.post('/insertParamManual', ruleParamManual, insertParam)
+
 router.post('/addJobData', addJobData)
 router.post('/bulkAddJobData', bulkAddJobData)
 router.get('/getJobData', getJobData)
