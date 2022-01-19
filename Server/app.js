@@ -8,30 +8,49 @@ const cors = require("cors");
 
 const cron = require('node-cron')
 
-cron.schedule('*/10 * * * * *', () => {
-    console.log('RUN JOB Every 10 seconds');
-    // get the client
-    const mysql = require('mysql2');
-    
-    // create the connection to database
-    const connection = mysql.createConnection({
-      host: process.env.HOST_DB_NEW,
-      user: process.env.USER_DB_NEW,
-      database: process.env.NAME_DB_NEW,
-      multipleStatements: true,
-      waitForConnections: true,
-      timezone: 'utc',
-    });
-    
+async function checkIsMcActive(id, cmdMultipleQuery) {
+    let q = `SELECT fmc_id, 
+    ferror_name,
+    fstart_time,
+    fend_time FROM u5364194_smartand_tmmin3_qmms.tb_error_log_2
+  WHERE fmc_id = ${id} AND 
+  fend_time IS NULL`
+    cmdMultipleQuery(q)
+        .then(result => {
+            console.log(result);
+            if (result.length < 1 || !result) {
+                let qChangesStatusMc = `UPDATE tb_status SET fstatus = 0, ferror_start = NULL WHERE fid = ${id}`
+                cmdMultipleQuery(qChangesStatusMc)
+                    .then(resStatus => {
+                        console.log(resStatus);
+                    })
+                    .catch(errStatus => {
+                        console.log(errStatus);
+                    })
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        })
+}
+
+cron.schedule('* * * * *', () => {
+    const cmdMultipleQuery = require('./config/MultipleQueryConnection')
+    console.log('RUN JOB Every minute');
     // simple query
-    connection.query(
-      'SELECT fid, fstatus from u5364194_smartand_tmmin3_qmms.tb_status where fstatus = 1',
-      function(err, results, fields) {
-        if(err) console.log(err);
-        console.log(results); // results contains rows returned by server
-        console.log(fields); // fields contains extra meta data about results, if available
-      }
-    );
+    let q = `SELECT fid,fstatus FROM u5364194_smartand_tmmin3_qmms.tb_status WHERE fstatus = 1;`
+    cmdMultipleQuery(q)
+        .then((result) => {
+            console.log(result);
+            let containerResult = result
+            if (containerResult.length > 0) {
+                containerResult.forEach(itemProb => {
+                    checkIsMcActive(itemProb.fid, cmdMultipleQuery)
+                })
+            }
+        }).catch((err) => {
+            console.error(err)
+        });
 })
 
 var indexRouter = require('./routes/index');
@@ -41,7 +60,7 @@ var app = express();
 
 app.use(cors({ origin: true }));
 app.use(logger('dev'));
-app.use(express.json({limit: '50mb'}));
+app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
