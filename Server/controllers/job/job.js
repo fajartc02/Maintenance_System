@@ -42,57 +42,52 @@ module.exports = {
         let containerCols = []
         let containerVals = []
         for (const key in req.body) {
-            if(key != 'fend_time' && key != 'intervalDays' && key != 'fstart_time') {
+            if (key != 'fend_time' && key != 'intervalDays' && key != 'fstart_time') {
                 containerCols.push(key)
                 containerVals.push(`'${req.body[key]}'`)
             }
         }
-        let containerQuery = []
-        let {fstart_time, fend_time, intervalDays} = req.body
-        let dateAdd = new Date(fstart_time.split(" ")).setDate(intervalDays);
-          fend_time = formatDate.YYYYMMDD_HHMM(new Date(dateAdd)).split(" ");
-          console.log(fstart_time);
-          for (let d = 0; d < intervalDays; d++) {
-            let firstDate = new Date(fstart_time.split(" ")).getDate();
-        let calcDateInterval = firstDate + d;
-        let setupDate = new Date().setDate(calcDateInterval);
-        let setupTime = new Date(setupDate).setTime(
-          new Date(fstart_time.split(" ")).getTime()
-        );
-        let dateRes = formatDate.YYYYMMDD_HHMM(new Date(setupTime))
-            if(containerCols.indexOf('fstart_time') == -1 || containerCols.indexOf('fend_time') == -1) {
+        let containerQueryVals = []
+        let { fstart_time, fend_time, intervalDays } = req.body
+        for (let i = 1; i <= intervalDays; i++) {
+            console.log(fstart_time);
+            console.log(fend_time);
+            if (i == 1) {
                 containerCols.push('fstart_time')
                 containerCols.push('fend_time')
             }
-            // containerVals.push(`'${dateRes}'`)
-            let modEndTime = `${dateRes.split(' ')[0]} ${req.body.fend_time.split(' ')[1]}`
-            let q = `(${containerVals.join(',')}, '${dateRes}', '${modEndTime}')`
-            containerQuery.push(q)
-          }
-          console.log(containerCols);
-          console.log(containerVals);
-          console.log(containerQuery);
+            let newStartDate = new Date(formatDate.YYYYMMDD_HHMM(fstart_time)).getTime() + i * 24 * 60 * 60 * 1000
+            let newDate = formatDate.YYYYMMDD(new Date(newStartDate))
+            containerQueryVals.push(`(${containerVals.join(',')},'${newDate} ${fstart_time.split(' ')[1]}','${newDate} ${fend_time.split(' ')[1]}')`)
+        }
+        console.log(containerQueryVals);
 
-          bulkInsertData(tableJob, containerCols, containerQuery)
-          .then(result => {
+        bulkInsertData(tableJob, containerCols, containerQueryVals)
+            .then(result => {
                 gettingSuccess(res, 201, result)
             })
             .catch(err => {
                 gettingError(res, err)
             })
     },
-    getJobData: async (req, res) => {
+    getJobData: async(req, res) => {
         let containerSomeCols = false
         let filterQuery = false
-        if(req.query.someCols) {
+        if (req.query.someCols) {
             containerSomeCols = req.query.someCols
         }
         console.log(req.query.filterQuery);
         // if(req.query.isDay) {
         //     filterQuery = `WHERE HOUR(fstart_time) = HOUR(NOW()) + 3 AND fstart_time = CURDATE() OR HOUR(fstart_time) = HOUR(NOW()) - 21 AND fstart_time = CURDATE() INTERVAL 1 DAY`
         // }
-        if(req.query.filterQuery) {
+        if (req.query.filterQuery) {
             filterQuery = req.query.filterQuery
+            if (filterQuery.includes('~')) {
+                let parshingQ = filterQuery.replace(new RegExp('~', 'g'), ' ')
+                console.log('===========');
+                console.log(parshingQ);
+                filterQuery = parshingQ
+            }
         }
         await getData(ViewJob, containerSomeCols, filterQuery)
             .then(async result => {
@@ -102,7 +97,7 @@ module.exports = {
                 await gettingError(res, err)
             })
     },
-    getOeeData: async (req, res) => {
+    getOeeData: async(req, res) => {
         await getData(viewOee, false, false)
             .then(async result => {
                 await gettingSuccess(res, 200, result)
@@ -111,18 +106,21 @@ module.exports = {
                 await gettingError(res, err)
             })
     },
-    getYamazumiData: async (req, res) => {
+    getYamazumiData: async(req, res) => {
         let containerQuery = []
-        let {members} = req.body
+        let { members } = req.body
         let filter = ''
-        if(req.query.filter == 'day') {
+        if (req.query.filter == 'day') {
             filter = ` AND DAY(fstart_time) = DAY(NOW())`
-        } else if(req.query.filter == 'week') {
+        } else if (req.query.filter == 'week') {
             filter = ` AND WEEK(fstart_time) = WEEK(NOW())`
-        } else if(req.query.filter == 'month') {
+        } else if (req.query.filter == 'month') {
             filter = ` AND MONTH(fstart_time) = MONTH(NOW())`
-        } else if(req.query.filter == 'year') {
+        } else if (req.query.filter == 'year') {
             filter = ` AND YEAR(fstart_time) = YEAR(NOW())`
+        }
+        if (req.query.fstart_time && req.query.fend_time) {
+            filter = ` AND DATE(fstart_time) >= DATE('${req.query.fstart_time}') AND DATE(fstart_time) <= DATE('${req.query.fend_time}')`
         }
         members.forEach(member => {
             let q = `SELECT foperator, fgroup, SUM(fdur) AS fdur FROM u5364194_smartand_tmmin3_qmms.v_jobdesk WHERE (fgroup LIKE '%Preventive%' OR fgroup LIKE '%training%' OR fgroup LIKE '%Repair%' OR fgroup LIKE '%Safety%' OR fgroup LIKE '%Project%' OR fgroup LIKE '%Others%') AND foperator LIKE '%${member}%'${filter} GROUP BY fgroup`
@@ -130,30 +128,29 @@ module.exports = {
         })
         console.log(containerQuery);
         cmdMultipleQuery(containerQuery.join(';'))
-        .then(result => {
-            console.log(result);
-            gettingSuccess(res, 200, result)
-        })
-        .catch(err => {
-            gettingError(res, err)
-        })
+            .then(result => {
+                console.log(result);
+                gettingSuccess(res, 200, result)
+            })
+            .catch(err => {
+                gettingError(res, err)
+            })
     },
-    deleteJobData: async (req, res) => {
+    deleteJobData: async(req, res) => {
         let key = req.body.key
         let operator = req.body.operator
         let val = req.body.val
         await deleteQuery(tableJob, key, operator, val)
-        .then(async result => {
-            await gettingSuccess(res, 200, result)
-        })
-        .catch(async err => {
-            await gettingError(res, err)
-            
-        })
+            .then(async result => {
+                await gettingSuccess(res, 200, result)
+            })
+            .catch(async err => {
+                await gettingError(res, err)
+            })
     },
-    editJobData: async (req, res) => {
+    editJobData: async(req, res) => {
         // fline, farea, fjob_type, fdesc, fstart_time, fend_time, foperator, fgroup, frole
-        let {fid, fline, farea, fjob_type, fdesc, fstart_time, fend_time, foperator, fgroup, frole} = req.body
+        let { fid, fline, farea, fjob_type, fdesc, fstart_time, fend_time, foperator, fgroup, frole } = req.body
         let q = `UPDATE ${tableJob} SET 
             fline = '${fline}', 
             farea = '${farea}', 
@@ -165,12 +162,13 @@ module.exports = {
             fgroup = '${fgroup}',
             frole = '${frole}'
                 WHERE fid = ${fid}`
-                await cmdMultipleQuery(q)
-                .then(result => {
-                    gettingSuccess(res, 200, result)
-                })
-                .catch(err => {
-                    gettingError(res, err)
-                })
+        console.log(q)
+        await cmdMultipleQuery(q)
+            .then(result => {
+                gettingSuccess(res, 200, result)
+            })
+            .catch(err => {
+                gettingError(res, err)
+            })
     }
 }

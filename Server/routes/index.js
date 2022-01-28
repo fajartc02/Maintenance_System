@@ -76,27 +76,27 @@ const {
     getSummaryWeekly
 } = require("../controllers/controllerProblem")
 
-const {uploadFile} = require('../middleware/controllerUpload')
+const { uploadFile } = require('../middleware/controllerUpload')
 
 
 const fs = require('fs')
 const stream = require('stream')
 
-router.get('/image', async (req, res) => {
+router.get('/image', async(req, res) => {
     let pathImage = `${req.query.path}`
     const r = fs.createReadStream(pathImage) // or any other way to get a readable stream
     const ps = new stream.PassThrough() // <---- this makes a trick with stream error handling
     stream.pipeline(
-    r,
-    ps, // <---- this makes a trick with stream error handling
-    (err) => {
-        if (err) {
-        console.log(err) // No such file or any other kind of error
-        return res.sendStatus(400); 
-        }
-    })
+        r,
+        ps, // <---- this makes a trick with stream error handling
+        (err) => {
+            if (err) {
+                console.log(err) // No such file or any other kind of error
+                return res.sendStatus(400);
+            }
+        })
     ps.pipe(res) // <---- this makes a trick with stream error handling
-  });
+});
 router.get('/', function(req, res) {
     // // res.setHeader('Content-Type', 'application/pdf')
     // // res.setHeader('Content-Disposition', 'inline;filename=doc1.pdf')
@@ -118,26 +118,33 @@ router.get('/', function(req, res) {
         fs.createReadStream(path).pipe(res)
     } else {
         res.status(500)
-        // console.log('File not found')
+            // console.log('File not found')
         res.send('File not found')
     }
 })
 router.post('/upload', uploadFile)
 
 // Quality Data
-const {addDataQuality, qualityData, groupDefect, groupWorstMachine, allDefectData, getOneDefectData, editDefectData, removeDefectData} = require('../controllers/controllerQuality')
-const { addAnalisys, getAnalisys,editAnalisys, removeAnalisys } = require('../controllers/controllerQualityWhy')
-const {addCmQuality, getQualityCm} = require('../controllers/controllerQualityCm')
+const { addDataQuality, qualityData, groupDefect, groupWorstMachine, allDefectData, getOneDefectData, editDefectData, removeDefectData } = require('../controllers/controllerQuality')
+const { addAnalisys, getAnalisys, editAnalisys, removeAnalisys } = require('../controllers/controllerQualityWhy')
+const { addCmQuality, getQualityCm } = require('../controllers/controllerQualityCm')
 
 const { addJobData, getJobData, bulkAddJobData, getOeeData, getYamazumiData, deleteJobData, editJobData } = require('../controllers/job/job')
 
-const {insertParam, getParameterList, getMachineParameter} = require('../controllers/symptomMc/parameterManual')
+const { insertParam, getParameterList, getMachineParameter, getDataHistoryParam, getListParameterMcs, getAdminParam, insertAdminParam, deleteParameter, addParamToMc, monitoringParamDashboard } = require('../controllers/symptomMc/parameterManual')
 
-const {ruleParamManual} = require('../middleware/rulesParameter')
+const { ruleParamManual } = require('../middleware/rulesParameter')
 
+router.get('/monitoringParam', monitoringParamDashboard)
+router.get('/paramHistory', getDataHistoryParam)
 router.get('/parameterList', getParameterList)
 router.get('/machineParameter', getMachineParameter)
-router.post('/insertParamManual', ruleParamManual, insertParam)
+router.post('/insertParamManual', insertParam)
+router.get('/admin/parameterToMc', getListParameterMcs)
+router.get('/admin/parameter', getAdminParam)
+router.post('/admin/parameter', insertAdminParam)
+router.delete('/admin/parameter/:fid', deleteParameter)
+router.post('/admin/parametertToMachine', addParamToMc)
 
 router.post('/addJobData', addJobData)
 router.post('/bulkAddJobData', bulkAddJobData)
