@@ -6,8 +6,8 @@ function insertData(table_name, colsName, vals) {
         (${colsName.join(',')}) 
             VALUES
         (${vals.join(',')})`
-        console.log(q);
-    return new Promise(async (resolve, reject) => {
+    console.log(q);
+    return new Promise(async(resolve, reject) => {
         await cmdMultipleQuery(q)
             .then(result => {
                 resolve(result)
@@ -23,22 +23,22 @@ function bulkInsertData(table_name, colsName, vals) {
         (${colsName.join(',')}) 
             VALUES
         ${vals.join(',')}`
-        console.log(q);
-        return new Promise(async (resolve, reject) => {
-            await cmdMultipleQuery(q)
-                .then(result => {
-                    resolve(result)
-                })
-                .catch(err => {
-                    reject(err)
-                })
-        })
+    console.log(q);
+    return new Promise(async(resolve, reject) => {
+        await cmdMultipleQuery(q)
+            .then(result => {
+                resolve(result)
+            })
+            .catch(err => {
+                reject(err)
+            })
+    })
 }
 
 function getData(table_name, someCols = false, filterQuery) {
     let q = `SELECT`
     let containerCols = []
-    if(someCols) {
+    if (someCols) {
         someCols.forEach(item => {
             containerCols.push(item)
         })
@@ -48,11 +48,11 @@ function getData(table_name, someCols = false, filterQuery) {
     }
     q += ` FROM ${table_name}`
     console.log(filterQuery);
-    if(filterQuery) {
-        q += ` ${filterQuery}`
+    if (filterQuery) {
+        q += ` ${filterQuery} AND TIMESTAMP(fstart_time) < TIMESTAMP(fend_time) AND fdesc NOT LIKE '%test%'`
     }
     console.log(q);
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async(resolve, reject) => {
         await cmdMultipleQuery(q)
             .then(result => {
                 resolve(result)
@@ -66,7 +66,7 @@ function getData(table_name, someCols = false, filterQuery) {
 function deleteQuery(table_name, colName, operator = '', valueName = '') {
     let q = `DELETE FROM ${table_name} WHERE ${colName} ${operator} ${valueName}`
 
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async(resolve, reject) => {
         await cmdMultipleQuery(q)
             .then(result => {
                 resolve(result)

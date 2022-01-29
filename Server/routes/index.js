@@ -30,7 +30,8 @@ const {
 const {
     getAllMtMember,
     signin,
-    signup
+    signup,
+    getLineMember
 } = require('../controllers/controllerMtMember')
 
 const {
@@ -131,9 +132,26 @@ const { addCmQuality, getQualityCm } = require('../controllers/controllerQuality
 
 const { addJobData, getJobData, bulkAddJobData, getOeeData, getYamazumiData, deleteJobData, editJobData } = require('../controllers/job/job')
 
-const { insertParam, getParameterList, getMachineParameter, getDataHistoryParam, getListParameterMcs, getAdminParam, insertAdminParam, deleteParameter, addParamToMc, monitoringParamDashboard } = require('../controllers/symptomMc/parameterManual')
+const {
+    insertParam,
+    getParameterList,
+    getMachineParameter,
+    getDataHistoryParam,
+    getListParameterMcs,
+    getAdminParam,
+    insertAdminParam,
+    deleteParameter,
+    addParamToMc,
+    monitoringParamDashboard
+} = require('../controllers/symptomMc/parameterManual')
+
+const { checkScreen, updateScreen } = require('../controllers/screen/controllerScreen')
+
 
 const { ruleParamManual } = require('../middleware/rulesParameter')
+
+router.get('/checkScreen', checkScreen)
+router.put('/updateScreen', updateScreen)
 
 router.get('/monitoringParam', monitoringParamDashboard)
 router.get('/paramHistory', getDataHistoryParam)
@@ -150,6 +168,9 @@ router.post('/addJobData', addJobData)
 router.post('/bulkAddJobData', bulkAddJobData)
 router.get('/getJobData', getJobData)
 router.get('/getOeeData', getOeeData)
+
+router.get('/getLineMember', getLineMember)
+
 router.get('/getAllMtMember', getAllMtMember)
 router.post('/getYamazumiData', getYamazumiData)
 router.post('/deleteJobData', deleteJobData)

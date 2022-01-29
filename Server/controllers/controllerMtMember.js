@@ -3,10 +3,10 @@ const cmdMultipleQuery = require('../config/MultipleQueryConnection');
 module.exports = {
     getAllMtMember: (req, res) => {
         let q = `SELECT * FROM tb_mt_member WHERE farea IS NOT NULL`
-        if(req.query.shift) {
+        if (req.query.shift) {
             q += ` AND fshift = '${req.query.shift}'`
         }
-        if(req.query.isMember) {
+        if (req.query.isMember) {
             q += ` AND (frole = 'TM' OR frole = 'GH')`
         }
         cmdMultipleQuery(q)
@@ -136,6 +136,27 @@ module.exports = {
             }).catch((err) => {
                 res.status(500).json({
                     msg: 'Err to get data member',
+                    err: err.message
+                })
+            });
+    },
+    getLineMember: (req, res) => {
+        let qAssy = `SELECT fname, fimage, fshift FROM tb_mt_member WHERE fline LIKE '%ASSY%' AND frole = 'TM'`
+        let qCr = `SELECT fname, fimage, fshift FROM tb_mt_member WHERE fline LIKE '%CR%' AND frole = 'TM'`
+        let qCam = `SELECT fname, fimage, fshift FROM tb_mt_member WHERE fline LIKE '%CAM%' AND frole = 'TM'`
+        let qCb = `SELECT fname, fimage, fshift FROM tb_mt_member WHERE fline LIKE '%CB%' AND frole = 'TM'`
+        let qCh = `SELECT fname, fimage, fshift FROM tb_mt_member WHERE fline LIKE '%CH%' AND frole = 'TM'`
+        let qLPDC = `SELECT fname, fimage, fshift FROM tb_mt_member WHERE fline LIKE 'LP%' AND frole = 'TM'`
+        let qHPDC = `SELECT fname, fimage, fshift FROM tb_mt_member WHERE fline LIKE 'DC%' AND frole = 'TM'`
+        cmdMultipleQuery(`${qAssy};${qCr};${qCam};${qCb};${qCh};${qLPDC};${qHPDC}`)
+            .then((result) => {
+                res.status(201).json({
+                    message: 'Success to get member line',
+                    data: result
+                })
+            }).catch((err) => {
+                res.status(500).json({
+                    msg: 'Err to get member line',
                     err: err.message
                 })
             });
