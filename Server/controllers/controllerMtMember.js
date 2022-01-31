@@ -148,7 +148,7 @@ module.exports = {
         let qCh = `SELECT fname, fimage, fshift FROM tb_mt_member WHERE fline LIKE '%CH%' AND frole = 'TM' ORDER BY fshift ASC`
         let qCb = `SELECT fname, fimage, fshift FROM tb_mt_member WHERE fline LIKE '%CB%' AND frole = 'TM' ORDER BY fshift ASC`
         let qAssy = `SELECT fname, fimage, fshift FROM tb_mt_member WHERE fline LIKE '%ASSY%' AND frole = 'TM' ORDER BY fshift ASC`
-        cmdMultipleQuery(`${qAssy};${qCr};${qCam};${qCb};${qCh};${qLPDC};${qHPDC}`)
+        cmdMultipleQuery(`${qLPDC};${qHPDC};${qCam};${qCr};${qCh};${qCb};${qAssy}`)
             .then((result) => {
                 res.status(201).json({
                     message: 'Success to get member line',
