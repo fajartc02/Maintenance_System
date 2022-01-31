@@ -49,7 +49,7 @@ function getData(table_name, someCols = false, filterQuery) {
     q += ` FROM ${table_name}`
     console.log(filterQuery);
     if (filterQuery) {
-        q += ` ${filterQuery} AND TIMESTAMP(fstart_time) < TIMESTAMP(fend_time) AND fdesc NOT LIKE '%test%'`
+        q += ` ${filterQuery} AND TIMESTAMP(fstart_time) < IFNULL(TIMESTAMP(NOW()),TIMESTAMP(fend_time)) AND fdesc NOT LIKE '%test%'`
     }
     console.log(q);
     return new Promise(async(resolve, reject) => {
