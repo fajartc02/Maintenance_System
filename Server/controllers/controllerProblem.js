@@ -196,5 +196,20 @@ module.exports = {
             }).catch((err) => {
                 console.log(err);
             });
+    },
+    getProblemByCategory: (req, res) => {
+        let q = `SELECT * FROM v_current_error_2`
+        if (req.body.filterQuery) {
+            q += ` WHERE ${req.body.filterQuery}`
+        }
+        cmdMultipleQuery(q)
+            .then((result) => {
+                res.status(200).json({
+                    message: 'Success to get LTB Problem',
+                    data: result
+                })
+            }).catch((err) => {
+                gettingError(res, err)
+            });
     }
 }

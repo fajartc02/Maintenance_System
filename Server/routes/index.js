@@ -74,7 +74,8 @@ const {
     getProblemTemporary,
     getProblemFreq,
     getProblemLtb,
-    getSummaryWeekly
+    getSummaryWeekly,
+    getProblemByCategory
 } = require("../controllers/controllerProblem")
 
 const { uploadFile } = require('../middleware/controllerUpload')
@@ -195,6 +196,9 @@ router.post('/addCmQuality', addCmQuality)
 
 
 // SUMMARY
+
+getProblemByCategory
+router.post('/problemCategory', getProblemByCategory)
 router.get('/delayProblemCm', getSummaryWeekly)
     // CYCLE TIME MACHINE
 router.get('/ctMachines', getAllCtMachines)
