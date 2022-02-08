@@ -34,24 +34,24 @@ async function checkIsMcActive(id, cmdMultipleQuery) {
         })
 }
 
-cron.schedule('* * * * *', () => {
-    const cmdMultipleQuery = require('./config/MultipleQueryConnection')
-    console.log('RUN JOB check invalid data Every minute');
-    // simple query
-    let q = `SELECT fid,fstatus FROM u5364194_smartand_tmmin3_qmms.tb_status WHERE fstatus = 1;`
-    cmdMultipleQuery(q)
-        .then((result) => {
-            console.log(result);
-            let containerResult = result
-            if (containerResult.length > 0) {
-                containerResult.forEach(itemProb => {
-                    checkIsMcActive(itemProb.fid, cmdMultipleQuery)
-                })
-            }
-        }).catch((err) => {
-            console.error(err)
-        });
-})
+// cron.schedule('* * * * *', () => {
+//     const cmdMultipleQuery = require('./config/MultipleQueryConnection')
+//     console.log('RUN JOB check invalid data Every minute');
+//     // simple query
+//     let q = `SELECT fid,fstatus FROM u5364194_smartand_tmmin3_qmms.tb_status WHERE fstatus = 1;`
+//     cmdMultipleQuery(q)
+//         .then((result) => {
+//             console.log(result);
+//             let containerResult = result
+//             if (containerResult.length > 0) {
+//                 containerResult.forEach(itemProb => {
+//                     checkIsMcActive(itemProb.fid, cmdMultipleQuery)
+//                 })
+//             }
+//         }).catch((err) => {
+//             console.error(err)
+//         });
+// })
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -64,6 +64,20 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+const { Sequelize } = require('sequelize');
+
+const sequelize = new Sequelize(process.env.NAME_DB_NEW, process.env.USER_DB_NEW, process.env.PASSWORD_DB_NEW, {
+    host: process.env.HOST_DB_NEW,
+    dialect: 'mysql'
+});
+
+try {
+    sequelize.authenticate();
+    console.log('Connection has been established successfully.');
+} catch (error) {
+    console.error('Unable to connect to the database:', error);
+}
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

@@ -79,8 +79,10 @@ module.exports = {
             if (req.query.filterQuery) {
                 q += ` ${req.query.filterQuery}`
             }
+            console.log(q);
             cmdMultipleQuery(q)
                 .then(result => {
+                    console.log(result);
                     gettingSuccess(res, result)
                     res.end()
                     console.log(result);
@@ -247,7 +249,7 @@ module.exports = {
                     let qHistoryLast = `SELECT * FROM v_parameter_log WHERE id_param = '${item.id_parameter}' GROUP BY id_mc ORDER BY clock DESC `
                     cmdMultipleQuery(qHistoryLast)
                         .then(res => {
-                            // console.log(res);
+                            console.log(res);
                             if (res.length > 0) {
                                 item.machines = res
                                 // callback(item)
@@ -278,5 +280,177 @@ module.exports = {
                 console.log(err);
                 gettingError(res, err)
             })
+    },
+    machinesDashboard: (req, res) => {
+        let containerQuery = []
+        let qMcAssy = `
+        SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
+            LEFT JOIN m_machine_parameter mmp
+                ON tbmc.fid = mmp.id_m_machine
+            LEFT JOIN m_parameter mp
+                ON mmp.id_m_parameter = mp.fid
+            LEFT JOIN o_history_parameter_value ohpv
+                ON ohpv.id_m_machine = tbmc.fid
+            LEFT JOIN m_severity msev
+                ON msev.fid = ohpv.id_m_severity WHERE fline = 'ASSY LINE' ORDER BY clock DESC`
+        let qMcCb = `
+        SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
+            LEFT JOIN m_machine_parameter mmp
+                ON tbmc.fid = mmp.id_m_machine
+            LEFT JOIN m_parameter mp
+                ON mmp.id_m_parameter = mp.fid
+            LEFT JOIN o_history_parameter_value ohpv
+                ON ohpv.id_m_machine = tbmc.fid
+            LEFT JOIN m_severity msev
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%BLOCK' ORDER BY clock DESC`
+        let qMcCh = `
+        SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
+            LEFT JOIN m_machine_parameter mmp
+                ON tbmc.fid = mmp.id_m_machine
+            LEFT JOIN m_parameter mp
+                ON mmp.id_m_parameter = mp.fid
+            LEFT JOIN o_history_parameter_value ohpv
+                ON ohpv.id_m_machine = tbmc.fid
+            LEFT JOIN m_severity msev
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%HEAD' ORDER BY clock DESC`
+        let qMcCam = `
+        SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
+            LEFT JOIN m_machine_parameter mmp
+                ON tbmc.fid = mmp.id_m_machine
+            LEFT JOIN m_parameter mp
+                ON mmp.id_m_parameter = mp.fid
+            LEFT JOIN o_history_parameter_value ohpv
+                ON ohpv.id_m_machine = tbmc.fid
+            LEFT JOIN m_severity msev
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE 'CAM%' ORDER BY clock DESC`
+        let qMcCr = `
+        SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
+            LEFT JOIN m_machine_parameter mmp
+                ON tbmc.fid = mmp.id_m_machine
+            LEFT JOIN m_parameter mp
+                ON mmp.id_m_parameter = mp.fid
+            LEFT JOIN o_history_parameter_value ohpv
+                ON ohpv.id_m_machine = tbmc.fid
+            LEFT JOIN m_severity msev
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE 'Crank%' ORDER BY clock DESC`
+        let qMcLp = `
+        SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
+            LEFT JOIN m_machine_parameter mmp
+                ON tbmc.fid = mmp.id_m_machine
+            LEFT JOIN m_parameter mp
+                ON mmp.id_m_parameter = mp.fid
+            LEFT JOIN o_history_parameter_value ohpv
+                ON ohpv.id_m_machine = tbmc.fid
+            LEFT JOIN m_severity msev
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%LP%' ORDER BY clock DESC`
+        let qMcHp = `
+        SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
+            LEFT JOIN m_machine_parameter mmp
+                ON tbmc.fid = mmp.id_m_machine
+            LEFT JOIN m_parameter mp
+                ON mmp.id_m_parameter = mp.fid
+            LEFT JOIN o_history_parameter_value ohpv
+                ON ohpv.id_m_machine = tbmc.fid
+            LEFT JOIN m_severity msev
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%HP%' ORDER BY clock DESC`
+        containerQuery.push(qMcAssy)
+        containerQuery.push(qMcCh)
+        containerQuery.push(qMcCb)
+        containerQuery.push(qMcCam)
+        containerQuery.push(qMcCr)
+        containerQuery.push(qMcLp)
+        containerQuery.push(qMcHp)
+        cmdMultipleQuery(containerQuery.join(';'))
+            .then(async (result) => {
+                let arrRes = []
+                let mapResult = await result.map((item, i) => {
+                    // item[0].totalMc = item.length
+                    let obj = {
+                        name: item[0].fline.toUpperCase(),
+                        machines: item,
+                        totalMc: item.length
+                    }
+                    arrRes.push(obj)
+                    if (i == 0) {
+                        return arrRes
+                    }
+                })
+                let count = 0
+                let idxSaved = null
+                let mapResWarning = await mapResult[0].map((item, i) => {
+                    let arrMc = []
+                    item.machines.forEach(mc => {
+                        if (mc.severity == 'WARNING') {
+                            // console.log(mc);
+
+                            if (arrMc.findIndex((elem => elem.id_mc == mc.id_mc)) == -1) {
+                                count += 1
+                            }
+                            arrMc.push(mc)
+                        }
+
+                    })
+                    item.warnCount = count
+                    item.warnMc = arrMc
+                    // console.log(item);
+                    if (idxSaved != i) {
+                        count = 0
+                        idxSaved = i
+                    }
+                    return item
+                })
+                let countOk = 0
+                let idxSavedOk = null
+                let mapResOK = await mapResWarning.map((item, i) => {
+                    let arrMc = []
+                    item.machines.forEach(mc => {
+                        if ((mc.severity == 'OK' || mc.severity == null)) {
+                            console.log(mc);
+                            if (arrMc.findIndex((elem => elem.id_mc == mc.id_mc)) == -1) {
+                                countOk += 1
+                            }
+                            arrMc.push(mc)
+                        }
+                    })
+                    item.okCount = countOk
+                    item.okMc = arrMc
+                    // console.log(item);
+                    if (idxSavedOk != i) {
+                        countOk = 0
+                        idxSavedOk = i
+                    }
+                    return item
+                })
+                let countNg = 0
+                let idxSavedNg = null
+                let mapResNg = await mapResOK.map((item, i) => {
+                    let arrMc = []
+                    item.machines.forEach(mc => {
+                        if (mc.severity == 'NG') {
+                            // console.log(mc);
+
+                            if (arrMc.findIndex((elem => elem.id_mc == mc.id_mc)) == -1) {
+                                countNg += 1
+                            }
+                            arrMc.push(mc)
+                        }
+
+                    })
+                    item.ngCount = countNg
+                    item.ngMc = arrMc
+                    // console.log(item);
+                    if (idxSavedNg != i) {
+                        countNg = 0
+                        idxSavedNg = i
+                    }
+                    return item
+                })
+                // res.send(mapResNg)
+                await gettingSuccess(res, mapResNg)
+            }).catch((err) => {
+                console.log(err)
+                // res.send(err)
+                gettingSuccess(res, err)
+            });
     }
 }

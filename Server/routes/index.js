@@ -143,7 +143,8 @@ const {
     insertAdminParam,
     deleteParameter,
     addParamToMc,
-    monitoringParamDashboard
+    monitoringParamDashboard,
+    machinesDashboard
 } = require('../controllers/symptomMc/parameterManual')
 
 const { checkScreen, updateScreen } = require('../controllers/screen/controllerScreen')
@@ -154,6 +155,7 @@ const { ruleParamManual } = require('../middleware/rulesParameter')
 router.get('/checkScreen', checkScreen)
 router.put('/updateScreen', updateScreen)
 
+router.get('/dashboard/machines', machinesDashboard)
 router.get('/monitoringParam', monitoringParamDashboard)
 router.get('/paramHistory', getDataHistoryParam)
 router.get('/parameterList', getParameterList)

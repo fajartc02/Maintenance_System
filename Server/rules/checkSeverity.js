@@ -1,7 +1,7 @@
 function checkSeverity(upper_limit, lower_limit, value) {
     // let gapWarningLimit = (upper_limit - lower_limit) * 10 / 100 // 90%
-    let warningLowLimit = +lower_limit + 20 / 100
-    let warningUpLimit = +upper_limit - 20 / 100
+    let warningLowLimit = +lower_limit + (+lower_limit * 20 / 100)
+    let warningUpLimit = +upper_limit - (+upper_limit * 20 / 100)
         // console.log(gapWarningLimit);
     console.log(warningUpLimit);
     console.log(+upper_limit);
