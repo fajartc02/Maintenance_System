@@ -3,7 +3,7 @@ const { exec } = require('child_process')
 module.exports = {
     updateServer: (req, res) => {
         console.log(`Running update script . . .`);
-        exec(`git pull && npm install && pm2 start bin/www`, function(error, stdout, stderr) {
+        exec(`git pull && npm install && pm2 start bin/www && pm2 restart 0`, function(error, stdout, stderr) {
             if (error || stderr) {
                 console.log(stderr);
                 console.log(error);
