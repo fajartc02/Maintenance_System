@@ -151,9 +151,10 @@ const { checkScreen, updateScreen } = require('../controllers/screen/controllerS
 
 
 const { ruleParamManual } = require('../middleware/rulesParameter')
-const { updateServer } = require('../controllers/controllerTest')
+const { updateServer, testing } = require('../controllers/controllerTest')
 
 router.get('/update-server', updateServer)
+router.get('/testing', testing)
 
 router.get('/checkScreen', checkScreen)
 router.put('/updateScreen', updateScreen)
