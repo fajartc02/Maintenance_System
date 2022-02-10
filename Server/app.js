@@ -34,24 +34,24 @@ async function checkIsMcActive(id, cmdMultipleQuery) {
         })
 }
 
-// cron.schedule('* * * * *', () => {
-//     const cmdMultipleQuery = require('./config/MultipleQueryConnection')
-//     console.log('RUN JOB check invalid data Every minute');
-//     // simple query
-//     let q = `SELECT fid,fstatus FROM u5364194_smartand_tmmin3_qmms.tb_status WHERE fstatus = 1;`
-//     cmdMultipleQuery(q)
-//         .then((result) => {
-//             console.log(result);
-//             let containerResult = result
-//             if (containerResult.length > 0) {
-//                 containerResult.forEach(itemProb => {
-//                     checkIsMcActive(itemProb.fid, cmdMultipleQuery)
-//                 })
-//             }
-//         }).catch((err) => {
-//             console.error(err)
-//         });
-// })
+cron.schedule('*/3 * * * *', () => {
+    const cmdMultipleQuery = require('./config/MultipleQueryConnection')
+    console.log('RUN JOB check invalid data 3 minute');
+    // simple query
+    let q = `SELECT fid,fstatus FROM u5364194_smartand_tmmin3_qmms.tb_status WHERE fstatus = 1;`
+    cmdMultipleQuery(q)
+        .then((result) => {
+            console.log(result);
+            let containerResult = result
+            if (containerResult.length > 0) {
+                containerResult.forEach(itemProb => {
+                    checkIsMcActive(itemProb.fid, cmdMultipleQuery)
+                })
+            }
+        }).catch((err) => {
+            console.error(err)
+        });
+})
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
