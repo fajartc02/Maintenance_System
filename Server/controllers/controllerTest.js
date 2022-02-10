@@ -23,7 +23,7 @@ module.exports = {
     },
     testing: (req, res) => {
         res.status(200).json({
-            message: 'sudah di update tgl 10/02/22',
+            message: 'sudah di update tgl 10/02/22 15:48',
         })
     }
 }
