@@ -19,9 +19,9 @@ function gettingError(res, err) {
 
 module.exports = {
         insertParam: (req, res) => {
-            let { id_m_machine, id_m_parameter, clock, value, upper_limit, lower_limit } = req.body
-            console.log(res.locals.data);
-            let checkIdSev = checkSeverity(upper_limit, lower_limit, value)
+            let { id_m_machine, id_m_parameter, clock, value, upper_limit = null, lower_limit = null, warning_ul = null, warning_ll = null } = req.body
+                // console.log(res.locals.data);
+            let checkIdSev = checkSeverity(upper_limit, lower_limit, value, warning_ul, warning_ll)
             console.log(checkIdSev);
             let q = `INSERT INTO 
             o_history_parameter_value 
@@ -79,6 +79,7 @@ module.exports = {
             if (req.query.filterQuery) {
                 q += ` ${req.query.filterQuery}`
             }
+            q += ` ORDER BY clock ASC`
             console.log(q);
             cmdMultipleQuery(q)
                 .then(result => {
@@ -292,7 +293,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline = 'ASSY LINE' ORDER BY clock DESC`
+                ON msev.fid = ohpv.id_m_severity WHERE fline = 'ASSY LINE' AND mp.name IS NOT NULL ORDER BY clock ASC`
         let qMcCb = `
         SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
             LEFT JOIN m_machine_parameter mmp
@@ -302,7 +303,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%BLOCK' ORDER BY clock DESC`
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%BLOCK' AND mp.name IS NOT NULL ORDER BY clock ASC`
         let qMcCh = `
         SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
             LEFT JOIN m_machine_parameter mmp
@@ -312,7 +313,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%HEAD' ORDER BY clock DESC`
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%HEAD' AND mp.name IS NOT NULL ORDER BY clock ASC`
         let qMcCam = `
         SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
             LEFT JOIN m_machine_parameter mmp
@@ -322,7 +323,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE 'CAM%' ORDER BY clock DESC`
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE 'CAM%' ORDER BY clock ASC`
         let qMcCr = `
         SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
             LEFT JOIN m_machine_parameter mmp
@@ -332,7 +333,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE 'Crank%' ORDER BY clock DESC`
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE 'Crank%' ORDER BY clock ASC`
         let qMcLp = `
         SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
             LEFT JOIN m_machine_parameter mmp
@@ -342,7 +343,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%LP%' ORDER BY clock DESC`
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%LP%' ORDER BY clock ASC`
         let qMcHp = `
         SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
             LEFT JOIN m_machine_parameter mmp
@@ -352,7 +353,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%HP%' ORDER BY clock DESC`
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%HP%' ORDER BY clock ASC`
         containerQuery.push(qMcAssy)
         containerQuery.push(qMcCh)
         containerQuery.push(qMcCb)
@@ -379,14 +380,26 @@ module.exports = {
                 let idxSaved = null
                 let mapResWarning = await mapResult[0].map((item, i) => {
                     let arrMc = []
-                    item.machines.forEach(mc => {
+                    item.machines.forEach((mc, idxMc) => {
                         if (mc.severity == 'WARNING') {
+                            // console.log(i);
                             // console.log(mc);
+                            // console.log(item.machines);
+                            // console.log(mc);
+
 
                             if (arrMc.findIndex((elem => elem.id_mc == mc.id_mc)) == -1) {
                                 count += 1
                             }
                             arrMc.push(mc)
+                            let checkLast = item.machines.filter(item => {
+                                return item.mc_name == mc.mc_name && item.name == mc.name
+                            })
+                            console.log(checkLast[checkLast.length - 1]);
+                            if (checkLast[checkLast.length - 1].severity == 'OK') {
+                                count = 0
+                            }
+
                         }
 
                     })
@@ -405,7 +418,7 @@ module.exports = {
                     let arrMc = []
                     item.machines.forEach(mc => {
                         if ((mc.severity == 'OK' || mc.severity == null)) {
-                            console.log(mc);
+                            // console.log(mc);
                             if (arrMc.findIndex((elem => elem.id_mc == mc.id_mc)) == -1) {
                                 countOk += 1
                             }
@@ -451,6 +464,20 @@ module.exports = {
                 console.log(err)
                 // res.send(err)
                 gettingSuccess(res, err)
+            });
+    },
+    parameterAlertHistory: (req, res) => {
+        let q = `SELECT * FROM u5364194_smartand_tmmin3_qmms.v_parameter_log WHERE (severity = 'WARNING' OR severity = 'NG')`
+        let { startDate, endDate } = req.query
+        if (startDate && endDate) {
+            q += ` AND TIMESTAMP(clock) >= '${req.query.startDate}' AND TIMESTAMP(clock) <= '${req.query.endDate}'`
+        }
+        console.log(q);
+        cmdMultipleQuery(q)
+            .then((result) => {
+                gettingSuccess(res, result)
+            }).catch((err) => {
+                gettingError(res, err)
             });
     }
 }
