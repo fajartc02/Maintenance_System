@@ -79,7 +79,10 @@ try {
     console.error('Unable to connect to the database:', error);
 }
 
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+app.listen(3000)
 
 module.exports = app;
