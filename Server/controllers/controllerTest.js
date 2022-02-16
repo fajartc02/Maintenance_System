@@ -40,7 +40,7 @@ module.exports = {
     },
     testing: (req, res) => {
         res.status(200).json({
-            message: 'sudah di update tgl 16/02/22 10:00',
+            message: 'sudah di update tgl 16/02/22 16:10',
         })
     }
 }
