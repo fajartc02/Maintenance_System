@@ -9,14 +9,14 @@ module.exports = {
                     console.log(error);
                     res.status(200).json({
                         message: 'Error',
-                        err: error ? error : stderr
+                        err: error ? error.split('\n') : stderr.split('\n')
                     })
                 } else {
                     console.log(stdout);
-                    // res.status(200).json({
-                    //     message: 'OK',
-                    //     data: stdout.split('\n')
-                    // })
+                    res.status(200).json({
+                        message: 'OK',
+                        data: stdout.split('\n')
+                    })
                 }
                 console.log(stdout);
 
