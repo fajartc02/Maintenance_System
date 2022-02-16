@@ -1,9 +1,9 @@
 const { exec } = require('child_process')
 
 module.exports = {
-    updateServer: (req, res) => {
+    updateServer: async(req, res) => {
         console.log(`Running update script . . .`);
-        exec(`git pull && npm install && pm2 start bin/www && pm2 restart 0`, function(error, stdout, stderr) {
+        await exec(`git pull && npm install`, function(error, stdout, stderr) {
             if (error || stderr) {
                 console.log(stderr);
                 console.log(error);
@@ -17,13 +17,27 @@ module.exports = {
                     message: 'OK',
                     data: stdout.split('\n')
                 })
-
             }
+
+        })
+        await exec(`pm2 restart 0`, function(error, stdout, stderr) {
+            if (error || stderr) {
+                console.log(stderr);
+                console.log(error);
+                res.status(200).json({
+                    message: 'Error',
+                    err: error ? error : stderr
+                })
+            }
+            res.status(200).json({
+                message: 'OK',
+                data: stdout.split('\n')
+            })
         })
     },
     testing: (req, res) => {
         res.status(200).json({
-            message: 'sudah di update tgl 10/02/22 15:48',
+            message: 'sudah di update tgl 10/02/22 12:48',
         })
     }
 }
