@@ -154,6 +154,10 @@ const { checkScreen, updateScreen } = require('../controllers/screen/controllerS
 const { ruleParamManual } = require('../middleware/rulesParameter')
 const { updateServer, testing } = require('../controllers/controllerTest')
 
+const { getOeeAllLines } = require('../controllers/oee/controllerOee')
+
+router.get('/oeeAllLines', getOeeAllLines)
+
 router.get('/update-server', updateServer)
 router.get('/testing', testing)
 

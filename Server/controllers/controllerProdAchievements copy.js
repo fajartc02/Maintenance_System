@@ -276,18 +276,9 @@ module.exports = {
                 count++
                 // console.log(formatDate(req.query[key]));
                 if (key == 'startDate') {
-                    if (req.query[key].includes(' ')) {
-                        startDate = req.query[key]
-                    } else {
-                        startDate = formatDate(req.query[key]);
-                    }
+                    startDate = formatDate(req.query[key]);
                 } else if (key == 'endDate') {
-
-                    if (req.query[key].includes(' ')) {
-                        endDate = req.query[key]
-                    } else {
-                        endDate = formatDate(req.query[key]);
-                    }
+                    endDate = formatDate(req.query[key]);
                 }
                 console.log(req.query);
                 if (key == 'machine' && req.query.isProblem == 'false') {
@@ -302,15 +293,7 @@ module.exports = {
                     qProblem = ` and ferror_name LIKE '%${req.query[key]}%'`
                 }
             }
-            // let d = new Date(endDate);
-            // console.log(d);
-            // let offsetTimeEndDate = d.setDate(d.getDate() + 1);
-            // console.log(endDate);
-            // console.log(offsetTimeEndDate);
-            // let offsetEndDate = formatDate(new Date(offsetTimeEndDate));
-            // console.log(offsetEndDate);
-            qProbHistory += ` WHERE fstart_time BETWEEN '${startDate}' AND '${endDate}'${qProblem}${qMachine} ${qLine} ORDER BY fdur DESC`
-            console.log(qProbHistory);
+            qProbHistory += ` WHERE date(fstart_time) >= date('${startDate}')${qProblem} and date(fstart_time) <= date('${endDate}')${qMachine} ${qLine} ORDER BY fdur DESC`
             dbSingleQuery(qProbHistory)
                 .then((results) => {
                     res.status(200).json({
@@ -536,14 +519,14 @@ module.exports = {
                 fcommentSh = '${req.body.cmShFeedback}',
                 fcommentDph = '${req.body.cmDhFeedback}'
                     WHERE fproblem_id = ${req.params.v_}`
-            console.log(qUpdateEndJob);
+                    console.log(qUpdateEndJob);
             await cmdMultipleQuery(qUpdateEndJob)
-                .then(resIns => {
-                    console.log(resIns);
-                })
-                .catch(err => {
-                    console.log(err);
-                })
+                    .then(resIns => {
+                        console.log(resIns);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
         } else {
             console.log('INI adalah Problem yang belum close');
             console.log(req.body);
@@ -561,7 +544,7 @@ module.exports = {
                     console.log(res);
                     let mapMt = await res.map((itemJob, i) => {
                         let element = itemJob.foperator ? itemJob : itemJob[0]
-                        if (element) {
+                        if(element) {
                             // nothing
                         } else {
                             return arrMt[i]
@@ -571,7 +554,7 @@ module.exports = {
                     console.log(mapMt);
                     let containerQInstJob = []
                     await mapMt.forEach(itmMtAfterMap => {
-                        if (itmMtAfterMap) {
+                        if(itmMtAfterMap) {
                             let qInstJob = `INSERT INTO tb_jobdesk (
                                 fline, 
                                 farea, 
@@ -596,16 +579,16 @@ module.exports = {
                                 '${req.body.cmLhFeedback}',
                                 '${req.body.cmShFeedback}',
                                 '${req.body.cmDhFeedback}')`
-                            containerQInstJob.push(qInstJob)
+                                containerQInstJob.push(qInstJob)
                         }
                     })
                     await cmdMultipleQuery(containerQInstJob.join(';'))
-                        .then(resIns => {
-                            console.log(resIns);
-                        })
-                        .catch(err => {
-                            console.log(err);
-                        })
+                    .then(resIns => {
+                        console.log(resIns);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
                 })
                 .catch(err => {
                     console.log(err);
@@ -628,15 +611,15 @@ module.exports = {
         } else {
             await cmdMultipleQuery(qUpdateColDash).then(({ data }) => { console.log(data) }).catch(err => { console.log(err) })
             await cmdMultipleQuery(qEditProb).then(({ data }) => { console.log(data) }).catch(err => { console.log(err) })
-            await cmdMultipleQuery(qCloseNotif).then(async({ data }) => {
+            await cmdMultipleQuery(qCloseNotif).then(async ({ data }) => {
                 let qUpdJob = `UPDATE tb_jobdesk SET fstart_time = TIMESTAMP('${req.body['fstart_time'][0]}', '${req.body['fstart_time'][1]}'), fend_time = TIMESTAMP('${req.body['fend_time'][0]}', '${req.body['fend_time'][1]}') WHERE fproblem_id = ${req.params.v_}`
-                await cmdMultipleQuery(qUpdJob)
-                    .then(res => {
-                        console.log(res);
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    })
+                    await cmdMultipleQuery(qUpdJob)
+                        .then(res => {
+                            console.log(res);
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        })
                 res.status(200).json({
                     message: 'Success to edit problem',
                     data
@@ -655,7 +638,7 @@ module.exports = {
         let idx = 0
         console.log('HERE REQ> BODY BROOO');
         console.log(req.body);
-        if (req.file) {
+        if(req.file) {
             // upload()
             console.log();
             console.log(req);
@@ -751,17 +734,17 @@ module.exports = {
         where t1.fend_time is null and t2.fmc_name = t1.fmc_name 
         limit 5`
         cmdMultipleQuery(q)
-            .then(result => {
-                res.status(200).json({
-                    message: 'OK',
-                    data: result
-                })
+        .then(result => {
+            res.status(200).json({
+                message: 'OK',
+                data: result
             })
-            .catch(err => {
-                res.status(500).json({
-                    message: 'ERR',
-                    err
-                })
+        })
+        .catch(err => {
+            res.status(500).json({
+                message: 'ERR',
+                err
             })
+        })
     }
 }
