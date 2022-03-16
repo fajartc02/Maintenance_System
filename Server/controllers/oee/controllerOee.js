@@ -19,15 +19,16 @@ module.exports = {
                     UNION 
                 SELECT UPPER(fline) as fline, fvalue, fshift, fdate,fmanual FROM 
                 tb_oee_log WHERE fshift = 2) t 
-            WHERE fmanual = 1 AND MONTH(fdate) = MONTH(NOW()) AND year(fdate) = year(now()) group by fdate,fline order by fdate ASC`
+            WHERE fmanual = 1 AND MONTH(fdate) = MONTH('${req.query.date}') AND year(fdate) = year('${req.query.date}') group by fdate,fline order by fdate ASC`
         let q2 = `SELECT UPPER(fline) as fline, date(fstart_time) as fstart_time, SUM(fdur) as fdur
 from v_current_error_2
-WHERE MONTH(fstart_time) = MONTH(NOW()) AND year(fstart_time) = year(now())
+WHERE MONTH(fstart_time) = MONTH('${req.query.date}') AND year(fstart_time) = year('${req.query.date}')
 GROUP BY date(fstart_time),fline
 order by fstart_time ASC;`
             //         let q2 = `SELECT fid, fline, fmc_name, fstart_time, fdur, fshift, ferror_name
             // FROM v_current_error_2 
             // WHERE fline IN ('LPDC', 'HPDC', 'Crank Shaft', 'Cam Shaft', 'Cylinder Head', 'Cylinder Block', 'ASSY LINE') AND YEAR(fstart_time) = YEAR(NOW()) AND MONTH(fstart_time) = MONTH(NOW()) ORDER BY fdur DESC`
+        console.log(qOeeLinesOfMonth);
         cmdMultipleQuery(`${qOeeLinesOfMonth}`)
             .then((result) => {
                 var groupResults = result.reduce(function(r, a) {
