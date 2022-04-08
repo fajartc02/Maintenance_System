@@ -64,16 +64,21 @@ function sendNotif(data, cb, res) {
     let noPakEdi = '08121055608';
     let noPakParman = '081282040900';
     let noPakDaud = '08176069440';
-    let arrKeys = ["LINE", "START TIME", 'MACHINE', "ERROR NAME", "DURATION", "MP"]
+    let arrKeys = ["LINE", "START TIME", 'MACHINE', "ERROR NAME", "DURATION", "MP", "LINK"]
     let messageInfo = ''
     for (let i = 0; i < data.length; i++) {
         if (i > 0) {
             messageInfo += '\n'
         }
+        if (i == 6) {
+            let newData = `https://smartandonsys.web.app/editProblem?v_=${data[i]}`
+            data[i] = newData
+        }
         messageInfo += `*${arrKeys[i]}* :\n${data[i]}`
         if (i == 4) {
             messageInfo += ' Min'
         }
+
         if (data[i] == '') {
             isPushNotif = false;
         }
@@ -221,7 +226,7 @@ module.exports = {
                             d.getMinutes().padLeft(),
                             d.getSeconds().padLeft()
                         ].join(':');
-                        let data = [resProblem[0].fline, dformat, resProblem[0].fmc_name, resProblem[0].ferror_name, dur, resProblem[0].foperator]
+                        let data = [resProblem[0].fline, dformat, resProblem[0].fmc_name, resProblem[0].ferror_name, dur, resProblem[0].foperator, resProblem[0].fid]
                         sendNotif(data, (resNotif) => {
                             console.log('THIS RES NOTIF');
                             console.log(resNotif);
