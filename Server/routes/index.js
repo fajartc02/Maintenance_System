@@ -159,6 +159,16 @@ const { getOeeAllLines, insertOeeLine } = require('../controllers/oee/controller
 router.get('/oeeAllLines', getOeeAllLines)
 router.post('/insertOee', insertOeeLine)
 
+const {
+    getParetoData,
+    getDetailPareto,
+    addFocusTheme
+} = require("../controllers/focusTheme/controllerProblem")
+
+router.get('/data/pareto', getParetoData)
+router.get('/data/pareto/details', getDetailPareto)
+router.post('/addFocusTheme', addFocusTheme)
+
 router.get('/update-server', updateServer)
 router.get('/testing', testing)
 

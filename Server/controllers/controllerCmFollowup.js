@@ -1,6 +1,6 @@
 const cmdMultipleQuery = require('../config/MultipleQueryConnection');
 
-    // const net = new brain.recurrent.LSTM();
+// const net = new brain.recurrent.LSTM();
 
 // net.train(['I am brainjs, Hello World!']);
 // const output = net.run('I am brainjs');
@@ -41,9 +41,9 @@ module.exports = {
         let fmc_name = ''
         let ferror_name = ''
         let fshift = ''
-        let isFullCap = false
+        let isFullCap = false // TASKFORCE AND FULLCAP PROBLEM THERE IS NO LIMIT DURATION (ALL DURATION CAN FETCH)
 
-        if (String(req.query.ferror_name ? req.query.ferror_name.toUpperCase() : null).includes('FULLCAP')) {
+        if (String(req.query.ferror_name ? req.query.ferror_name.toUpperCase() : null).includes('FULLCAP') && String(req.query.ferror_name ? req.query.ferror_name.toUpperCase() : null).includes('TASKFORCE')) {
             isFullCap = true
         }
         console.log(isFullCap);
