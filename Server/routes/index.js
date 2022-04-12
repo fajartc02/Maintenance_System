@@ -162,12 +162,14 @@ router.post('/insertOee', insertOeeLine)
 const {
     getParetoData,
     getDetailPareto,
-    addFocusTheme
+    addFocusTheme,
+    finishedTheme
 } = require("../controllers/focusTheme/controllerProblem")
 
 router.get('/data/pareto', getParetoData)
 router.get('/data/pareto/details', getDetailPareto)
 router.post('/addFocusTheme', addFocusTheme)
+router.put('/finishedTheme/:vid', finishedTheme)
 
 router.get('/update-server', updateServer)
 router.get('/testing', testing)

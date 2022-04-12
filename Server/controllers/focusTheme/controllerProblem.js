@@ -1,7 +1,7 @@
 const cmdMultipleQuery = require('../../config/MultipleQueryConnection');
 
-async function gettingSuccess(res, data) {
-    return await res.status(200).json({
+function gettingSuccess(res, data) {
+    return res.status(200).json({
         message: 'OK',
         data
     })
@@ -24,6 +24,7 @@ module.exports = {
             ${isOrderFreq ? 'count(fid) AS freq,' : 'sum(fdur) AS fdur,'}
             fline,
             id_m_problem_member
+            ${isMachine ? '' : ',fname_theme_member'}
         FROM
             v_current_error_2
         WHERE
@@ -75,13 +76,22 @@ module.exports = {
                 let queryUpdateErr = `UPDATE tb_error_log_2
                 SET id_m_problem_member = ${id_problem_member} WHERE fid = ${id_m_problem}`
                 cmdMultipleQuery(queryUpdateErr)
-                    .then((result) => {
-                        console.log(result)
-                    }).catch((err) => {
-                        console.error(err);
+                    .then((resultUpdateErr) => {
+                        gettingSuccess(res, resultUpdateErr)
+                    }).catch((errUpdateErr) => {
+                        gettingError(res, errUpdateErr)
                     });
             }).catch((err) => {
                 console.error(err);
+            });
+    },
+    finishedTheme: (req, res) => {
+        let queryUpdateStatus = `UPDATE m_problem_member SET is_status = 1 where fid = ${req.params.vid}`
+        cmdMultipleQuery(queryUpdateStatus)
+            .then((result) => {
+                gettingSuccess(res, result)
+            }).catch((err) => {
+                gettingError(res, err)
             });
     }
 }

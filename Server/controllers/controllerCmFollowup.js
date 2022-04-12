@@ -1,10 +1,5 @@
 const cmdMultipleQuery = require('../config/MultipleQueryConnection');
 
-// const net = new brain.recurrent.LSTM();
-
-// net.train(['I am brainjs, Hello World!']);
-// const output = net.run('I am brainjs');
-// console.log(output);
 
 function configWa(msg, receiverNo) {
     var axios = require('axios');
