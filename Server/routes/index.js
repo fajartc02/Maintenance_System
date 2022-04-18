@@ -163,13 +163,19 @@ const {
     getParetoData,
     getDetailPareto,
     addFocusTheme,
-    finishedTheme
+    finishedTheme,
+    getMemberSelectedTheme,
+    getStatusTheme,
+    updateFocusTheme
 } = require("../controllers/focusTheme/controllerProblem")
 
 router.get('/data/pareto', getParetoData)
 router.get('/data/pareto/details', getDetailPareto)
 router.post('/addFocusTheme', addFocusTheme)
+router.put('/updateFocusTheme/:id_thema', updateFocusTheme)
 router.put('/finishedTheme/:vid', finishedTheme)
+router.get('/focusTheme/getMemberSelectedTheme', getMemberSelectedTheme)
+router.get('/focusTheme/getStatusTheme', getStatusTheme)
 
 router.get('/update-server', updateServer)
 router.get('/testing', testing)
