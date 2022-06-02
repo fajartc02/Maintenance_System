@@ -281,5 +281,8 @@ ORDER BY fstart_time DESC`
                     err
                 })
             });
+    },
+    getDetailFT: (req, res) => {
+        let q = `SELECT * FROM o_problem_member_detail WHERE id_p_m = ${req.params.id_p_m}`
     }
 }
