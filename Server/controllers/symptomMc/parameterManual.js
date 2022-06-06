@@ -77,7 +77,7 @@ module.exports = {
         getDataHistoryParam: (req, res) => {
             let q = `SELECT * FROM v_parameter_log`
             if (req.query.filterQuery) {
-                q += ` ${req.query.filterQuery}`
+                q += ` ${req.query.filterQuery} AND value > 0`
             }
             q += ` ORDER BY clock ASC`
             console.log(q);
@@ -85,13 +85,11 @@ module.exports = {
                 .then(result => {
                     console.log(result);
                     gettingSuccess(res, result)
-                    res.end()
-                    console.log(result);
+                        // res.end()
                 })
                 .catch(err => {
                     gettingError(res, err)
-                    res.end()
-                    console.log(err);
+                        // res.end()
                 })
         },
         getListParameterMcs: (req, res) => {
@@ -472,6 +470,7 @@ module.exports = {
         if (startDate && endDate) {
             q += ` AND TIMESTAMP(clock) >= '${req.query.startDate}' AND TIMESTAMP(clock) <= '${req.query.endDate}'`
         }
+        q += ` ORDER BY clock ASC`
         console.log(q);
         cmdMultipleQuery(q)
             .then((result) => {
