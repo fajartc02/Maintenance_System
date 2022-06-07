@@ -291,7 +291,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline = 'ASSY LINE' AND mp.name IS NOT NULL ORDER BY clock ASC`
+                ON msev.fid = ohpv.id_m_severity WHERE fline = 'ASSY LINE' AND mp.name IS NOT NULL ORDER BY clock DESC LIMIT 100`
         let qMcCb = `
         SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
             LEFT JOIN m_machine_parameter mmp
@@ -301,7 +301,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%BLOCK' AND mp.name IS NOT NULL ORDER BY clock ASC`
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%BLOCK' AND mp.name IS NOT NULL ORDER BY clock DESC LIMIT 100`
         let qMcCh = `
         SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
             LEFT JOIN m_machine_parameter mmp
@@ -311,7 +311,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%HEAD' AND mp.name IS NOT NULL ORDER BY clock ASC`
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%HEAD' AND mp.name IS NOT NULL ORDER BY clock DESC LIMIT 100`
         let qMcCam = `
         SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
             LEFT JOIN m_machine_parameter mmp
@@ -321,7 +321,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE 'CAM%' ORDER BY clock ASC`
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE 'CAM%' ORDER BY clock DESC LIMIT 100`
         let qMcCr = `
         SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
             LEFT JOIN m_machine_parameter mmp
@@ -331,7 +331,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE 'Crank%' ORDER BY clock ASC`
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE 'Crank%' ORDER BY clock DESC LIMIT 100`
         let qMcLp = `
         SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
             LEFT JOIN m_machine_parameter mmp
@@ -341,7 +341,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%LP%' ORDER BY clock ASC`
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%LP%' ORDER BY clock DESC LIMIT 100`
         let qMcHp = `
         SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
             LEFT JOIN m_machine_parameter mmp
@@ -351,7 +351,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%HP%' ORDER BY clock ASC`
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%HP%' ORDER BY clock DESC LIMIT 100`
         containerQuery.push(qMcAssy)
         containerQuery.push(qMcCh)
         containerQuery.push(qMcCb)
