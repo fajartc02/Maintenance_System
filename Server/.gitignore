@@ -3,3 +3,6 @@ node_modules/
 Server/upload
 sandbox.sql
 schema/
+insertParam.sql
+m_machine_parameter.sql
+TEST.png
