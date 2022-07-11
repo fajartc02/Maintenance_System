@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+
+const prodDailyRoutes = require('./prod-daily-routes/index')
 const {
     getColorDash,
     getLines,
@@ -84,6 +86,8 @@ const { uploadFile } = require('../middleware/controllerUpload')
 const fs = require('fs')
 const stream = require('stream')
 
+router.use('/v1/prod-daily', prodDailyRoutes)
+
 router.get('/image', async(req, res) => {
     let pathImage = `${req.query.path}`
     const r = fs.createReadStream(pathImage) // or any other way to get a readable stream
@@ -158,6 +162,7 @@ const { getOeeAllLines, insertOeeLine } = require('../controllers/oee/controller
 
 router.get('/oeeAllLines', getOeeAllLines)
 router.post('/insertOee', insertOeeLine)
+
 
 const {
     getParetoData,
@@ -299,13 +304,8 @@ router.post('/addNewMachine', addNewMachine)
 
 router.get('/poolEnd', poolEnd)
 
+const { getMtbf } = require('../controllers/mtbfMttr/controllerMtbfMttr')
 
-
-const pca = require('./pca')
-const parameter = require('./parameterRoute')
-
-router.use('/pca', pca)
-router.use('/parameter', parameter)
-
+router.get('/mtbf', getMtbf)
 
 module.exports = router;

@@ -1,3 +1,14 @@
+function YYYYMMDD(date) {
+    var d = new Date(date),
+        month = "" + (d.getMonth() + 1),
+        day = "" + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) month = "0" + month;
+    if (day.length < 2) day = "0" + day;
+
+    return [year, month, day].join("-");
+}
 const formatDate = {
     YYYYMMDD: (date) => {
         var d = new Date(date),
@@ -52,6 +63,17 @@ const formatDate = {
             0
         )
     },
+    getTommorow: (date) => {
+        let now = new Date(YYYYMMDD(date))
+
+        let offsetDay = now.getTime() + (60 * 1000 * 60 * 24)
+        return YYYYMMDD(new Date(offsetDay))
+    },
+    getYesterday: (date) => {
+        let now = new Date(YYYYMMDD(date))
+        let offsetDay = now.getTime() - (60 * 1000 * 60 * 24)
+        return YYYYMMDD(new Date(offsetDay))
+    },
     getFirstDate: (date) => {
         return new Date(
             date.getFullYear(),
@@ -79,4 +101,4 @@ const formatDate = {
 
 }
 
-module.exports =  formatDate;
+module.exports = formatDate;

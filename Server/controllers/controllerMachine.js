@@ -27,7 +27,7 @@ module.exports = {
     mapMachines: (req, res) => {
         let q = `SELECT * FROM tb_mc`
         if (req.query.fline) {
-            q += `WHERE fline LIKE '%${req.query.fline}%'`
+            q += ` WHERE fline LIKE '%${req.query.fline}%'`
         }
         cmdQuery(q)
             .then((result) => {
