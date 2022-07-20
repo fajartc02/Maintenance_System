@@ -86,6 +86,7 @@ const { uploadFile } = require('../middleware/controllerUpload')
 const fs = require('fs')
 const stream = require('stream')
 
+router.use('/api/v1', require('./v1/api'));
 router.use('/v1/prod-daily', prodDailyRoutes)
 
 router.get('/image', async(req, res) => {

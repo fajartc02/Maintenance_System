@@ -26,9 +26,10 @@ function cmdMultipleQuery(sql) {
                     reject(err);
                 }
                 resolve(result);
-                connection.destroy()
+                // connection.destroy()
+                // connection.release()
             });
-            pool.releaseConnection(connection);
+            // pool.releaseConnection(connection);
         });
     });
 }

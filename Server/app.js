@@ -65,24 +65,10 @@ app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const { Sequelize } = require('sequelize');
-
-const sequelize = new Sequelize(process.env.NAME_DB_NEW, process.env.USER_DB_NEW, process.env.PASSWORD_DB_NEW, {
-    host: process.env.HOST_DB_NEW,
-    dialect: 'mysql'
-});
-
-try {
-    sequelize.authenticate();
-    console.log('Connection has been established successfully.');
-} catch (error) {
-    console.error('Unable to connect to the database:', error);
-}
-
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-app.listen(3000)
+// app.listen(3000)
 
 module.exports = app;

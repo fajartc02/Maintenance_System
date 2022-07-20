@@ -25,12 +25,13 @@ function cmdQuery(sql) {
             }
             console.log(err);
             connection.query(sql, function(err, result) {
-                connection.release();
+
                 if (err) {
                     console.log(err);
                     reject(err);
                 }
                 resolve(result);
+                connection.release();
             });
         });
     });
