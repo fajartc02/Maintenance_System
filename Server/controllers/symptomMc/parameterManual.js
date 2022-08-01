@@ -490,7 +490,7 @@ module.exports = {
             q += ` AND TIMESTAMP(clock) >= '${req.query.startDate} 00:00:00' AND TIMESTAMP(clock) <= '${req.query.endDate} 23:59:59'`
             // q += ` AND clock BETWEEN '${req.query.startDate} 00:00:00' AND clock '${req.query.endDate} 23:59:59'`
         }
-        q += ` ORDER BY fid ASC`
+        q += ` ORDER BY fid ASC LIMIT 1`
         console.log(q);
         cmdMultipleQuery(q)
             .then((result) => {
