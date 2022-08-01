@@ -282,6 +282,7 @@ module.exports = {
     },
     machinesDashboard: (req, res) => {
         let containerQuery = []
+        console.log('dashboard/machines Still processing ....');
         let qMcAssy = `
         SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
             LEFT JOIN m_machine_parameter mmp
@@ -291,7 +292,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline = 'ASSY LINE' AND mp.name IS NOT NULL ORDER BY clock DESC LIMIT 100`
+                ON msev.fid = ohpv.id_m_severity WHERE fline = 'ASSY LINE' AND mp.name IS NOT NULL ORDER BY id_mc DESC LIMIT 100`
         let qMcCb = `
         SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
             LEFT JOIN m_machine_parameter mmp
@@ -301,7 +302,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%BLOCK' AND mp.name IS NOT NULL ORDER BY clock DESC LIMIT 100`
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%BLOCK' AND mp.name IS NOT NULL ORDER BY id_mc DESC LIMIT 100`
         let qMcCh = `
         SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
             LEFT JOIN m_machine_parameter mmp
@@ -321,7 +322,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE 'CAM%' ORDER BY clock DESC LIMIT 100`
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE 'CAM%' ORDER BY id_mc DESC LIMIT 100`
         let qMcCr = `
         SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
             LEFT JOIN m_machine_parameter mmp
@@ -331,7 +332,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE 'Crank%' ORDER BY clock DESC LIMIT 100`
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE 'Crank%' ORDER BY id_mc DESC LIMIT 100`
         let qMcLp = `
         SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
             LEFT JOIN m_machine_parameter mmp
@@ -341,7 +342,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%LP%' ORDER BY clock DESC LIMIT 100`
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%LP%' ORDER BY id_mc DESC LIMIT 100`
         let qMcHp = `
         SELECT tbmc.fid AS id_mc, tbmc.fline AS fline, tbmc.fmc_name AS mc_name, mp.name, ohpv.clock AS clock, ohpv.value AS value, msev.fname AS severity FROM tb_mc tbmc
             LEFT JOIN m_machine_parameter mmp
@@ -351,7 +352,7 @@ module.exports = {
             LEFT JOIN o_history_parameter_value ohpv
                 ON ohpv.id_m_machine = tbmc.fid
             LEFT JOIN m_severity msev
-                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%HP%' ORDER BY clock DESC LIMIT 100`
+                ON msev.fid = ohpv.id_m_severity WHERE fline LIKE '%HP%' ORDER BY id_mc DESC LIMIT 100`
         containerQuery.push(qMcAssy)
         containerQuery.push(qMcCh)
         containerQuery.push(qMcCb)
@@ -361,6 +362,7 @@ module.exports = {
         containerQuery.push(qMcHp)
         cmdMultipleQuery(containerQuery.join(';'))
             .then(async (result) => {
+                // console.log(result);
                 let arrRes = []
                 let mapResult = await result.map((item, i) => {
                     // item[0].totalMc = item.length
@@ -471,10 +473,28 @@ module.exports = {
             q += ` AND TIMESTAMP(clock) >= '${req.query.startDate} 00:00:00' AND TIMESTAMP(clock) <= '${req.query.endDate} 23:59:59'`
             // q += ` AND clock BETWEEN '${req.query.startDate} 00:00:00' AND clock '${req.query.endDate} 23:59:59'`
         }
-        q += ` ORDER BY clock ASC`
+        q += `LIMIT 1`
         console.log(q);
         cmdMultipleQuery(q)
             .then((result) => {
+                console.log(result);
+                gettingSuccess(res, result)
+            }).catch((err) => {
+                gettingError(res, err)
+            });
+    },
+    countAlertHistory: (req, res) => {
+        let q = `SELECT * FROM o_history_parameter_value WHERE id_m_severity = 2 OR id_m_severity = 3`
+        let { startDate, endDate } = req.query
+        if (startDate && endDate) {
+            q += ` AND TIMESTAMP(clock) >= '${req.query.startDate} 00:00:00' AND TIMESTAMP(clock) <= '${req.query.endDate} 23:59:59'`
+            // q += ` AND clock BETWEEN '${req.query.startDate} 00:00:00' AND clock '${req.query.endDate} 23:59:59'`
+        }
+        q += ` ORDER BY fid ASC`
+        console.log(q);
+        cmdMultipleQuery(q)
+            .then((result) => {
+                console.log(result);
                 gettingSuccess(res, result)
             }).catch((err) => {
                 gettingError(res, err)

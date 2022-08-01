@@ -164,7 +164,7 @@ module.exports = {
                                             container.push(element)
                                             console.log(container);
                                             if (container.length == containerObjReport.length) {
-                                                console.log(containerObjReport);
+                                                console.log(JSON.stringify(containerObjReport));
 
                                                 res.status(200).json({
                                                     message: 'ok',

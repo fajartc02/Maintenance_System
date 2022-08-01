@@ -86,7 +86,7 @@ const { uploadFile } = require('../middleware/controllerUpload')
 const fs = require('fs')
 const stream = require('stream')
 
-router.use('/api/v1', require('./v1/api'));
+
 router.use('/v1/prod-daily', prodDailyRoutes)
 
 router.get('/image', async(req, res) => {
@@ -150,7 +150,8 @@ const {
     addParamToMc,
     monitoringParamDashboard,
     machinesDashboard,
-    parameterAlertHistory
+    parameterAlertHistory,
+    countAlertHistory
 } = require('../controllers/symptomMc/parameterManual')
 
 const { checkScreen, updateScreen } = require('../controllers/screen/controllerScreen')
@@ -195,6 +196,7 @@ router.get('/paramHistory', getDataHistoryParam)
 router.get('/parameterList', getParameterList)
 router.get('/machineParameter', getMachineParameter)
 router.get('/parameterAlertHistory', parameterAlertHistory)
+router.get('/countAlertHistory', countAlertHistory)
 router.post('/insertParamManual', insertParam)
 
 router.get('/admin/parameterToMc', getListParameterMcs)
