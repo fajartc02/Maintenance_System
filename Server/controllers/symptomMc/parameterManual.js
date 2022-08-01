@@ -19,15 +19,15 @@ function gettingError(res, err) {
 
 module.exports = {
         insertParam: (req, res) => {
-            let { id_m_machine, id_m_parameter, clock, value, upper_limit = null, lower_limit = null, warning_ul = null, warning_ll = null } = req.body
+            let { id_m_machine, id_m_parameter, clock, value, upper_limit = null, lower_limit = null, warning_ul = null, warning_ll = null, id_m_sev = null } = req.body
                 // console.log(res.locals.data);
-            let checkIdSev = checkSeverity(upper_limit, lower_limit, value, warning_ul, warning_ll)
-            console.log(checkIdSev);
+                // let checkIdSev = checkSeverity(upper_limit, lower_limit, value, warning_ul, warning_ll)
+                // console.log(checkIdSev);
             let q = `INSERT INTO 
             o_history_parameter_value 
             (id_m_machine, id_m_parameter, id_m_severity, clock, value) 
                 VALUES 
-            (${id_m_machine}, ${id_m_parameter}, ${checkIdSev}, '${clock}', ${value})`
+            (${id_m_machine}, ${id_m_parameter}, ${id_m_sev}, '${clock}', ${value})`
             cmdMultipleQuery(q)
                 .then(result => {
                     gettingSuccess(res, result)
@@ -79,11 +79,11 @@ module.exports = {
             if (req.query.filterQuery) {
                 q += ` ${req.query.filterQuery} AND value > 0`
             }
-            q += ` ORDER BY clock ASC`
-            console.log(q);
+            q += ` ORDER BY clock DESC`
+                // console.log(q);
             cmdMultipleQuery(q)
                 .then(result => {
-                    console.log(result);
+                    // console.log(result);
                     gettingSuccess(res, result)
                         // res.end()
                 })
@@ -241,8 +241,8 @@ module.exports = {
         let q = `SELECT * FROM u5364194_smartand_tmmin3_qmms.v_machine_parameter group by id_parameter`
         cmdMultipleQuery(q)
             .then(async result => {
-                console.log(result);
-                console.log(result.length);
+                // console.log(result);
+                // console.log(result.length);
                 let containerVal = []
                 let newRes = (callback) => result.map((item, i) => {
                     let qHistoryLast = `SELECT * FROM v_parameter_log WHERE id_param = '${item.id_parameter}' GROUP BY id_mc ORDER BY clock DESC `
