@@ -3,7 +3,7 @@ function getAvData(id_tr_time_output_report) {
         const { cmdMultipleQuery } = require('./index')
         let q = `SELECT * FROM v_av_report WHERE id_tr_time_output_report = ${id_tr_time_output_report}`
         let res = null
-        console.log(q);
+            // console.log(q);
         cmdMultipleQuery(q)
             .then((result) => {
                 resolve(result)

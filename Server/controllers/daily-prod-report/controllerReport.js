@@ -98,7 +98,7 @@ module.exports = {
             let id_report = report.id_report
             let outputData = await getDataOutput(id_report)
 
-            console.log(outputData);
+            // console.log(outputData);
             // console.log(avData);
             let containerObjReport = []
             let totalOutCommu = 0
@@ -162,10 +162,7 @@ module.exports = {
                                                 // let rq = 
                                             element.oeeData = (av * 100)
                                             container.push(element)
-                                            console.log(container);
                                             if (container.length == containerObjReport.length) {
-                                                console.log(JSON.stringify(containerObjReport));
-
                                                 res.status(200).json({
                                                     message: 'ok',
                                                     data: containerObjReport

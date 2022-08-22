@@ -11,7 +11,7 @@ async function getDataOutput(id_report, selected_date = null) {
             FROM
                 u5364194_smartand_tmmin3_qmms.v_report_output
             WHERE id_tr_report = ${id_report}`
-    console.log(q);
+        // console.log(q);
     let outputData = null
     await cmdMultipleQuery(q)
         .then((result) => {
