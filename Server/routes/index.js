@@ -151,7 +151,8 @@ const {
     monitoringParamDashboard,
     machinesDashboard,
     parameterAlertHistory,
-    countAlertHistory
+    countAlertHistory,
+    editParameter
 } = require('../controllers/symptomMc/parameterManual')
 
 const { checkScreen, updateScreen } = require('../controllers/screen/controllerScreen')
@@ -198,6 +199,7 @@ router.get('/machineParameter', getMachineParameter)
 router.get('/parameterAlertHistory', parameterAlertHistory)
 router.get('/countAlertHistory', countAlertHistory)
 router.post('/insertParamManual', insertParam)
+router.put('/parameter/:id', editParameter)
 
 router.get('/admin/parameterToMc', getListParameterMcs)
 router.get('/admin/parameter', getAdminParam)

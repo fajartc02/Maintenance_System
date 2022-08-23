@@ -207,6 +207,23 @@ module.exports = {
                 gettingError(res, err)
             })
     },
+    editParameter: (req, res) => {
+        let q = `UPDATE o_history_parameter_value SET value = ${req.body.value} WHERE fid = ${req.params.id}`
+        // let isB
+        // console.log(q);
+        cmdMultipleQuery(q)
+            .then((result) => {
+                res.status(201).json({
+                    message: 'OK',
+                    data: result
+                })
+            }).catch((err) => {
+                res.status(500).json({
+                    message: 'err',
+                    err
+                })
+            });
+    },
     deleteParameter: (req, res) => {
         let q = `DELETE FROM m_parameter WHERE fid = ${req.params.fid}`
         console.log(q);
