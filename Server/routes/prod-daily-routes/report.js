@@ -12,7 +12,11 @@ let {
     getPeData,
     getRqData,
     editAvData,
-    deleteAvData
+    editPeData,
+    editRqData,
+    deleteAvData,
+    deleteRqData,
+    deletePeData
 } = require('../../controllers/daily-prod-report/controllerReport')
 
 // /report/whatever
@@ -28,9 +32,13 @@ router.delete('/avData/:_id', deleteAvData)
 
 router.post('/inputDataPe', inputPeData)
 router.get('/peData/:_id', getPeData)
+router.put('/peData/:_id', editPeData)
+router.delete('/peData/:_id', deletePeData)
 
 router.post('/inputDataRq', inputRqData)
-router.get('/rqData/:_id', getPeData)
+router.get('/rqData/:_id', getRqData)
+router.put('/rqData/:_id', editRqData)
+router.delete('/rqData/:_id', deleteRqData)
 
 
 module.exports = router
