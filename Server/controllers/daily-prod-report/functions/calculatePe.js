@@ -1,6 +1,5 @@
-function calculatePe(total_ls) {
-    let total_jam = 480
-    return (total_jam - total_ls) / total_jam
+function calculatePe(total_ls, total_minute) {
+    return ((total_minute - total_ls) / total_minute)*100
 }
 
 module.exports = calculatePe
