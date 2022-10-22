@@ -28,6 +28,7 @@ module.exports = {
             id_m_product_type,
             id_m_shift,
             id_m_group,
+            id_m_member,
             takt_time,
         } = req.body
         let id_tr_report_created = null
@@ -38,8 +39,8 @@ module.exports = {
                 is_friday = null
         } = req.params
 
-        let containerColReport = ['id_m_line', 'id_m_department', 'id_m_product_type', 'id_m_shift', 'id_m_group', 'takt_time']
-        let containerValues = [id_m_line, id_m_department, id_m_product_type, id_m_shift, id_m_group, takt_time]
+        let containerColReport = ['id_m_line', 'id_m_department', 'id_m_product_type', 'id_m_shift', 'id_m_group', 'id_m_member', 'takt_time']
+        let containerValues = [id_m_line, id_m_department, id_m_product_type, id_m_shift, id_m_group, id_m_member, takt_time]
         try {
             await insertDataTable(tableTrReport, containerColReport, containerValues)
                 .then(result => {
@@ -77,32 +78,33 @@ module.exports = {
         }
     },
     getReport: async(req, res) => {
-        let { selected_date, id_m_shift, id_m_group } = req.query
-
-        let report = null
-        console.log(req.query);
-        if (id_m_shift) {
-            // siang & malam tr_report
-            // `id_m_shift = ${id_m_shift}`
+        let { selected_date, id_m_shift, id_m_group, id_m_line } = req.query
+        let search = 'WHERE 1=1'
+        if (selected_date) {
+            search += ` AND DATE(date_report)='${selected_date}'`
         }
-
-        if (id_m_group) {
-            // `id_m_group = ${id_m_group}`
-
+        if (id_m_shift && id_m_shift > 0) {
+            search += ` AND id_m_shift=${id_m_shift}`
+        }
+        if (id_m_group && id_m_group > 0) {
+            search += ` AND id_m_group=${id_m_group}`
+        }
+        if (id_m_line && id_m_line > 0) {
+            search += ` AND id_m_line=${id_m_line}`
         }
 
         try {
             // getProdAchivement
 
-            let report = await getReport(id_m_shift, id_m_group)
-            let id_report = report.id_report
-            let outputData = await getDataOutput(id_report)
+            let report = await getReport(search)
 
             // console.log(outputData);
             // console.log(avData);
             let containerObjReport = []
             let totalOutCommu = 0
             if (report) {
+                let id_report = report.id_report
+                let outputData = await getDataOutput(id_report)
                 await outputData.forEach((item, i) => {
                     let objReportOutput = {
                         achData: [],
@@ -131,61 +133,85 @@ module.exports = {
                 for (let i = 0; i < containerObjReport.length; i++) {
                     const element = containerObjReport[i];
                     // rumus oee = av * pe * rq
-
                     getAvData(containerObjReport[i].achData[0].id)
-                        .then(async resAv => {
-                            // console.log(resAv);
-                            element.avData = resAv
-                            let sumAv = function() {
-                                let count = 0
-                                for (let i = 0; i < resAv.length; i++) {
-                                    const element = resAv[i];
-                                    count += ((new Date(element.end_time).getTime() - new Date(element.start_time).getTime()) / 1000) / 60
+                        .then(resAv => {
+                            element.avData = resAv.map(o => {
+                                let obj = {
+                                    id_tr_time_output_report: o.id_tr_time_output_report,
+                                    id_av: o.id_av,
+                                    fline: o.fline,
+                                    id_m_machine: o.id_m_machine,
+                                    fmc_name: o.fmc_name,
+                                    problem: o.problem,
+                                    action: o.action,
+                                    start_time: o.start_time,
+                                    end_time: o.end_time,
+                                    minute: (new Date(o.end_time).getTime() - new Date(o.start_time).getTime()) / 1000 / 60
                                 }
-                                return count
-                            }
-                            element.lsData += sumAv()
+                                return obj
+                            })
+                            let totalMinutesAv = 0
+                            element.avData.forEach(itemAv => {
+                                totalMinutesAv += itemAv.minute
+                            })
+                            element.lsData += totalMinutesAv
 
                             getPeData(containerObjReport[i].achData[0].id)
                                 .then(resPe => {
-                                    element.peData = resPe
-                                    let sumPe = function() {
-                                        let count = 0
-                                        resPe.forEach(itemPe => {
-                                            count += (new Date(itemPe.end_time).getTime() - new Date(itemPe.start_time).getTime()) / 1000 / 60
-                                        })
-                                        return count
-                                    }
-                                    element.lsData += sumPe()
+                                    element.peData = resPe.map(o => {
+                                        let obj = {
+                                            id_tr_time_output_report: o.id_tr_time_output_report,
+                                            id: o.id,
+                                            problem: o.problem,
+                                            start_time: o.start_time,
+                                            end_time: o.end_time,
+                                            minute: (new Date(o.end_time).getTime() - new Date(o.start_time).getTime()) / 1000 / 60
+                                        }
+                                        return obj
+                                    })
+                                    let totalMinutesPe = 0
+                                    element.peData.forEach(itemPe => {
+                                        totalMinutesPe += itemPe.minute
+                                    })
+                                    element.lsData += totalMinutesPe
                                     getRqData(containerObjReport[i].achData[0].id)
                                         .then(resRq => {
                                             element.rqData = resRq
-                                                // console.log(element);
-                                            let av = calculateAv(sumAv(), resAv.num_time)
-                                            let pe = calculatePe(sumPe())
-                                                // let rq = 
-                                            element.oeeData = (av * 100)
+                                            let totalRq = 0
+                                            element.rqData.forEach(itemRq => {
+                                                totalRq += itemRq.total
+                                            })
+                                            let total_minute = containerObjReport[i].achData[0].desc_minutes
+                                            let total_output = containerObjReport[i].achData[0].total_output
+                                            let av = calculateAv(totalMinutesAv, parseInt(total_minute))
+                                            let pe = calculatePe(totalMinutesPe, parseInt(total_minute))
+                                            let rq = (totalRq != 0) ? (100 - ((totalRq / total_output) * 100)) : 100
+                                            let oeeData = (av * pe * rq) / 10000
+                                            element.oeeData = (oeeData >= 1000) ? parseInt(oeeData / 1000) : parseInt(oeeData)
                                             container.push(element)
-                                            console.log('LS DAta');
-                                            console.log(element.lsData);
-                                            // console.log(containerObjReport[i]);
                                             if (container.length == containerObjReport.length) {
                                                 res.status(200).json({
                                                     message: 'ok',
-                                                    data: containerObjReport
+                                                    data: containerObjReport,
+                                                    line: report.line,
+                                                    department: report.department,
+                                                    shift: report.shift,
+                                                    group_name: report.group_name,
+                                                    product_type: report.product_type,
+                                                    takt_time: report.takt_time
                                                 })
                                             }
                                         })
                                 })
                         })
-
-
-
                 }
-
+            } else {
+                res.status(200).json({
+                    message: 'ok',
+                    data: []
+                })
             }
         } catch (err) {
-            console.log(err);
             res.status(500).json({
                 message: 'err',
                 err

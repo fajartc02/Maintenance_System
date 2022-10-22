@@ -1,9 +1,9 @@
 const { cmdMultipleQuery } = require('./index')
 
-async function getReport(id_m_shift = '', id_m_group = '', id_m_line = 1, date = 'ORDER BY date_report DESC LIMIT 1') {
+async function getReport(search) {
     // return new Promise((resolve, reject) => {
-    let q = `SELECT * from v_report WHERE id_m_line = ${id_m_line} ${date}`
-    console.log(q);
+    let  date = 'ORDER BY date_report DESC LIMIT 1'
+    let q = `SELECT * from v_report ${search} ${date}`
     let report = null
     await cmdMultipleQuery(q)
         .then((result) => {
