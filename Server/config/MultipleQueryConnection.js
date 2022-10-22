@@ -1,5 +1,6 @@
 function cmdMultipleQuery(sql) {
     const mysql = require('mysql2')
+    require('dotenv').config()
     var pool = mysql.createPool({
         // connectionLimit: 100, // default = 10
         host: process.env.HOST_DB_NEW,

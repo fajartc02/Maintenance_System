@@ -485,12 +485,14 @@ module.exports = {
     },
     parameterAlertHistory: (req, res) => {
         let q = `SELECT * FROM u5364194_smartand_tmmin3_qmms.v_parameter_log WHERE (severity = 'WARNING' OR severity = 'NG')`
-        let { startDate, endDate } = req.query
+        let { startDate, endDate, limit } = req.query
         if (startDate && endDate) {
             q += ` AND TIMESTAMP(clock) >= '${req.query.startDate} 00:00:00' AND TIMESTAMP(clock) <= '${req.query.endDate} 23:59:59'`
             // q += ` AND clock BETWEEN '${req.query.startDate} 00:00:00' AND clock '${req.query.endDate} 23:59:59'`
         }
-        // q += `LIMIT 1`
+        if (limit) {
+            q += `LIMIT ${limit}`
+        }
         console.log(q);
         cmdMultipleQuery(q)
             .then((result) => {

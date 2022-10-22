@@ -7,8 +7,8 @@ function gettingSuccess(res, data) {
     })
 }
 
-function gettingError(res, err) {
-    return res.status(200).json({
+function gettingError(res, err, code = 500) {
+    return res.status(code).json({
         message: 'Err',
         err
     })
@@ -54,7 +54,7 @@ module.exports = {
 
     },
     addFocusTheme: (req, res) => {
-        let { id_m_member, id_m_problem, date_plan } = req.body
+        // let { id_m_member, id_m_problem, date_plan } = req.body
         let containerKeyCol = []
         let containerVals = []
         for (const key in req.body) {
@@ -69,21 +69,19 @@ module.exports = {
             (
                 ${containerVals.join(',')}
             )`
-        console.log(queryAddTheme);
         cmdMultipleQuery(`${queryAddTheme}`)
             .then((result) => {
                 console.log(result.insertId)
-                let id_problem_member = result.insertId
-                let queryUpdateErr = `UPDATE tb_error_log_2
-                SET id_m_problem_member = ${id_problem_member} WHERE fid = ${id_m_problem}`
-                cmdMultipleQuery(queryUpdateErr)
-                    .then((resultUpdateErr) => {
-                        gettingSuccess(res, resultUpdateErr)
-                    }).catch((errUpdateErr) => {
-                        gettingError(res, errUpdateErr)
-                    });
+                res.status(201).json({
+                    message: 'Success to add',
+                    data: result
+                })
             }).catch((err) => {
                 console.error(err);
+                res.status(500).json({
+                    message: 'Error to add',
+                    err: err.message
+                })
             });
     },
     updateFocusTheme: (req, res) => {
@@ -138,7 +136,7 @@ WHERE
     tmm.fline IS NOT NULL AND 
     tmm.fline <> '' AND 
     (frole = 'TM' OR frole = 'GH' OR frole = 'GH.' OR frole = 'TM.') AND 
-    (fstart_time BETWEEN '2022-04-01' AND '2022-04-30' OR fstart_time IS NULL) AND
+    (fstart_time BETWEEN '${start_time}' AND '${end_time}') AND
     tmm.fshift = 'RED'
 GROUP BY 
     id_problem,fname
@@ -162,7 +160,7 @@ WHERE
     tmm.fline IS NOT NULL AND 
     tmm.fline <> '' AND 
     (frole = 'TM' OR frole = 'GH' OR frole = 'GH.' OR frole = 'TM.') AND 
-    (fstart_time BETWEEN '2022-04-01' AND '2022-04-30' OR fstart_time IS NULL) AND
+    (fstart_time BETWEEN '${start_time}' AND '${end_time}') AND
     tmm.fshift = 'WHITE'
 GROUP BY 
     id_problem,fname
@@ -284,5 +282,23 @@ ORDER BY fstart_time DESC`
     },
     getDetailFT: (req, res) => {
         let q = `SELECT * FROM o_problem_member_detail WHERE id_p_m = ${req.params.id_p_m}`
+    },
+    checkFocusTheme: (req, res) => {
+        try {
+
+            let q = `select * from v_ft_member where id_m_problem = ${req.params.problem_id}`
+            console.log(q);
+            cmdMultipleQuery(q)
+                .then((result) => {
+                    console.log(result);
+                    if (result.length > 0) {
+                        gettingSuccess(res, result)
+                    } else {
+                        gettingError(res, result, 500)
+                    }
+                })
+        } catch (error) {
+            gettingError(res, error)
+        }
     }
 }

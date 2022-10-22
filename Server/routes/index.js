@@ -166,24 +166,13 @@ const { getOeeAllLines, insertOeeLine } = require('../controllers/oee/controller
 router.get('/oeeAllLines', getOeeAllLines)
 router.post('/insertOee', insertOeeLine)
 
+// Start::FOCUS THEME ROUTES
 
-const {
-    getParetoData,
-    getDetailPareto,
-    addFocusTheme,
-    finishedTheme,
-    getMemberSelectedTheme,
-    getStatusTheme,
-    updateFocusTheme
-} = require("../controllers/focusTheme/controllerProblem")
+const ftRoutes = require('./focus-theme/index')
 
-router.get('/data/pareto', getParetoData)
-router.get('/data/pareto/details', getDetailPareto)
-router.post('/addFocusTheme', addFocusTheme)
-router.put('/updateFocusTheme/:id_thema', updateFocusTheme)
-router.put('/finishedTheme/:vid', finishedTheme)
-router.get('/focusTheme/getMemberSelectedTheme', getMemberSelectedTheme)
-router.get('/focusTheme/getStatusTheme', getStatusTheme)
+router.use('/focus-theme', ftRoutes)
+
+// End::FOCUS THEME ROUTES
 
 router.get('/update-server', updateServer)
 router.get('/testing', testing)

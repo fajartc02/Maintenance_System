@@ -131,15 +131,18 @@ module.exports = {
                 for (let i = 0; i < containerObjReport.length; i++) {
                     const element = containerObjReport[i];
                     // rumus oee = av * pe * rq
+
                     getAvData(containerObjReport[i].achData[0].id)
-                        .then(resAv => {
+                        .then(async resAv => {
+                            // console.log(resAv);
                             element.avData = resAv
-                            let totalLs = 0
                             let sumAv = function() {
-                                resAv.forEach(itemAv => {
-                                    totalLs += (new Date(itemAv.end_time).getTime() - new Date(itemAv.start_time).getTime()) / 1000 / 60
-                                })
-                                return totalLs
+                                let count = 0
+                                for (let i = 0; i < resAv.length; i++) {
+                                    const element = resAv[i];
+                                    count += ((new Date(element.end_time).getTime() - new Date(element.start_time).getTime()) / 1000) / 60
+                                }
+                                return count
                             }
                             element.lsData += sumAv()
 
@@ -147,21 +150,25 @@ module.exports = {
                                 .then(resPe => {
                                     element.peData = resPe
                                     let sumPe = function() {
-                                        resAv.forEach(itemAv => {
-                                            totalLs += (new Date(itemAv.end_time).getTime() - new Date(itemAv.start_time).getTime()) / 1000 / 60
+                                        let count = 0
+                                        resPe.forEach(itemPe => {
+                                            count += (new Date(itemPe.end_time).getTime() - new Date(itemPe.start_time).getTime()) / 1000 / 60
                                         })
-                                        return totalLs
+                                        return count
                                     }
                                     element.lsData += sumPe()
                                     getRqData(containerObjReport[i].achData[0].id)
                                         .then(resRq => {
                                             element.rqData = resRq
                                                 // console.log(element);
-                                            let av = calculateAv(sumAv())
+                                            let av = calculateAv(sumAv(), resAv.num_time)
                                             let pe = calculatePe(sumPe())
                                                 // let rq = 
                                             element.oeeData = (av * 100)
                                             container.push(element)
+                                            console.log('LS DAta');
+                                            console.log(element.lsData);
+                                            // console.log(containerObjReport[i]);
                                             if (container.length == containerObjReport.length) {
                                                 res.status(200).json({
                                                     message: 'ok',
@@ -171,6 +178,7 @@ module.exports = {
                                         })
                                 })
                         })
+
 
 
                 }

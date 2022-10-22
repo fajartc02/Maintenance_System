@@ -47,10 +47,11 @@ module.exports = {
         let containerValues = []
         for (const key in req.body) {
             const value = req.body[key];
-            let str = `${key} = ${value}`
+            let str = `${key} = '${value}'`
             containerValues.push(str)
         }
         let q = `UPDATE tr_time_av_report SET ${containerValues.join(', ')} WHERE id = ${_id}`
+        console.log(q);
         cmdMultipleQuery(q)
             .then((result) => {
                 res.status(200).json({
