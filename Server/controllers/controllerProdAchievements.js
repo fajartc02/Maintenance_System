@@ -210,7 +210,7 @@ module.exports = {
             })
     },
     getLines: (req, res) => {
-        var q = `select * from tb_line`;
+        var q = `select * from tb_line where parent_id is null`;
         dbSingleQuery(q)
             .then((results) => {
                 res.status(200).json({
