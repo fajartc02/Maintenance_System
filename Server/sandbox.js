@@ -22,8 +22,6 @@
 //     console.log(queryTotal);
 // })
 
-const cmdMultipleQuery = require('./config/MultipleQueryConnection')
-
 // async function runInsertData() {
 //     let machineList = await cmdMultipleQuery(`SELECT * FROM v_machine_parameter WHERE is_auto = 0 AND id_parameter = 1`)
 //         .then((result) => {
@@ -110,4 +108,45 @@ async function runInsertQueryGenerator() {
     console.log(queryTotal);
 }
 
-runInsertQueryGenerator()
+const cmdMultipleQuery = require('./config/MultipleQueryConnection')
+
+function checkMTBF() {
+    cmdMultipleQuery(`
+select
+    count(fmc_name) as total_problem,
+    fmc_name,
+    fstart_time,
+    fend_time,
+    SUM(fdur) as total_duration
+from v_current_error_2
+    where fline like "%assy line%" AND
+    fdur >= 10 and
+    fstart_time between '2022-10-01' AND '2022-10-31'
+GROUP BY fmc_name
+ORDER BY fmc_name`)
+        .then(result => {
+            console.log(result);
+            // ====== RUMUS MTBF ======
+            // mtbfByMc = workingHour / totalProblem
+            // ====== RUMUS MTTR ======
+            // mttrByMc = totalTimeRepair / totalProblem
+            let mapMtbfMttrResult = result.map(itm => {
+                console.log(itm);
+                return {
+                    // date: itm.fstart_time.toString().split('T')[0],
+                    machine: itm.fmc_name,
+                    // mtbf: 336 / itm.total_problem,
+                    total_problem: itm.total_problem,
+                    // mttr: itm.total_duration / itm.total_problem,
+                    total_repair: (+itm.total_duration / 60).toFixed(1)
+                }
+            })
+            console.table(mapMtbfMttrResult)
+                // console.log(mapMtbfMttrResult);
+        })
+        .catch(err => {
+            console.error(err);
+        })
+}
+
+checkMTBF()

@@ -172,6 +172,10 @@ const ftRoutes = require('./focus-theme/index')
 
 router.use('/focus-theme', ftRoutes)
 
+const { addAnalisysNew, getAnalisysNew } = require('../controllers/analisys-new/analisys')
+router.post('/why_analisys/add/:v_', addAnalisysNew)
+router.get('/why_analisys/get/:v_', getAnalisysNew)
+
 // End::FOCUS THEME ROUTES
 
 router.get('/update-server', updateServer)
