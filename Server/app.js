@@ -34,6 +34,10 @@ async function checkIsMcActive(id, cmdMultipleQuery) {
         })
 }
 
+const { getAllCountermeasure, getNotifLeader } = require('./functions/notification/countermeasure')
+
+getAllCountermeasure(getNotifLeader)
+
 cron.schedule('*/3 * * * *', () => {
     const cmdMultipleQuery = require('./config/MultipleQueryConnection')
     console.log('RUN JOB check invalid data 3 minute');

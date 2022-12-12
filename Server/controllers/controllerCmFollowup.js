@@ -37,6 +37,7 @@ module.exports = {
         let ferror_name = ''
         let fshift = ''
         let isFullCap = false // TASKFORCE AND FULLCAP PROBLEM THERE IS NO LIMIT DURATION (ALL DURATION CAN FETCH)
+        let isFT = false // for focus theme id_m_problem_member
 
         if (String(req.query.ferror_name ? req.query.ferror_name.toUpperCase() : null).includes('FULLCAP') && String(req.query.ferror_name ? req.query.ferror_name.toUpperCase() : null).includes('TASKFORCE')) {
             isFullCap = true
@@ -62,6 +63,9 @@ module.exports = {
         if (req.query.shift) {
             fshift = ` AND fshift = '${req.query.shift}'`
         }
+        if (req.query.isFocusTheme) {
+            isFT = true
+        }
         let q = `SELECT 
             fid,
             fline,
@@ -80,7 +84,7 @@ module.exports = {
             fpermanet_cm_lama LIKE '%[{%' OR fyokoten LIKE '%[{%') AND
             fend_time IS NOT NULL AND
             date(fstart_time) >= date('${startDate}') AND 
-            date(fstart_time) <= date('${endDate}')${fline}${fmc_name}${ferror_name}${fshift}${isFullCap ? "" : " AND fdur >= 30"}`
+            date(fstart_time) <= date('${endDate}')${fline}${fmc_name}${ferror_name}${fshift}${isFullCap ? "" : " AND fdur >= 30"}${isFT ? " AND id_m_problem_member IS NOT NULL" : ""}`
 
         let qCountCmNotYet = `SELECT 
             COUNT(*) AS totalCmNotYet
@@ -90,7 +94,7 @@ module.exports = {
             fpermanet_cm_lama LIKE '%[{%') AND
             fend_time IS NOT NULL AND
             date(fstart_time) >= date('${startDate}') AND 
-            date(fstart_time) <= date('${endDate}')${fline}${fmc_name}${ferror_name}${fshift}${isFullCap ? "" : " AND fdur >= 30"}`
+            date(fstart_time) <= date('${endDate}')${fline}${fmc_name}${ferror_name}${fshift}${isFullCap ? "" : " AND fdur >= 30"}${isFT ? " AND id_m_problem_member IS NOT NULL" : ""}`
 
         let qCountCmOk = `SELECT 
             COUNT(*) AS totalCmOk
@@ -100,7 +104,7 @@ module.exports = {
             fpermanet_cm_lama LIKE '%[{%') AND
             fend_time IS NOT NULL AND
             date(fstart_time) >= date('${startDate}') AND 
-            date(fstart_time) <= date('${endDate}')${fline}${fmc_name}${ferror_name}${fshift}${isFullCap ? "" : " AND fdur >= 30"}`
+            date(fstart_time) <= date('${endDate}')${fline}${fmc_name}${ferror_name}${fshift}${isFullCap ? "" : " AND fdur >= 30"}${isFT ? " AND id_m_problem_member IS NOT NULL" : ""}`
         let containerQuery = []
         containerQuery.push(q)
         containerQuery.push(qCountCmNotYet)

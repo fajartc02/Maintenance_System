@@ -37,7 +37,6 @@ module.exports = {
         ORDER BY
             ${isOrderFreq ? 'fdur' : 'fdur'} desc
         ${isNoLimit ? '' : 'LIMIT 5'}`
-        console.log(queryParetoMc);
         cmdMultipleQuery(queryParetoMc)
             .then((result) => {
                 gettingSuccess(res, result)
@@ -212,6 +211,7 @@ ORDER BY fstart_time DESC`
                 console.log(err);
             });
     },
+
     getStatusTheme: (req, res) => {
         let containerLines = ['LPDC', 'HPDC', 'CRANK', 'CAM', 'HEAD', 'BLOCK', 'ASSY']
         let containerQueryLines = []
@@ -285,9 +285,7 @@ ORDER BY fstart_time DESC`
     },
     checkFocusTheme: (req, res) => {
         try {
-
             let q = `select * from v_ft_member where id_m_problem = ${req.params.problem_id}`
-            console.log(q);
             cmdMultipleQuery(q)
                 .then((result) => {
                     console.log(result);
@@ -300,5 +298,79 @@ ORDER BY fstart_time DESC`
         } catch (error) {
             gettingError(res, error)
         }
+    },
+    countMemberStatus: (req, res) => {
+        let qMemberAlready = `SELECT COUNT(fid) as count_member_ft from v_ft_member WHERE created_at BETWEEN '${req.query.start_time}' AND '${req.query.end_time}'`
+        let qMtMember = `SELECT COUNT(fid) as count_member_mt  FROM tb_mt_member where farea IS NOT NULL AND (frole = 'TM' OR frole = 'TM.')`
+        console.log(qMemberAlready);
+        cmdMultipleQuery(qMemberAlready + ';' + qMtMember)
+            .then((result) => {
+                console.log(result)
+                console.log(result[0][0]);
+                console.log(result[0]);
+                let memberNotYetFT = result[1][0].count_member_mt - result[0][0].count_member_ft
+                let resObj = {
+                    count_member_finished: result[0][0].count_member_ft,
+                    count_member_notyet: memberNotYetFT
+                }
+                gettingSuccess(res, resObj)
+
+            }).catch((err) => {
+                gettingError(res, err)
+            });
+    },
+    getFocusTheme: (req, res) => {
+        let q = `SELECT * FROM v_ft_member WHERE created_at BETWEEN '${req.query.start_time}' AND '${req.query.end_time}'`
+        if (req.params.id_member) q += ` AND id_m_member = ${req.params.id_member}`
+        cmdMultipleQuery(q)
+            .then((result) => {
+                gettingSuccess(res, result)
+            }).catch((err) => {
+                gettingError(res, err)
+            });
+    },
+    getMemberFTNotYet: (req, res) => {
+        let qMembers = `SELECT * FROM tb_mt_member where farea IS NOT NULL AND (frole = 'TM' OR frole = 'TM.')`
+        let qAlreadyFTMembers = `SELECT id_m_member FROM v_ft_member WHERE created_at BETWEEN '${req.query.start_time}' AND '${req.query.end_time}'`
+        cmdMultipleQuery(`${qMembers};${qAlreadyFTMembers}`)
+            .then((result) => {
+                let ex_id_members = result[1].map(item => { return item.id_m_member })
+                let filterData = result[0].filter(item => { return ex_id_members.indexOf(item.fid) === -1 })
+                gettingSuccess(res, filterData)
+            }).catch((err) => {
+                gettingError(res, err)
+            });
+    },
+    countTaskForce: (req, res) => {
+        let qCountTaskforce = `SELECT COUNT(fid) as count_taskforce from v_current_error_2 WHERE fstart_time BETWEEN '${req.query.start_time}' AND '${req.query.end_time}' AND ferror_name LIKE '%[TASKFORCE]%'`
+        let qMtMember = `SELECT COUNT(fid) as count_taskforce from v_current_error_2 WHERE fstart_time BETWEEN '${req.query.start_time}' AND '${req.query.end_time}' AND fdur >= 60`
+
+        cmdMultipleQuery(qCountTaskforce + ';' + qMtMember)
+            .then((result) => {
+                console.log(result);
+                let resObj = {
+                    count_member_finished: result[0][0].count_taskforce,
+                    count_member_notyet: result[1][0].count_taskforce
+                }
+                gettingSuccess(res, resObj)
+            }).catch((err) => {
+                gettingError(res, err)
+            });
+    },
+    getTaskforce: (req, res) => {
+        let qDetailTF = `SELECT * from v_current_error_2 WHERE fstart_time BETWEEN '${req.query.start_time}' AND '${req.query.end_time}' AND ferror_name LIKE '%[TASKFORCE]%'`
+        cmdMultipleQuery(qDetailTF).then((result) => {
+            gettingSuccess(res, result)
+        }).catch((err) => {
+            gettingError(res, err)
+        });
+    },
+    getNotyetTF: (req, res) => {
+        let qMtMember = `SELECT * from v_current_error_2 WHERE fstart_time BETWEEN '${req.query.start_time}' AND '${req.query.end_time}' AND fdur >= 60`
+        cmdMultipleQuery(qMtMember).then((result) => {
+            gettingSuccess(res, result)
+        }).catch((err) => {
+            gettingError(res, err)
+        });
     }
 }
