@@ -36,7 +36,6 @@ async function checkIsMcActive(id, cmdMultipleQuery) {
 
 const { getAllCountermeasure, getNotifLeader } = require('./functions/notification/countermeasure')
 
-
 cron.schedule('* * */1 * *', () => {
     getAllCountermeasure(getNotifLeader)
 })

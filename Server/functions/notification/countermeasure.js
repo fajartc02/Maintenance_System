@@ -60,6 +60,7 @@ module.exports = {
                             // console.log(findLeader);
                         let msgHeaderTemplate = `*SMART COUNTERMEASURE REMINDER*\n`
                         let msgInfoTemplate = `Line: ${itm.item.fline}\nMc: ${itm.item.fmc_name}\n\n`
+                        let msgLink = `\n\nUntuk Detail:\n https://smartandonsys.web.app/editProblem?v_=${itm.item.fid}`
                         let container = itm.parse.map((cm, i) => {
                                 let status;
                                 let days = Math.floor((new Date(cm.datePlan).getTime() - new Date().getTime()) / 1000 / 60 / 60 / 24)
@@ -79,13 +80,13 @@ module.exports = {
                             // console.log(msgHeaderTemplate);
                             // console.log(msgInfoTemplate);
                             // console.log(container.join('\n'));
-                        let msg = msgHeaderTemplate + msgInfoTemplate + container.join('\n')
+                        let msg = msgHeaderTemplate + msgInfoTemplate + container.join('\n') + msgLink
                         console.log(msg);
                         if (container.length > 0) {
                             console.log('FIND LEADER');
                             console.log(findLeader);
                             findLeader.forEach(leadMt => {
-                                configWa(msg, '082211511213', 'CM TERJADI')
+                                configWa(msg, leadMt.fwa_no, 'CM TERJADI')
                             })
                         }
 
