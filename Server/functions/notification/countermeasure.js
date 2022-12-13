@@ -37,7 +37,7 @@ function configWa(msg, receiverNo, category) {
 
 module.exports = {
     getAllCountermeasure: (getNotifLeader) => {
-        let qGetCmTerjadi = `select fid, fstart_time, fshift, line_id, fline, fmc_name, fpermanet_cm from v_current_error_2 where fpermanet_cm LIKE '%[{%' AND fstart_time BETWEEN '${formatDate.YYYYMMDD(new Date().getTime() - 1000 * 60 * 60 * 24 * 90)}' AND '${formatDate.YYYYMMDD(new Date().getTime())}'`
+        let qGetCmTerjadi = `select fid, fstart_time, fshift,ferror_name, line_id, fline, fmc_name, fpermanet_cm from v_current_error_2 where fpermanet_cm LIKE '%[{%' AND fstart_time BETWEEN '${formatDate.YYYYMMDD(new Date().getTime() - 1000 * 60 * 60 * 24 * 90)}' AND '${formatDate.YYYYMMDD(new Date().getTime())}' AND ferror_name LIKE "%[TASKFORCE]%"`
         return cmdMultipleQuery(qGetCmTerjadi)
             .then(async(result) => {
                 let mapResultCm = result.map(item => {
@@ -86,7 +86,7 @@ module.exports = {
                             console.log('FIND LEADER');
                             console.log(findLeader);
                             findLeader.forEach(leadMt => {
-                                configWa(msg, leadMt.fwa_no, 'CM TERJADI')
+                                // configWa(msg, leadMt.fwa_no, 'CM TERJADI')
                             })
                         }
 
