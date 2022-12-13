@@ -59,7 +59,7 @@ module.exports = {
                             // console.log(itm.parse);
                             // console.log(findLeader);
                         let msgHeaderTemplate = `*SMART COUNTERMEASURE REMINDER*\n`
-                        let msgInfoTemplate = `Line: ${itm.item.fline}\nMc: ${itm.item.fmc_name}\n\n`
+                        let msgInfoTemplate = `Line: ${itm.item.fline}\nMc: ${itm.item.fmc_name}\nProblem:${itm.ferror_name}\n\n`
                         let msgLink = `\n\nUntuk Detail:\n https://smartandonsys.web.app/editProblem?v_=${itm.item.fid}`
                         let container = itm.parse.map((cm, i) => {
                                 let status;
@@ -86,7 +86,7 @@ module.exports = {
                             console.log('FIND LEADER');
                             console.log(findLeader);
                             findLeader.forEach(leadMt => {
-                                // configWa(msg, leadMt.fwa_no, 'CM TERJADI')
+                                configWa(msg, leadMt.fwa_no, 'CM TERJADI')
                             })
                         }
 
