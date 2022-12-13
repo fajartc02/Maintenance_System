@@ -57,7 +57,8 @@ const {
 
 const {
     sendNotifWhatsapp,
-    sendWhatsapp
+    sendWhatsapp,
+    notifCmWa
 } = require('../controllers/controllerNotif')
 
 const {
@@ -269,6 +270,7 @@ router.get('/problemLtb', getProblemLtb)
 // NOTIF
 router.get('/sendNotifWhatsapp', sendNotifWhatsapp)
 router.post('/sendWhatsapp', sendWhatsapp)
+router.post('/notifCmWa', notifCmWa)
 
 // CONTERMEASURE
 router.get('/cmFollowup', getCmFollowup)

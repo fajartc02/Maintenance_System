@@ -201,6 +201,7 @@ function getCurrentStop(cb) {
     }
 }
 
+const { getAllCountermeasure, getNotifLeader } = require('../functions/notification/countermeasure')
 module.exports = {
     sendNotifWhatsapp: (req, res) => {
         var containerFalse = []
@@ -364,5 +365,12 @@ module.exports = {
             }).catch((err) => {
                 console.log(err);
             });
+    },
+    notifCmWa: (req, res) => {
+        console.log('masuk notif');
+        getAllCountermeasure(getNotifLeader)
+        res.status(201).json({
+            message: 'notifikasi berhasil di jalankan',
+        })
     }
 }
