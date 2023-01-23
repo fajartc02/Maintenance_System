@@ -19,7 +19,7 @@ module.exports = {
         getParetoData: (req, res) => {
                 let { isMachine = null, isOrderFreq = null, fstart_date, fend_date, fline, fmc_name = null, fav_categoty = null, isNoLimit = null } = req.query
                 let queryParetoMc = `SELECT
-            ${fmc_name ? `fid,` : 'fid,'}
+                ${fmc_name ? `fid,` : ''}
             ${isMachine ? 'fmc_name,' : 'ferror_name,'}
             ${isOrderFreq ? 'count(fid) AS fdur,' : 'sum(fdur) AS fdur,'}
             fline,
@@ -36,7 +36,7 @@ module.exports = {
             ${isMachine ? 'fmc_name' : 'ferror_name'}
         ORDER BY
             ${isOrderFreq ? 'fdur' : 'fdur'} desc
-        ${isNoLimit ? '' : 'LIMIT 15'}`
+        ${isNoLimit ? '' : 'LIMIT 5'}`
         cmdMultipleQuery(queryParetoMc)
             .then((result) => {
                 gettingSuccess(res, result)
@@ -211,6 +211,7 @@ ORDER BY fstart_time DESC`
                 console.log(err);
             });
     },
+
     getStatusTheme: (req, res) => {
         let containerLines = ['LPDC', 'HPDC', 'CRANK', 'CAM', 'HEAD', 'BLOCK', 'ASSY']
         let containerQueryLines = []

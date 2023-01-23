@@ -18,6 +18,8 @@ const {
     getNotyetTF
 } = require("../../controllers/focusTheme/controllerProblem")
 
+const { graphTFSelected, graphTFCm } = require('../../controllers/focusTheme/controllerTaskforce')
+
 router.get('/member_notyet', getMemberFTNotYet)
 router.get('/data/pareto', getParetoData)
 router.get('/data/pareto/details', getDetailPareto)
@@ -33,7 +35,8 @@ router.get('/detailTaskforce', getTaskforce)
 router.get('/notyetTaskforce', getNotyetTF)
 router.get('/', getFocusTheme)
 router.get('/:id_member', getFocusTheme)
-
+router.get('/graph/taskforce', graphTFSelected)
+router.get('/graph/taskforce/countermeasure', graphTFCm)
 
 
 module.exports = router

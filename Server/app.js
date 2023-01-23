@@ -36,10 +36,19 @@ async function checkIsMcActive(id, cmdMultipleQuery) {
 
 const { getAllCountermeasure, getNotifLeader } = require('./functions/notification/countermeasure')
 
-cron.schedule('0 0 */1 * *', () => {
+const { getTemporaryAction } = require('./functions/notification/temporaryAction')
+
+// Every day at 7:00am check remind countermeasure to leader MT 
+cron.schedule('0 7 * * *', () => {
     getAllCountermeasure(getNotifLeader)
 })
 
+// Every monday at 7:00am check remind temporary action to leader MT 
+cron.schedule('0 7 * * 1', () => {
+    getTemporaryAction()
+})
+
+// Every 3 seconds check fixing bug smartandon not closed
 cron.schedule('*/3 * * * *', () => {
     const cmdMultipleQuery = require('./config/MultipleQueryConnection')
     console.log('RUN JOB check invalid data 3 minute');
