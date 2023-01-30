@@ -185,6 +185,10 @@ router.get('/testing', testing)
 router.get('/checkScreen', checkScreen)
 router.put('/updateScreen', updateScreen)
 
+// Machines Monitoring
+const { getMachinesStatus } = require('../controllers/monitoring/machinesMonitoring')
+router.get('/monitoring/machines', getMachinesStatus)
+
 router.get('/dashboard/machines', machinesDashboard)
 router.get('/monitoringParam', monitoringParamDashboard)
 router.get('/paramHistory', getDataHistoryParam)
