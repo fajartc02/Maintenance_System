@@ -186,8 +186,9 @@ router.get('/checkScreen', checkScreen)
 router.put('/updateScreen', updateScreen)
 
 // Machines Monitoring
-const { getMachinesStatus } = require('../controllers/monitoring/machinesMonitoring')
+const { getMachinesStatus, getDetailAlarm } = require('../controllers/monitoring/machinesMonitoring')
 router.get('/monitoring/machines', getMachinesStatus)
+router.get('/monitoring/machines/details', getDetailAlarm)
 
 router.get('/dashboard/machines', machinesDashboard)
 router.get('/monitoringParam', monitoringParamDashboard)
