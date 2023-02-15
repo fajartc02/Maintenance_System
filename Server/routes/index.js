@@ -89,6 +89,11 @@ const stream = require('stream')
 
 const symptom = require('./symptom/index')
 router.use('/symptom', symptom)
+router.get('/update/server/self', (req, res) => {
+    exec(`git pull && npm install && pm2 stop 0 && pm2 delete 0 && npx kill-port 3001 && pm2 start bin/www`, (error, stdout, stderr) => {
+        console.log(error, stdout, stderr);
+    })
+})
 
 router.use('/v1/prod-daily', prodDailyRoutes)
 
@@ -311,7 +316,9 @@ router.post('/addNewMachine', addNewMachine)
 
 router.get('/poolEnd', poolEnd)
 
-const { getMtbf } = require('../controllers/mtbfMttr/controllerMtbfMttr')
+const { getMtbf } = require('../controllers/mtbfMttr/controllerMtbfMttr');
+const { exec } = require('child_process');
+const { stderr } = require('process');
 
 router.get('/mtbf', getMtbf)
 
