@@ -13,26 +13,26 @@ module.exports = {
 FROM tb_status ts
 JOIN tb_mc tmc
 		on ts.fid = tmc.fid
-where tmc.line_id = 2  order by tmc.idx_pos ASC`
-            // AND tmc.fmc_name like '%1'
+where tmc.line_id = ${req.query.line_id ? req.query.line_id : 2} order by tmc.idx_pos ASC`
+        // AND tmc.fmc_name like '%1'
         cmdMultipleQuery(q)
             .then((result) => {
+                console.log(result);
                 let lines = [{
-                    line_nm: "HPDC",
+                    line_nm: result[0].line_nm,
                     areas: [{
                         area_nm: "All",
                         cells: [{
-                                cell_nm: "All",
-                                machines: result,
-                            },
+                            cell_nm: "All",
+                            machines: result,
+                        },
                             // {
                             //     cell_nm: "DC 2",
                             //     machines: [],
                             // },
                         ],
-                    }, ],
+                    },],
                 }]
-                console.log(lines)
                 res.status(200).json({
                     message: 'ok',
                     data: lines

@@ -87,10 +87,12 @@ const { uploadFile } = require('../middleware/controllerUpload')
 const fs = require('fs')
 const stream = require('stream')
 
+const symptom = require('./symptom/index')
+router.use('/symptom', symptom)
 
 router.use('/v1/prod-daily', prodDailyRoutes)
 
-router.get('/image', async(req, res) => {
+router.get('/image', async (req, res) => {
     let pathImage = `${req.query.path}`
     const r = fs.createReadStream(pathImage) // or any other way to get a readable stream
     const ps = new stream.PassThrough() // <---- this makes a trick with stream error handling
@@ -105,7 +107,7 @@ router.get('/image', async(req, res) => {
         })
     ps.pipe(res) // <---- this makes a trick with stream error handling
 });
-router.get('/', function(req, res) {
+router.get('/', function (req, res) {
     // // res.setHeader('Content-Type', 'application/pdf')
     // // res.setHeader('Content-Disposition', 'inline;filename=doc1.pdf')
     // // res.send()
@@ -126,7 +128,7 @@ router.get('/', function(req, res) {
         fs.createReadStream(path).pipe(res)
     } else {
         res.status(500)
-            // console.log('File not found')
+        // console.log('File not found')
         res.send('File not found')
     }
 })
@@ -241,7 +243,7 @@ router.post('/addCmQuality', addCmQuality)
 getProblemByCategory
 router.post('/problemCategory', getProblemByCategory)
 router.get('/delayProblemCm', getSummaryWeekly)
-    // CYCLE TIME MACHINE
+// CYCLE TIME MACHINE
 router.get('/ctMachines', getAllCtMachines)
 router.get('/ctMachinesDashboard', getCtMcDashboard)
 router.get('/ctOneMachine', getOneCtMachine)
