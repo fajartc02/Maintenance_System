@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "start": "nodemon ./bin/www",
-        "update-server": "git pull && npm install && pm2 restart 0"
+        "update-server": "git pull && npm install && pm2 stop 0 && pm2 delete 0 && npx kill-port 3100 && pm2 start bin/www"
     },
     "dependencies": {
         "axios": "^0.23.0",
