@@ -91,7 +91,7 @@ const symptom = require('./symptom/index')
 router.use('/symptom', symptom)
 
 router.get('/update/server/self', (req, res) => {
-    exec(`git pull && npm install && pm2 stop 0 && pm2 delete 0 && npx kill-port 3001 && pm2 start bin/www`, (error, stdout, stderr) => {
+    exec(`git pull && npm install && pm2 stop 0 && pm2 delete 0 && npx kill-port 3100 && pm2 start bin/www`, (error, stdout, stderr) => {
         console.log(error, stdout, stderr);
     })
 })
