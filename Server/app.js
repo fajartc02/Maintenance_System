@@ -49,7 +49,7 @@ cron.schedule('0 7 * * 1', () => {
 })
 
 // Every 3 seconds check fixing bug smartandon not closed
-cron.schedule('*/3 * * * *', () => {
+cron.schedule('*/10 * * * * *', () => {
     const cmdMultipleQuery = require('./config/MultipleQueryConnection')
     console.log('RUN JOB check invalid data 3 minute');
     // simple query
