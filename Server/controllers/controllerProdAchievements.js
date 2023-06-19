@@ -479,6 +479,7 @@ module.exports = {
         let qDetailProb = `SELECT  * FROM v_current_error_2 where fid = ${req.query.v_}`
         dbSingleQuery(qDetailProb)
             .then((results) => {
+                console.log(results);
                 res.status(200).json({
                     message: 'Success to get detail problem',
                     data: results
