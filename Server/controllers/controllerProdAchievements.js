@@ -478,13 +478,19 @@ module.exports = {
     getDetailProblem: (req, res) => {
         let qDetailProb = `SELECT  * FROM v_current_error_2 where fid = ${req.query.v_}`
         dbSingleQuery(qDetailProb)
-            .then((results) => {
-                console.log(results);
-                res.status(200).json({
-                    message: 'Success to get detail problem',
-                    data: results
-                })
+            .then(async(results) => {
+                let detailProblem = results
+                if (detailProblem.length > 0) {
+                    let qGetUraian = `SELECT * FROM tb_r_uraian WHERE error_id = ${detailProblem[0].fid}`
+                    let dataUraian = await dbSingleQuery(qGetUraian)
+                    results[0].uraian = dataUraian
+                    res.status(200).json({
+                        message: 'Success to get detail problem',
+                        data: results
+                    })
+                }
             }).catch((err) => {
+                console.log(err);
                 res.status(203).json({
                     message: 'Error Request get detail problem',
                     err
