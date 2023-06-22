@@ -11,3 +11,5 @@ config/
 
 sandbox.*
 upload/
+
+*copy.*

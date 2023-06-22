@@ -33,14 +33,15 @@ function gettingSuccess(res, status, data) {
 
     ======RUMUS MTBF======
     mtbfByMc = workingHour / totalProblem
-    mtbfByLine = totalMc(line) * workingHour
+    mtbfByLine = totalWHAllMcs / Jumlah Problem all mcs
     ======RUMUS MTTR======
     mttrByMc = totalTimeRepair / totalProblem
-    mttrByLine = totalTimeRepair(line) / totalProblem(line)
+    mttrByLine = totalMTTRAllMcs / jumlahMcs
 */
 
 module.exports = {
     getMtbf: (req, res) => {
+        let { start_date, end_date } = req.query
         let containerLine = [{
                 name: 'LPDC',
                 totalMc: 0,
@@ -90,11 +91,24 @@ module.exports = {
         let containerQueryCountProblemMc = []
             // let qTotalProblem
             // CAST(expression AS TYPE);
+        let queryTime = `
+        AND fstart_time BETWEEN 
+        '${start_date} 00:00:00' AND '${end_date} 23:59:59'`
         for (let i = 0; i < containerLine.length; i++) {
             const line = containerLine[i];
             let qTotalMc = `SELECT fline, count(fid) as totalMc FROM ${tableMachine} WHERE fline like '%${line.name}%'`
-            let qSumProbMc = `SELECT fline, fmc_name, sum(fdur) as sumTotalProblem from ${ViewCurrentError2} where fline like '%${line.name}%' AND fstart_time BETWEEN '2022-06-01 07:00:00' AND '2022-06-30 18:00:00' GROUP BY fmc_name`
-            let qCountProbMc = `SELECT fline, fmc_name, count(fid) as countTotalProblem from ${ViewCurrentError2} where fline like '%${line.name}%' AND fstart_time BETWEEN '2022-06-01 07:00:00' AND '2022-06-30 18:00:00' GROUP BY fmc_name`
+            let qSumProbMc = `SELECT fline, fmc_name, CAST(sum(fdur) AS INT) as totalRepair from ${ViewCurrentError2} 
+            where 
+                fdur >= 30 
+                AND fline like '%${line.name}%' 
+                ${queryTime}
+            GROUP BY fmc_name`
+            let qCountProbMc = `SELECT fline, fmc_name, count(fid) as countTotalProblem from ${ViewCurrentError2} 
+            where 
+                fdur >= 30 
+                AND fline like '%${line.name}%' 
+                ${queryTime}
+            GROUP BY fmc_name`
             containerQueryTotalMc.push(qTotalMc)
             containerQuerySumProblemMc.push(qSumProbMc)
             containerQueryCountProblemMc.push(qCountProbMc)
@@ -104,42 +118,68 @@ module.exports = {
         // 14 - 20 (count total problem / mc)
         cmdMultipleQuery(containerQueryTotalMc.join(';') + ';' + containerQuerySumProblemMc.join(';') + ';' + containerQueryCountProblemMc.join(';'))
             .then((result) => {
-                let container = []
-                let mapResult = result.map((itemData, i) => {
-                    // console.log(itemData);
-                    let obj = {}
-                    for (let j = 0; j < itemData.length; j++) {
-                        const elemData = itemData[j];
-                        // console.log(elemData);
-                        if (i >= 0 && i <= 6) {
-                            // console.log(elemData);
-                            obj.line = elemData.fline
-                            obj.totalMc = elemData.totalMc
-                            obj.machinesSumRepair = result[i + 7]
-                            result[i + 7].forEach((itm, k) => {
-                                itm.mttr = (itm.sumTotalProblem / 60) / result[i + 14][k].countTotalProblem
-                                    // mttrByLine = totalTimeRepair(line) / totalProblem(line)
-                            })
-                            let spliceArr = result.slice(0, 13)
-                            let mapSumTotalRepair = spliceArr.map(itm => {
-                                return +itm.sumTotalProblem
-                            })
-                            console.log(spliceArr);
-                            const sum = mapSumTotalRepair.reduce(add, 0); // with initial value to avoid when the array is empty
+                let workingHour = 1020
+                    // result[0~6] => [{fline: LINE, totoalMc: 00}]
+                    // result[7~13] => [{fline: LINE, fmc_name: MC, totalRepair: 00}]
+                    // result[14~20] => [{ fline: LINE, fmc_name: MC, countTotalProblem: 00 }]
+                let totalMcsLines = result.slice(0, 7)
+                let totalTimeRepairMcs = result.slice(7, 14)
+                let totalProblemMcs = result.slice(14, 21)
+                let mapResult = totalMcsLines.map((arrLine, i) => {
+                    let line = arrLine[0]
+                    let separatorTimeRepairMcs = totalTimeRepairMcs[i]
+                    let mapMttrMtbfMcs = separatorTimeRepairMcs.map((mc, j) => {
 
-                            function add(accumulator, a) {
-                                return accumulator + a;
-                            }
-                            obj.mttrLine = sum
-                            result[i + 14].forEach((itm, k) => {
-                                itm.mtbf = (20 * 16) / itm.countTotalProblem
-                            })
-                            obj.machinesCountProb = result[i + 14]
-                        }
-                    }
-                    // console.log(elemData);
-                    return obj
+                        // mttrByMc = totalTimeRepair / totalProblem
+                        let mttrByMc = mc.totalRepair / totalProblemMcs[i][j].countTotalProblem
+                        mc.totalProblem = totalProblemMcs[i][j].countTotalProblem
+                        mc.mttr = mttrByMc
+
+                        // mtbfByMc = workingHour = workingHour = 20s hari kerja / totalProblem
+                        mc.mtbf = workingHour / totalProblemMcs[i][j].countTotalProblem
+                        return mc
+                    })
+
+                    // console.log(mapMttrMtbfMcs);
+                    line.mcs = mapMttrMtbfMcs
+                    let totalRepairLine = totalTimeRepairMcs[i].reduce((accumulator, currentValue) => {
+                        return accumulator + currentValue.totalRepair
+                    }, 0)
+                    let totalProbLine = totalProblemMcs[i].reduce((accumulator, currentValue) => {
+                        return accumulator + currentValue.countTotalProblem
+                    }, 0)
+                    let totalMcs = line.totalMc
+
+                    // RUMUS 1
+                    // mtbfByLine = totalWHAllMcs / Jumlah Problem all mcs
+                    // let mtbfByLine = (workingHour * totalMcs) / (totalProbLine == 0 ? 1 : totalProbLine)
+                    // mttrByLine = totalMTTRAllMcs / jumlahMcs
+                    let totalMttrByLines = mapMttrMtbfMcs.reduce((accumulator, currentValue) => {
+                        return accumulator + currentValue.mttr
+                    }, 0)
+
+                    let mttrByLine = totalMttrByLines / totalMcs
+
+
+                    // RUMUS 2
+                    // MTBF = totalMTBFAllMc / Jumlah mesin
+                    let totalMtbfMcs = mapMttrMtbfMcs.reduce((accumulator, currentValue) => {
+                        return accumulator + currentValue.mtbf
+                    }, 0)
+
+                    // console.log(totalMtbfMcs / totalMcs);
+                    let mtbfByLine = (totalMtbfMcs + ((totalMcs - 10) * workingHour)) / totalMcs
+                    line.totalRepair = totalRepairLine
+                    line.totalProblem = totalProbLine
+                    line.mttr = +mttrByLine.toFixed(1)
+                    line.mtbf = +mtbfByLine.toFixed(0)
+
+                    // console.log(`KRITERIA PROBLEM > 30 Menit all Lines, Working Hour: ${workingHour}`);
+                    // console.table([{ line: line.fline, mtbf: +mtbfByLine.toFixed(1), mttr: +mttrByLine.toFixed(1), totalRepairLine, totalProbLine }])
+                    console.log(line);
+                    return line
                 })
+
 
                 gettingSuccess(res, 200, mapResult)
             }).catch((err) => {
