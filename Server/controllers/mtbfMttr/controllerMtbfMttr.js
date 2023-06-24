@@ -89,6 +89,7 @@ module.exports = {
         let containerQueryTotalMc = []
         let containerQuerySumProblemMc = []
         let containerQueryCountProblemMc = []
+        let containerDurFetch = [30, 30, 30, 30, 30, 30, 5]
             // let qTotalProblem
             // CAST(expression AS TYPE);
         let queryTime = `
@@ -99,13 +100,13 @@ module.exports = {
             let qTotalMc = `SELECT fline, count(fid) as totalMc FROM ${tableMachine} WHERE fline like '%${line.name}%'`
             let qSumProbMc = `SELECT fline, fmc_name, CAST(sum(fdur) AS INT) as totalRepair from ${ViewCurrentError2} 
             where 
-                fdur >= 30 
+                fdur >= ${containerDurFetch[i]} 
                 AND fline like '%${line.name}%' 
                 ${queryTime}
             GROUP BY fmc_name`
             let qCountProbMc = `SELECT fline, fmc_name, count(fid) as countTotalProblem from ${ViewCurrentError2} 
             where 
-                fdur >= 30 
+                fdur >= ${containerDurFetch[i]} 
                 AND fline like '%${line.name}%' 
                 ${queryTime}
             GROUP BY fmc_name`
@@ -137,6 +138,9 @@ module.exports = {
 
                         // mtbfByMc = workingHour = workingHour = 20s hari kerja / totalProblem
                         mc.mtbf = workingHour / totalProblemMcs[i][j].countTotalProblem
+                        console.log(totalProblemMcs[i][j].countTotalProblem);
+                        console.log(mc.totalRepair);
+                        console.log(mc);
                         return mc
                     })
 
