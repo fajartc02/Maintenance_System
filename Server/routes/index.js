@@ -305,7 +305,28 @@ router.get('/detailParam', getDetailParam)
 router.post('/addProblem', addProblem)
 router.get('/getDetailProblem', getDetailProblem)
 
-router.put('/editProblem/:v_', editProblem)
+const newUpload = require("../functions/newUpload")
+
+router.put('/editProblem/:v_', newUpload.fields(
+    [
+        {
+            name : 'fimage_problem',
+            maxCount : 1
+        },
+        {
+            name : 'std_img',
+            maxCount : 1
+        },
+        {
+            name : 'act_img',
+            maxCount : 1
+        },
+        {
+            name : 'why1_img',
+            maxCount : 1
+        }
+    ]
+), editProblem)
 router.delete('/deleteProblem/:v_', deleteProblem)
 
 router.get('/getHenkaten', getHenkaten)
