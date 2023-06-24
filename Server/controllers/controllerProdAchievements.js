@@ -498,28 +498,90 @@ module.exports = {
             });
     },
     editProblem: async(req, res) => {
+        console.log('REQ FILES');
+        console.log(req.files);
+        let pathFimgProblem = req.files.fimage_problem ? `${req.files.fimage_problem[0].destination}${req.files.fimage_problem[0].filename}` : null
+        let pathStdImg = req.files.std_img ? `${req.files.std_img[0].destination}${req.files.std_img[0].filename}` : null
+        let pathActImg = req.files.act_img ? `${req.files.act_img[0].destination}${req.files.act_img[0].filename}` : null 
+        let pathWhyImg = req.files.why1_img ? `${req.files.why1_img[0].destination}${req.files.why1_img[0].filename}` : null 
+        // console.log(req.files.fimage_problem.destination);
+        req.body.why1_img = pathWhyImg
         let containerQuery = []
         let qEditProb = `UPDATE tb_error_log_2 set`
         let idx = 0
         console.log('HERE REQ> BODY BROOO');
         console.log(req.body);
-        Object.size = function(obj) {
-            var size = 0,
-                key;
-            for (key in obj) {
-                if (obj.hasOwnProperty(key)) size++;
+        let size = 0
+        
+        // furaian_kejadian_general
+        let uraian = []
+        for (const key in req.body) {
+            const vals = req.body[key];
+            if(key == 'furaian_kejadian_general') uraian.push({desc_name: req.body['furaian_kejadian_general'], type_uraian: 'general'})
+            if(key == 'furaian_kejadian_standard') uraian.push({desc_name: req.body['furaian_kejadian_standard'], type_uraian: 'standard'})
+            if(key == 'furaian_kejadian_actual') uraian.push({desc_name: req.body['furaian_kejadian_actual'], type_uraian: 'actual'})
+        }
+        console.log(uraian);
+        if(uraian.length > 0){
+            let qUraianInsert = []
+            let qUraianUpdate = []
+            for (let i = 0; i < uraian.length; i++) {
+                const element = uraian[i];
+                await cmdMultipleQuery(`SELECT id from tb_r_uraian where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian}'`)
+                    .then((result) => {
+                        console.log(result)
+                        let ilusUraian = null
+                        if(pathFimgProblem) {
+                            ilusUraian = pathFimgProblem
+                        }
+                        if(pathStdImg) {
+                            ilusUraian = pathStdImg
+                        }
+                        if(pathActImg) {
+                            ilusUraian = pathActImg
+                        }
+                        
+                        if (result.length > 0) {
+                            qUraianUpdate.push(`UPDATE tb_r_uraian SET desc_nm = '${element.desc_name}', ilustration = ${ilusUraian ? `'${ilusUraian}'` : ilusUraian} where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian}'`)
+                            // cmdMultipleQuery()
+                        } else {
+                            qUraianInsert.push(`INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration, type_uraian) VALUES (${req.params.v_}, '${element.desc_name}', ${ilusUraian ? `'${ilusUraian}'` : ilusUraian}, '${element.type_uraian}')`)
+                            // cmdMultipleQuery()
+                        }
+                    }).catch((err) => {
+                        console.log(err)
+                    });
             }
-            return size;
-        };
-        let size = Object.size(req.body)
-            // console.log(size);
+            if(qUraianInsert.length > 0) {
+                cmdMultipleQuery(qUraianInsert.join(';'))
+            }
+            if(qUraianUpdate.length > 0) {
+                console.log(qUraianUpdate);
+                cmdMultipleQuery(qUraianUpdate.join(';'))
+            }
+        }
+
+        delete req.body.fimage_problem;
+        delete req.body.std_img;
+        delete req.body.act_img;
+        delete req.body.furaian_kejadian_general;
+        delete req.body.furaian_kejadian_standard;
+        delete req.body.furaian_kejadian_actual;
+
+        for (const key in req.body) {
+            // console.log(key);
+            size++;
+        }
+
         for (key in req.body) {
             idx++
             if (key == 'fstart_time' || key == 'fend_time') {
-                qEditProb += ` ${key}=TIMESTAMP('${req.body[key][0]}', '${req.body[key][1]}')`
+                qEditProb += ` ${key}=TIMESTAMP('${req.body[key]}')`
             } else if (key == 'fiveWhyLhApprove' || key == 'fiveWhyShApprove' || key == 'cmLhApprove' || key == 'cmShApprove') {
                 qEditProb += ` ${key}=${req.body[key] == 0 ? false : true}`
-            } else {
+            }else if(key == 'why1_img' && !req.body[key]){
+                qEditProb += ` ${key}=${req.body[key]}`
+            }else{
                 qEditProb += ` ${key}='${req.body[key]}'`
             }
             if (idx == size) {} else {
@@ -527,7 +589,7 @@ module.exports = {
             }
         }
         qEditProb += ` where fid = ${req.params.v_}`
-            // console.log(qEditProb);
+            console.log(qEditProb);
         containerQuery.push(qEditProb)
         if (req.query.isFinished) {
             var qUpdateColDash = `update tb_status set fstatus = 0, ferror_start = NULL, ferror_end = NULL where fid = ${req.query.isFinished}`
@@ -537,8 +599,8 @@ module.exports = {
                 containerQuery.push(qCloseNotif)
             }
             let qUpdateEndJob = `UPDATE tb_jobdesk SET 
-                fend_time = TIMESTAMP('${req.body['fend_time'][0]}', '${req.body['fend_time'][1]}'), 
-                fstart_time = TIMESTAMP('${req.body['fstart_time'][0]}', '${req.body['fstart_time'][1]}'),
+                fend_time = TIMESTAMP('${req.body['fend_time']}'), 
+                fstart_time = TIMESTAMP('${req.body['fstart_time']}'),
                 fcommentLh = '${req.body.cmLhFeedback}',
                 fcommentSh = '${req.body.cmShFeedback}',
                 fcommentDph = '${req.body.cmDhFeedback}'
@@ -597,7 +659,7 @@ module.exports = {
                                 ${req.params.v_},
                                 'Repair', 
                                 '${req.body.ferror_name}',
-                                TIMESTAMP('${req.body['fstart_time'][0]}', '${req.body['fstart_time'][1]}'),
+                                TIMESTAMP('${req.body['fstart_time']}'),
                                 '${itmMtAfterMap}',
                                 'Repair',
                                 '${req.body.cmLhFeedback}',
@@ -618,6 +680,7 @@ module.exports = {
                     console.log(err);
                 })
         }
+        console.log(qEditProb);
         if (containerQuery.length <= 1) {
             await cmdMultipleQuery(qEditProb)
                 .then(({ data }) => {
@@ -636,7 +699,7 @@ module.exports = {
             await cmdMultipleQuery(qUpdateColDash).then(({ data }) => { console.log(data) }).catch(err => { console.log(err) })
             await cmdMultipleQuery(qEditProb).then(({ data }) => { console.log(data) }).catch(err => { console.log(err) })
             await cmdMultipleQuery(qCloseNotif).then(async({ data }) => {
-                let qUpdJob = `UPDATE tb_jobdesk SET fstart_time = TIMESTAMP('${req.body['fstart_time'][0]}', '${req.body['fstart_time'][1]}'), fend_time = TIMESTAMP('${req.body['fend_time'][0]}', '${req.body['fend_time'][1]}') WHERE fproblem_id = ${req.params.v_}`
+                let qUpdJob = `UPDATE tb_jobdesk SET fstart_time = TIMESTAMP('${req.body['fstart_time']}'), fend_time = TIMESTAMP('${req.body['fend_time']}') WHERE fproblem_id = ${req.params.v_}`
                 await cmdMultipleQuery(qUpdJob)
                     .then(res => {
                         console.log(res);

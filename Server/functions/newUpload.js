@@ -23,7 +23,7 @@ const checkFileType = function(file, cb) { //Allowed file extensions
 const storageEngine = multer.diskStorage({  
     destination: function(req, file, cb) {
         console.log(file);
-        cb(null, `./uploads/`)
+        cb(null, `./upload/`)
     },
     filename: (req, file, cb) => {
         cb(null, `${Date.now()}--${file.originalname}`);
@@ -34,7 +34,9 @@ const storageEngine = multer.diskStorage({  
 const upload = multer({  
     storage: storageEngine,
     limits: { fileSize: 1000000 }, // 10 MB Max
-    fileFilter: (req, file, cb) => {     checkFileType(file, cb);   },
+    fileFilter: (req, file, cb) => {   
+        checkFileType(file, cb);   
+    },
 });
 
 
