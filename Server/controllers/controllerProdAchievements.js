@@ -529,25 +529,54 @@ module.exports = {
                         const element = uraian[i];
                         await cmdMultipleQuery(`SELECT id from tb_r_uraian where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian}'`)
                             .then((result) => {
-                                    console.log(result)
-                                    let ilusUraian = null
-                                    if (pathFimgProblem) {
-                                        ilusUraian = pathFimgProblem
-                                    }
-                                    if (pathStdImg) {
-                                        ilusUraian = pathStdImg
-                                    }
-                                    if (pathActImg) {
-                                        ilusUraian = pathActImg
-                                    }
-
+                                console.log(result)
+                                let ilusUraian = null
+                                if (pathFimgProblem && i == 0) {
+                                    ilusUraian = pathFimgProblem
                                     if (result.length > 0) {
                                         qUraianUpdate.push(`UPDATE tb_r_uraian SET desc_nm = '${element.desc_name}', ilustration = ${ilusUraian ? `'${ilusUraian}'` : ilusUraian} where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian}'`)
-                            // cmdMultipleQuery()
-                        } else {
-                            qUraianInsert.push(`INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration, type_uraian) VALUES (${req.params.v_}, '${element.desc_name}', ${ilusUraian ? `'${ilusUraian}'` : ilusUraian}, '${element.type_uraian}')`)
-                            // cmdMultipleQuery()
-                        }
+                            
+                                    } else {
+                                        qUraianInsert.push(`INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration, type_uraian) VALUES (${req.params.v_}, '${element.desc_name}', ${ilusUraian ? `'${ilusUraian}'` : ilusUraian}, '${element.type_uraian}')`)
+                                        
+                                    }
+                                }
+                                if (pathStdImg && i == 1) {
+                                    ilusUraian = pathStdImg
+                                    if (result.length > 0) {
+                                        qUraianUpdate.push(`UPDATE tb_r_uraian SET desc_nm = '${element.desc_name}', ilustration = ${ilusUraian ? `'${ilusUraian}'` : ilusUraian} where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian}'`)
+                            
+                                    } else {
+                                        qUraianInsert.push(`INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration, type_uraian) VALUES (${req.params.v_}, '${element.desc_name}', ${ilusUraian ? `'${ilusUraian}'` : ilusUraian}, '${element.type_uraian}')`)
+                                        
+                                    }
+                                }
+                                if (pathActImg && i ==2) {
+                                    ilusUraian = pathActImg
+                                    if (result.length > 0) {
+                                        qUraianUpdate.push(`UPDATE tb_r_uraian SET desc_nm = '${element.desc_name}', ilustration = ${ilusUraian ? `'${ilusUraian}'` : ilusUraian} where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian}'`)
+                            
+                                    } else {
+                                        qUraianInsert.push(`INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration, type_uraian) VALUES (${req.params.v_}, '${element.desc_name}', ${ilusUraian ? `'${ilusUraian}'` : ilusUraian}, '${element.type_uraian}')`)
+                                        
+                                    }
+                                }
+                                if (result.length > 0) {
+                                    qUraianUpdate.push(`UPDATE tb_r_uraian SET desc_nm = '${element.desc_name}' where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian}'`)
+                        
+                                } else {
+                                    qUraianInsert.push(`INSERT INTO tb_r_uraian(error_id, desc_nm, type_uraian) VALUES (${req.params.v_}, '${element.desc_name}', '${element.type_uraian}')`)
+                                    
+                                }
+
+
+                                // if (result.length > 0) {
+                                //     qUraianUpdate.push(`UPDATE tb_r_uraian SET desc_nm = '${element.desc_name}', ilustration = ${ilusUraian ? `'${ilusUraian}'` : ilusUraian} where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian}'`)
+                        
+                                // } else {
+                                //     qUraianInsert.push(`INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration, type_uraian) VALUES (${req.params.v_}, '${element.desc_name}', ${ilusUraian ? `'${ilusUraian}'` : ilusUraian}, '${element.type_uraian}')`)
+                                    
+                                // }
                     }).catch((err) => {
                         console.log(err)
                     });
@@ -579,8 +608,10 @@ module.exports = {
                 qEditProb += ` ${key}=TIMESTAMP('${req.body[key]}')`
             } else if (key == 'fiveWhyLhApprove' || key == 'fiveWhyShApprove' || key == 'cmLhApprove' || key == 'cmShApprove') {
                 qEditProb += ` ${key}=${req.body[key] == 0 ? false : true}`
+            }else if(key == 'why1_img' && req.body[key]){
+                qEditProb += ` ${key}='${req.body[key]}'`
             }else if(key == 'why1_img' && !req.body[key]){
-                qEditProb += ` ${key}=${req.body[key]}`
+                continue
             }else{
                 qEditProb += ` ${key}='${req.body[key]}'`
             }
