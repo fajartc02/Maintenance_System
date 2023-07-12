@@ -11,6 +11,7 @@ function cmdMultipleQuery(sql) {
         multipleStatements: true,
         queueLimit: 0,
         waitForConnections: true,
+        timezone: 'Z',
         // connectionLimit: 10,
         // timezone: 'utc',
         connectTimeout: 60000

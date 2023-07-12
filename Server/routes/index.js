@@ -308,22 +308,21 @@ router.get('/getDetailProblem', getDetailProblem)
 const newUpload = require("../functions/newUpload")
 
 router.put('/editProblem/:v_', newUpload.fields(
-    [
-        {
-            name : 'fimage_problem',
-            maxCount : 1
+    [{
+            name: 'fimage_problem',
+            maxCount: 1
         },
         {
-            name : 'std_img',
-            maxCount : 1
+            name: 'std_img',
+            maxCount: 1
         },
         {
-            name : 'act_img',
-            maxCount : 1
+            name: 'act_img',
+            maxCount: 1
         },
         {
-            name : 'why1_img',
-            maxCount : 1
+            name: 'why1_img',
+            maxCount: 1
         }
     ]
 ), editProblem)
@@ -344,6 +343,9 @@ router.get('/poolEnd', poolEnd)
 const { getMtbf } = require('../controllers/mtbfMttr/controllerMtbfMttr');
 const { exec } = require('child_process');
 const { stderr } = require('process');
+const { getProblemAnalisys } = require('../controllers/problemAnalisys/problemAnalisys');
+
+router.get('/problem-analisys', getProblemAnalisys)
 
 router.get('/mtbf-mttr', getMtbf)
 
