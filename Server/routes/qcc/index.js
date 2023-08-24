@@ -214,8 +214,8 @@ router.post('/submission', upload.array('attach'), async(req, res) => {
             console.log(req.files);
             
             let id = await lastId(`${process.env.QCC_PREFIX}_r_posts`, 'post_id')
-            const banner = `uploads\\${req.files[0].filename}`
-            const pdf_file = `uploads\\${req.files[1].filename}`
+            const banner = `uploads/${req.files[0].filename}`
+            const pdf_file = `uploads/${req.files[1].filename}`
             let q = `INSERT INTO ${process.env.QCC_PREFIX}_r_posts
             (post_id, type_id, title, banner, pdf_file) VALUES
             (${id}, '${type_id}', '${title}', '${banner}', '${pdf_file}')`
