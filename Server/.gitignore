@@ -13,8 +13,4 @@ sandbox.*
 upload/
 
 *copy.*
-*.png
-*.jpeg
 *.mp4
-*.pdf
-*.jpg
