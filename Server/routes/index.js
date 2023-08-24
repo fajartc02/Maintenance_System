@@ -349,4 +349,8 @@ router.get('/problem-analisys', getProblemAnalisys)
 
 router.get('/mtbf-mttr', getMtbf)
 
+
+const qcc = require('./qcc/index')
+router.use('/qcc', qcc)
+
 module.exports = router;
