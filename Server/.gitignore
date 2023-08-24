@@ -8,8 +8,13 @@ m_machine_parameter.sql
 TEST.png
 sandbox.mjs
 config/
-
+ssl/
 sandbox.*
 upload/
 
 *copy.*
+*.png
+*.jpeg
+*.mp4
+*.pdf
+*.jpg
