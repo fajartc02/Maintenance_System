@@ -309,7 +309,7 @@ module.exports = {
                 // console.log(offsetTimeEndDate);
                 // let offsetEndDate = formatDate(new Date(offsetTimeEndDate));
                 // console.log(offsetEndDate);
-                qProbHistory += ` WHERE fstart_time BETWEEN '${startDate}' AND '${endDate}'${qProblem}${qMachine} ${qLine} ORDER BY fdur DESC`
+                qProbHistory += ` WHERE fstart_time BETWEEN '${startDate}' AND '${endDate}'${qProblem}${qMachine} ${qLine} ORDER BY ${req.query.sort} DESC`
                 console.log(qProbHistory);
                 dbSingleQuery(qProbHistory)
                     .then((results) => {
@@ -475,6 +475,7 @@ module.exports = {
                     })
                 });
         },
+
         getDetailProblem: (req, res) => {
             let qDetailProb = `SELECT  * FROM v_current_error_2 where fid = ${req.query.v_}`
             dbSingleQuery(qDetailProb)
@@ -504,8 +505,23 @@ module.exports = {
                 let pathStdImg = req.files.std_img ? `${req.files.std_img[0].destination}${req.files.std_img[0].filename}` : null
                 let pathActImg = req.files.act_img ? `${req.files.act_img[0].destination}${req.files.act_img[0].filename}` : null
                 let pathWhyImg = req.files.why1_img ? `${req.files.why1_img[0].destination}${req.files.why1_img[0].filename}` : null
-                    // console.log(req.files.fimage_problem.destination);
+                
+                let pathFimgProblem2 = req.files.fimage2_problem ? `${req.files.fimage2_problem[0].destination}${req.files.fimage2_problem[0].filename}` : null
+                let pathStdImg2 = req.files.std2_img ? `${req.files.std2_img[0].destination}${req.files.std2_img[0].filename}` : null
+                let pathActImg2 = req.files.act2_img ? `${req.files.act2_img[0].destination}${req.files.act2_img[0].filename}` : null
+                let pathWhyImg2 = req.files.why2_img ? `${req.files.why2_img[0].destination}${req.files.why2_img[0].filename}` : null
+                let pathWhyImg12 = req.files.why12_img ? `${req.files.why12_img[0].destination}${req.files.why12_img[0].filename}` : null
+                let pathWhyImg22 = req.files.why22_img ? `${req.files.why22_img[0].destination}${req.files.why22_img[0].filename}` : null
                 req.body.why1_img = pathWhyImg
+                req.body.why2_img = pathWhyImg2
+                req.body.why12_img = pathWhyImg12
+                req.body.why22_img = pathWhyImg22
+
+                let delWhy1 = req.body.deleteWhy1
+                let delWhy2 = req.body.deleteWhy2
+                let delWhy12 = req.body.deleteWhy12
+                let delWhy22 = req.body.deleteWhy22
+                
                 let containerQuery = []
                 let qEditProb = `UPDATE tb_error_log_2 set`
                 let idx = 0
@@ -531,34 +547,53 @@ module.exports = {
                             .then((result) => {
                                 console.log(result)
                                 let ilusUraian = null
-                                if (pathFimgProblem && i == 0) {
+                                let ilusUraian2 = null
+                                if ((pathFimgProblem || (req.body.deleteProblem1 == 1)) && i == 0) {
                                     ilusUraian = pathFimgProblem
                                     if (result.length > 0) {
                                         qUraianUpdate.push(`UPDATE tb_r_uraian SET desc_nm = '${element.desc_name}', ilustration = ${ilusUraian ? `'${ilusUraian}'` : ilusUraian} where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian}'`)
-                            
                                     } else {
-                                        qUraianInsert.push(`INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration, type_uraian) VALUES (${req.params.v_}, '${element.desc_name}', ${ilusUraian ? `'${ilusUraian}'` : ilusUraian}, '${element.type_uraian}')`)
-                                        
+                                        qUraianInsert.push(`INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration, type_uraian) VALUES (${req.params.v_}, '${element.desc_name}', ${ilusUraian ? `'${ilusUraian}'` : ilusUraian}, '${element.type_uraian}')`)   
                                     }
                                 }
-                                if (pathStdImg && i == 1) {
+                                if ((pathFimgProblem2 || (req.body.deleteProblem2 == 1)) && i == 0) {
+                                    ilusUraian2 = pathFimgProblem2
+                                    if (result.length > 0) {
+                                        qUraianUpdate.push(`UPDATE tb_r_uraian SET desc_nm = '${element.desc_name}', ilustration2 = ${ilusUraian2 ? `'${ilusUraian2}'` : ilusUraian2} where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian}'`)
+                                    } else {
+                                        qUraianInsert.push(`INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration2, type_uraian) VALUES (${req.params.v_}, '${element.desc_name}', ${ilusUraian2 ? `'${ilusUraian2}'` : ilusUraian2}, '${element.type_uraian}')`)   
+                                    }
+                                }
+                                if ((pathStdImg || (req.body.deleteStd1 == 1)) && i == 1) {
                                     ilusUraian = pathStdImg
                                     if (result.length > 0) {
                                         qUraianUpdate.push(`UPDATE tb_r_uraian SET desc_nm = '${element.desc_name}', ilustration = ${ilusUraian ? `'${ilusUraian}'` : ilusUraian} where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian}'`)
-                            
                                     } else {
-                                        qUraianInsert.push(`INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration, type_uraian) VALUES (${req.params.v_}, '${element.desc_name}', ${ilusUraian ? `'${ilusUraian}'` : ilusUraian}, '${element.type_uraian}')`)
-                                        
+                                        qUraianInsert.push(`INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration, type_uraian) VALUES (${req.params.v_}, '${element.desc_name}', ${ilusUraian ? `'${ilusUraian}'` : ilusUraian}, '${element.type_uraian}')`)   
                                     }
                                 }
-                                if (pathActImg && i ==2) {
+                                if ((pathStdImg2 || (req.body.deleteStd2 == 1)) && i == 1) {
+                                    ilusUraian2 = pathStdImg2
+                                    if (result.length > 0) {
+                                        qUraianUpdate.push(`UPDATE tb_r_uraian SET desc_nm = '${element.desc_name}', ilustration2 = ${ilusUraian2 ? `'${ilusUraian2}'` : ilusUraian2} where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian}'`)
+                                    } else {
+                                        qUraianInsert.push(`INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration2, type_uraian) VALUES (${req.params.v_}, '${element.desc_name}', ${ilusUraian2 ? `'${ilusUraian2}'` : ilusUraian2}, '${element.type_uraian}')`)   
+                                    }
+                                }
+                                if ((pathActImg || (req.body.deleteAct1 == 1)) && i == 2) {
                                     ilusUraian = pathActImg
                                     if (result.length > 0) {
                                         qUraianUpdate.push(`UPDATE tb_r_uraian SET desc_nm = '${element.desc_name}', ilustration = ${ilusUraian ? `'${ilusUraian}'` : ilusUraian} where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian}'`)
-                            
                                     } else {
-                                        qUraianInsert.push(`INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration, type_uraian) VALUES (${req.params.v_}, '${element.desc_name}', ${ilusUraian ? `'${ilusUraian}'` : ilusUraian}, '${element.type_uraian}')`)
-                                        
+                                        qUraianInsert.push(`INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration, type_uraian) VALUES (${req.params.v_}, '${element.desc_name}', ${ilusUraian ? `'${ilusUraian}'` : ilusUraian}, '${element.type_uraian}')`)   
+                                    }
+                                }
+                                if ((pathActImg2 || (req.body.deleteAct2 == 1)) && i == 2) {
+                                    ilusUraian2 = pathActImg2
+                                    if (result.length > 0) {
+                                        qUraianUpdate.push(`UPDATE tb_r_uraian SET desc_nm = '${element.desc_name}', ilustration2 = ${ilusUraian2 ? `'${ilusUraian2}'` : ilusUraian2} where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian}'`)
+                                    } else {
+                                        qUraianInsert.push(`INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration2, type_uraian) VALUES (${req.params.v_}, '${element.desc_name}', ${ilusUraian2 ? `'${ilusUraian2}'` : ilusUraian2}, '${element.type_uraian}')`)   
                                     }
                                 }
                                 if (result.length > 0) {
@@ -589,28 +624,47 @@ module.exports = {
                 cmdMultipleQuery(qUraianUpdate.join(';'))
             }
         }
+        
 
         delete req.body.fimage_problem;
         delete req.body.std_img;
         delete req.body.act_img;
+        delete req.body.fimage2_problem;
+        delete req.body.std2_img;
+        delete req.body.act2_img;
         delete req.body.furaian_kejadian_general;
         delete req.body.furaian_kejadian_standard;
         delete req.body.furaian_kejadian_actual;
+        delete req.body.deleteProblem1;
+        delete req.body.deleteProblem2;
+        delete req.body.deleteAct1;
+        delete req.body.deleteAct2;
+        delete req.body.deleteStd1;
+        delete req.body.deleteStd2;
+        delete req.body.deleteWhy1;
+        delete req.body.deleteWhy12;
+        delete req.body.deleteWhy2;
+        delete req.body.deleteWhy22;
 
         for (const key in req.body) {
             // console.log(key);
             size++;
         }
-
+        // console.log('why disinii');
+        // console.log(req.body.why1_img);
         for (key in req.body) {
             idx++
             if (key == 'fstart_time' || key == 'fend_time') {
                 qEditProb += ` ${key}=TIMESTAMP('${req.body[key]}')`
             } else if (key == 'fiveWhyLhApprove' || key == 'fiveWhyShApprove' || key == 'cmLhApprove' || key == 'cmShApprove') {
                 qEditProb += ` ${key}=${req.body[key] == 0 ? false : true}`
-            }else if(key == 'why1_img' && req.body[key]){
+            }else if((key == 'why1_img' || key == 'why12_img' || key == 'why2_img' || key == 'why22_img')  && req.body[key]){
                 qEditProb += ` ${key}='${req.body[key]}'`
-            }else if(key == 'why1_img' && !req.body[key]){
+            }
+            else if(((key == 'why1_img' && delWhy1 == 1) || (key == 'why12_img' && delWhy12 == 1) || (key == 'why2_img' && delWhy2 == 1) || (key == 'why22_img' && delWhy22 == 1))  && !req.body[key]){
+                qEditProb += ` ${key}='${req.body[key]}'`
+            }
+            else if((key == 'why1_img' || key == 'why12_img' || key == 'why2_img' || key == 'why22_img') && !req.body[key]){
                 continue
             }else{
                 qEditProb += ` ${key}='${req.body[key]}'`
@@ -877,5 +931,6 @@ module.exports = {
                     err
                 })
             })
-    }
+    },
+    
 }

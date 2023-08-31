@@ -19,7 +19,7 @@ const {
     deleteProblem,
     getActiveProblem,
     getAllActiveProblem,
-    poolEnd
+    poolEnd,
 } = require('../controllers/controllerProdAchievements')
 
 const {
@@ -323,7 +323,31 @@ router.put('/editProblem/:v_', newUpload.fields(
         {
             name: 'why1_img',
             maxCount: 1
-        }
+        },
+        {
+            name: 'why2_img',
+            maxCount: 1
+        },
+        {   name: 'fimage2_problem',
+            maxCount: 1
+        },
+        {
+            name: 'std2_img',
+            maxCount: 1
+        },
+        {
+            name: 'act2_img',
+            maxCount: 1
+        },
+        {
+            name: 'why12_img',
+            maxCount: 1
+        },
+        {
+            name: 'why22_img',
+            maxCount: 1
+        },
+        
     ]
 ), editProblem)
 router.delete('/deleteProblem/:v_', deleteProblem)
