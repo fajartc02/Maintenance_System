@@ -328,7 +328,8 @@ router.put('/editProblem/:v_', newUpload.fields(
             name: 'why2_img',
             maxCount: 1
         },
-        {   name: 'fimage2_problem',
+        {
+            name: 'fimage2_problem',
             maxCount: 1
         },
         {
@@ -347,7 +348,7 @@ router.put('/editProblem/:v_', newUpload.fields(
             name: 'why22_img',
             maxCount: 1
         },
-        
+
     ]
 ), editProblem)
 router.delete('/deleteProblem/:v_', deleteProblem)
@@ -376,5 +377,8 @@ router.get('/mtbf-mttr', getMtbf)
 
 const qcc = require('./qcc/index')
 router.use('/qcc', qcc)
+
+const v2 = require('./v2/index')
+router.use('/v2', v2)
 
 module.exports = router;

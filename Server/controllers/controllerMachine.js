@@ -1,4 +1,5 @@
 const cmdQuery = require('../config/MysqlConnection');
+const cmdQueryMultiple = require('../config/MultipleQueryConnection');
 const pool = require('../config/MysqlConnection');
 
 function gettingError(res, err) {
@@ -9,17 +10,26 @@ function gettingError(res, err) {
 }
 
 module.exports = {
-    addNewMachine: (req, res) => {
+    addNewMachine: async(req, res) => {
         let qAddNewMachine = `INSERT INTO tb_mc 
             (fmc_name, fline, fop_desc, fmaker) 
         VALUES
-            ('${req.body.machine}', '${req.body.selectedLine}', '${req.body.process}', '${req.body.maker}')`
-        cmdQuery(qAddNewMachine)
-            .then((results) => {
-                res.status(201).json({
-                    message: 'Success to add new Machine',
-                    data: results
-                })
+            ('${req.body.machine}', '${req.body.selectedLine}', '${req.body.process}', '${req.body.maker}');`
+        await cmdQueryMultiple(qAddNewMachine)
+            .then(async(results) => {
+                let newMcId = results.insertId
+                let q = `INSERT INTO tb_status(fid, fstatus) VALUES (${newMcId}, 0)`
+                await cmdQuery(q)
+                    .then(resu => {
+                        res.status(201).json({
+                            message: 'Success to add new Machine',
+                            data: 'inserted'
+                        })
+                    })
+                    .catch(erro => {
+                        gettingError(res, erro)
+                    })
+
             }).catch((err) => {
                 gettingError(res, err)
             });

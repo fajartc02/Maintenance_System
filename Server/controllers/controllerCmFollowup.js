@@ -38,6 +38,15 @@ module.exports = {
         let fshift = ''
         let isFullCap = false // TASKFORCE AND FULLCAP PROBLEM THERE IS NO LIMIT DURATION (ALL DURATION CAN FETCH)
         let isFT = false // for focus theme id_m_problem_member
+        let isLtb = `(
+            fdur >= 120 AND (
+                fline = 'Cylinder Head' OR fline = 'Cylinder Block' OR fline = 'Crank shaft' OR fline = 'Cam Shaft' OR fline = 'HPDC' OR fline = 'LPDC'
+            )
+        ) OR (
+            fdur >= 15 AND (
+                fline = 'ASSY LINE'
+            )
+        )`
 
         if (String(req.query.ferror_name ? req.query.ferror_name.toUpperCase() : null).includes('FULLCAP') && String(req.query.ferror_name ? req.query.ferror_name.toUpperCase() : null).includes('TASKFORCE')) {
             isFullCap = true
@@ -83,6 +92,7 @@ module.exports = {
             (fpermanet_cm LIKE '%[{%' OR
             fpermanet_cm_lama LIKE '%[{%' OR fyokoten LIKE '%[{%') AND
             fend_time IS NOT NULL AND
+            ${isLtb} AND
             date(fstart_time) >= date('${startDate}') AND 
             date(fstart_time) <= date('${endDate}')${fline}${fmc_name}${ferror_name}${fshift}${isFullCap ? "" : " AND fdur >= 30"}${isFT ? " AND id_m_problem_member IS NOT NULL" : ""}`
 

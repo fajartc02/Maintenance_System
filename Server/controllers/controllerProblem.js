@@ -119,6 +119,8 @@ module.exports = {
     },
     getSummaryWeekly: (req, res) => {
         let containerQuery = []
+        let ltbCondCM = `((fline = 'Cylinder Head' OR fline = 'Cylinder Block' OR fline = 'Crank shaft' OR fline = 'Cam Shaft') AND fdur >= 120)`
+        let ltbCondK = `fline = 'ASSY LINE' AND fdur >= 15`
         let qHerman = `SELECT fstart_time, fline, ferror_name, fdur, foperator FROM 
             v_current_error_2 WHERE
             fshift = 'w' AND
@@ -172,15 +174,24 @@ module.exports = {
         let qGetAll = `SELECT * FROM v_current_error_2 WHERE
             fshift <> '-' AND
             fshift <> '' AND
-            fdur >= 60 AND
-            fdur < 120 AND
+            (
+                fdur >= 120 AND (
+                    fline = 'Cylinder Head' OR fline = 'Cylinder Block' OR fline = 'Crank shaft' OR fline = 'Cam Shaft' OR fline = 'HPDC' OR fline = 'LPDC'
+                )
+            ) OR (
+                fdur >= 15 AND (
+                    fline = 'ASSY LINE'
+                )
+            ) AND
+            
             MONTH(fstart_time) >= MONTH(NOW())-3 AND
             fav_categoty <> 'DIES' AND
             cmLhFeedback IS NOT NULL`;
         let qGetAllLtb = `SELECT * FROM v_current_error_2 WHERE
             fshift <> '-' AND
             fshift <> '' AND
-            fdur >= 120 AND
+            ${ltbCondCM} AND
+            ${ltbCondK} AND
             fav_categoty <> 'DIES' AND
             cmLhFeedback IS NOT NULL`;
         containerQuery.push(qHerman, qHartanto, qWahyu, qTri, qHermanFin, qHartantoFin, qWahyuFin, qTriFin, qGetAll, qGetAllLtb)
