@@ -216,7 +216,7 @@ module.exports = {
                         const mc = line.mcs[idx] ? line.mcs[idx] : machinesDataAll[i];
 
                         let mttr = mc.mttr || 0
-                        let mtbf = mc.mtbf || 1020
+                        let mtbf = mc.mtbf || 1200
                         console.log(mttr);
                         console.log(mtbf);
                         let typeMttr = 1
