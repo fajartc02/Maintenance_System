@@ -211,12 +211,12 @@ module.exports = {
                     line.mtbf = +mtbfByLine.toFixed(0)
 
                     for (let idx = 0; idx < machinesDataAll.length; idx++) {
-                        machinesDataAll[i].mtbf = 1020
+                        machinesDataAll[i].mtbf = 1300 - (i * 15)
                         machinesDataAll[i].mttr = 0
                         const mc = line.mcs[idx] ? line.mcs[idx] : machinesDataAll[i];
 
                         let mttr = mc.mttr || 0
-                        let mtbf = mc.mtbf || 1200
+                        let mtbf = mc.mtbf || 1300 - (i * 15)
                         console.log(mttr);
                         console.log(mtbf);
                         let typeMttr = 1
