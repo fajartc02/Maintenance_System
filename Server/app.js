@@ -49,9 +49,9 @@ cron.schedule('0 7 * * 1', () => {
 })
 
 // Every 3 seconds check fixing bug smartandon not closed
-cron.schedule('*/10 * * * * *', () => {
+cron.schedule('*/30 * * * * *', () => {
     const cmdMultipleQuery = require('./config/MultipleQueryConnection')
-    console.log('RUN JOB check invalid data 3 minute');
+    console.log('RUN JOB check invalid data 30 minutes');
     // simple query
     let q = `SELECT fid,fstatus FROM u5364194_smartand_tmmin3_qmms.tb_status WHERE fstatus = 1;`
     cmdMultipleQuery(q)

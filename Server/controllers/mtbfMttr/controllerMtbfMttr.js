@@ -118,14 +118,46 @@ module.exports = {
         // 7 - 13 (sumProb / Mc)
         // 14 - 20 (count total problem / mc)
         cmdMultipleQuery(containerQueryTotalMc.join(';') + ';' + containerQuerySumProblemMc.join(';') + ';' + containerQueryCountProblemMc.join(';'))
-            .then((result) => {
+            .then(async(result) => {
                 let workingHour = 1020
+                let machinesDataAll = await cmdMultipleQuery('SELECT * FROM tb_mc')
                     // result[0~6] => [{fline: LINE, totoalMc: 00}]
                     // result[7~13] => [{fline: LINE, fmc_name: MC, totalRepair: 00}]
                     // result[14~20] => [{ fline: LINE, fmc_name: MC, countTotalProblem: 00 }]
                 let totalMcsLines = result.slice(0, 7)
                 let totalTimeRepairMcs = result.slice(7, 14)
                 let totalProblemMcs = result.slice(14, 21)
+                let containerA = []
+                let containerB = []
+                let containerC = []
+                let containerD = []
+                let containerE = []
+                let containerF = []
+                let containerScatters = [{
+                    name: 'Range A',
+                    key: 'containerA',
+                    data: []
+                }, {
+                    name: 'Range B',
+                    key: 'containerB',
+                    data: []
+                }, {
+                    name: 'Range C',
+                    key: 'containerC',
+                    data: []
+                }, {
+                    name: 'Range D',
+                    key: 'containerD',
+                    data: []
+                }, {
+                    name: 'Range E',
+                    key: 'containerE',
+                    data: []
+                }, {
+                    name: 'Range F',
+                    key: 'containerF',
+                    data: []
+                }]
                 let mapResult = totalMcsLines.map((arrLine, i) => {
                     let line = arrLine[0]
                     let separatorTimeRepairMcs = totalTimeRepairMcs[i]
@@ -178,14 +210,129 @@ module.exports = {
                     line.mttr = +mttrByLine.toFixed(1)
                     line.mtbf = +mtbfByLine.toFixed(0)
 
-                    // console.log(`KRITERIA PROBLEM > 30 Menit all Lines, Working Hour: ${workingHour}`);
-                    // console.table([{ line: line.fline, mtbf: +mtbfByLine.toFixed(1), mttr: +mttrByLine.toFixed(1), totalRepairLine, totalProbLine }])
-                    console.log(line);
+                    for (let idx = 0; idx < machinesDataAll.length; idx++) {
+                        machinesDataAll[i].mtbf = 1020
+                        machinesDataAll[i].mttr = 0
+                        const mc = line.mcs[idx] ? line.mcs[idx] : machinesDataAll[i];
+
+                        let mttr = mc.mttr || 0
+                        let mtbf = mc.mtbf || 1020
+                        console.log(mttr);
+                        console.log(mtbf);
+                        let typeMttr = 1
+                        let typeMtbf = 1
+                            // MTTR:
+                            //     1 mttr <= 1
+                            //     2 (mttr > 1 && mttr <= 2)
+                            //     3 (mttr > 2 && mttr <= 3)
+                            //     4 mttr > 3
+                        if (mttr <= 1) typeMttr = 1
+                        else if (mttr > 1 && mttr <= 2) typeMttr = 2
+                        else if (mttr > 2 && mttr <= 3) typeMttr = 3
+                        else if (mttr > 3) typeMttr = 4
+                            // MTBF:
+                            //     1 mtbf >= 850
+                            //     2 (mtbf < 850 && mtbf >= 450)
+                            //     3 (mtbf < 450 && mtbf >= 250)
+                            //     4 mtbf < 250 
+                        if (mtbf >= 850) typeMtbf = 1
+                        else if (mtbf < 850 && mtbf >= 450) typeMtbf = 2
+                        else if (mtbf < 450 && mtbf >= 250) typeMtbf = 3
+                        else if (mtbf < 250) typeMtbf = 4
+
+                        /*
+                            RANGED A:
+                                1 && 1 || 2 && 1 || 1 && 2
+                            RANGED B:
+                                1 && 3 || 2 && 2 || 3 && 1
+                            RANGED C:
+                                1 && 4 || 2 && 3 || 3 && 2 || 4 && 1
+                            RANGED D:
+                                2 && 4 || 3 && 3 || 4 && 2
+                            RANGED E:
+                                3 && 4 || 4 && 3
+                            RANGED F:
+                                4 && 4
+                        */
+                        mc.typeMttr = typeMttr
+                        mc.typeMtbf = typeMtbf
+                        let scatter = [mttr, mtbf]
+                        let obj = {}
+                        if ((typeMttr == 1 && typeMtbf == 1) || (typeMttr == 2 && typeMtbf == 1) || (typeMttr == 1 && typeMtbf == 2)) {
+                            // RANGED A
+                            containerA.push(mc)
+
+                            let findObj = containerScatters.find(range => range.name == 'Range A')
+                            if (findObj) findObj.data.push(scatter)
+                            else containerScatters.push({
+                                name: "Range A",
+                                data: scatter
+                            })
+                        } else if ((typeMttr == 1 && typeMtbf == 3) || (typeMttr == 2 && typeMtbf == 2) || (typeMttr == 3 && typeMtbf == 1)) {
+                            // RANGED B
+                            containerB.push(mc)
+                            let findObj = containerScatters.find(range => range.name == 'Range B')
+                            if (findObj) findObj.data.push(scatter)
+                            else containerScatters.push({
+                                name: "Range B",
+                                data: scatter
+                            })
+                        } else if ((typeMttr == 1 && typeMtbf == 4) || (typeMttr == 2 && typeMtbf == 3) || (typeMttr == 3 && typeMtbf == 2) || (typeMttr == 4 && typeMtbf == 1)) {
+                            // RANGED C
+                            containerC.push(mc)
+                            let findObj = containerScatters.find(range => range.name == 'Range C')
+                            if (findObj) findObj.data.push(scatter)
+                            else containerScatters.push({
+                                name: "Range C",
+                                data: scatter
+                            })
+                        } else if ((typeMttr == 2 && typeMtbf == 4) || (typeMttr == 3 && typeMtbf == 3) || (typeMttr == 4 && typeMtbf == 2)) {
+                            // RANGED D
+                            containerD.push(mc)
+                            let findObj = containerScatters.find(range => range.name == 'Range D')
+                            if (findObj) findObj.data.push(scatter)
+                            else containerScatters.push({
+                                name: "Range D",
+                                data: scatter
+                            })
+                        } else if ((typeMttr == 3 && typeMtbf == 4) || (typeMttr == 4 && typeMtbf == 3)) {
+                            // RANGED E
+                            containerE.push(mc)
+                            let findObj = containerScatters.find(range => range.name == 'Range E')
+                            if (findObj) findObj.data.push(scatter)
+                            else containerScatters.push({
+                                name: "Range E",
+                                data: scatter
+                            })
+                        } else if (typeMttr == 4 && typeMtbf == 4) {
+                            // RANGED F
+                            containerF.push(mc)
+                            let findObj = containerScatters.find(range => range.name == 'Range F')
+                            if (findObj) findObj.data.push(scatter)
+                            else containerScatters.push({
+                                name: "Range F",
+                                data: scatter
+                            })
+                        }
+                    }
                     return line
                 })
+                let objScatter = [
+                    containerA,
+                    containerB,
+                    containerC,
+                    containerD,
+                    containerE,
+                    containerF
+                ]
+                let resObj = {
+                    mapResult,
+                    scatters: objScatter,
+                    containerScatters
+                }
 
 
-                gettingSuccess(res, 200, mapResult)
+                gettingSuccess(res, 200, resObj)
             }).catch((err) => {
                 console.log(err);
                 gettingError(res, err)
