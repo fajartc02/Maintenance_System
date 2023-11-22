@@ -263,66 +263,65 @@ module.exports = {
                     })
                 });
         },
-        getProblemsHistory: (req, res) => {
-            let qProbHistory = `SELECT * FROM v_current_error_2`
-            let count = 0
-            if (req.query) {
-                let startDate;
-                let endDate;
-                let qMachine = ""
-                let qLine = ""
-                let qProblem = ""
-                for (key in req.query) {
-                    count++
-                    // console.log(formatDate(req.query[key]));
-                    if (key == 'startDate') {
-                        if (req.query[key].includes(' ')) {
-                            startDate = req.query[key]
-                        } else {
-                            startDate = formatDate(req.query[key]);
-                        }
-                    } else if (key == 'endDate') {
+        getProblemsHistory: async(req, res) => {
+            try {
+                let qProbHistory = `SELECT * FROM v_current_error_2`
+                let count = 0
+                if (req.query) {
+                    let startDate;
+                    let endDate;
+                    let qMachine = ""
+                    let qLine = ""
+                    let qProblem = ""
+                    for (key in req.query) {
+                        count++
+                        if (key == 'startDate') {
+                            if (req.query[key].includes(' ')) {
+                                startDate = req.query[key]
+                            } else {
+                                startDate = formatDate(req.query[key]);
+                            }
+                        } else if (key == 'endDate') {
 
-                        if (req.query[key].includes(' ')) {
-                            endDate = req.query[key]
-                        } else {
-                            endDate = formatDate(req.query[key]);
+                            if (req.query[key].includes(' ')) {
+                                endDate = req.query[key]
+                            } else {
+                                endDate = formatDate(req.query[key]);
+                            }
+                        }
+                        console.log(req.query);
+                        if (key == 'machine' && req.query.isProblem == 'false') {
+                            if (req.query[key] != 'null') {
+                                qMachine = ` and fmc_name = '${req.query[key]}'`;
+                            }
+                        }
+                        if (key == 'line') {
+                            qLine = ` and fline = '${req.query[key]}'`;
+                        }
+                        if (key == 'problem') {
+                            qProblem = ` and ferror_name LIKE '%${req.query[key]}%'`
                         }
                     }
-                    console.log(req.query);
-                    if (key == 'machine' && req.query.isProblem == 'false') {
-                        if (req.query[key] != 'null') {
-                            qMachine = ` and fmc_name = '${req.query[key]}'`;
-                        }
-                    }
-                    if (key == 'line') {
-                        qLine = ` and fline = '${req.query[key]}'`;
-                    }
-                    if (key == 'problem') {
-                        qProblem = ` and ferror_name LIKE '%${req.query[key]}%'`
-                    }
+                    qProbHistory += ` WHERE fstart_time BETWEEN '${startDate}' AND '${endDate}'${qProblem}${qMachine} ${qLine} ORDER BY ${req.query.sort} DESC;`
+
+                    let problemHistoryData = await cmdMultipleQuery(qProbHistory)
+                    let mapPrbAnalysis = await problemHistoryData.map(async item => {
+                        let prob_id = item.fid
+                        const prbAnalysis = await cmdMultipleQuery(`SELECT json_string FROM o_analisys WHERE id_problem = ${prob_id} LIMIT 1`)
+                        prbAnalysis.length > 0 ? item.isAnalysis = true : item.isAnalysis = false
+                        return item
+                    })
+                    const waitData = await Promise.all(mapPrbAnalysis)
+                    res.status(200).json({
+                        message: 'Success to get Problem History',
+                        data: waitData
+                    })
                 }
-                // let d = new Date(endDate);
-                // console.log(d);
-                // let offsetTimeEndDate = d.setDate(d.getDate() + 1);
-                // console.log(endDate);
-                // console.log(offsetTimeEndDate);
-                // let offsetEndDate = formatDate(new Date(offsetTimeEndDate));
-                // console.log(offsetEndDate);
-                qProbHistory += ` WHERE fstart_time BETWEEN '${startDate}' AND '${endDate}'${qProblem}${qMachine} ${qLine} ORDER BY ${req.query.sort} DESC`
-                console.log(qProbHistory);
-                dbSingleQuery(qProbHistory)
-                    .then((results) => {
-                        res.status(200).json({
-                            message: 'Success to get Problem History',
-                            data: results
-                        })
-                    }).catch((err) => {
-                        res.status(203).json({
-                            message: 'Error Request Problem History',
-                            err: err
-                        })
-                    });
+            } catch (error) {
+                res.status(203).json({
+                    message: 'Error Request Problem History',
+                    err: error
+                })
             }
         },
         getOeeLog: (req, res) => {
@@ -499,13 +498,11 @@ module.exports = {
                 });
         },
         editProblem: async(req, res) => {
-                console.log('REQ FILES');
-                console.log(req.files);
                 let pathFimgProblem = req.files.fimage_problem ? `${req.files.fimage_problem[0].destination}${req.files.fimage_problem[0].filename}` : null
                 let pathStdImg = req.files.std_img ? `${req.files.std_img[0].destination}${req.files.std_img[0].filename}` : null
                 let pathActImg = req.files.act_img ? `${req.files.act_img[0].destination}${req.files.act_img[0].filename}` : null
                 let pathWhyImg = req.files.why1_img ? `${req.files.why1_img[0].destination}${req.files.why1_img[0].filename}` : null
-                
+
                 let pathFimgProblem2 = req.files.fimage2_problem ? `${req.files.fimage2_problem[0].destination}${req.files.fimage2_problem[0].filename}` : null
                 let pathStdImg2 = req.files.std2_img ? `${req.files.std2_img[0].destination}${req.files.std2_img[0].filename}` : null
                 let pathActImg2 = req.files.act2_img ? `${req.files.act2_img[0].destination}${req.files.act2_img[0].filename}` : null
@@ -521,7 +518,7 @@ module.exports = {
                 let delWhy2 = req.body.deleteWhy2
                 let delWhy12 = req.body.deleteWhy12
                 let delWhy22 = req.body.deleteWhy22
-                
+
                 let containerQuery = []
                 let qEditProb = `UPDATE tb_error_log_2 set`
                 let idx = 0
@@ -545,13 +542,13 @@ module.exports = {
                         const element = uraian[i];
                         await cmdMultipleQuery(`SELECT id from tb_r_uraian where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian}'`)
                             .then((result) => {
-                                console.log(result)
-                                let ilusUraian = null
-                                let ilusUraian2 = null
-                                if ((pathFimgProblem || (req.body.deleteProblem1 == 1)) && i == 0) {
-                                    ilusUraian = pathFimgProblem
-                                    if (result.length > 0) {
-                                        qUraianUpdate.push(`UPDATE tb_r_uraian SET desc_nm = '${element.desc_name}', ilustration = ${ilusUraian ? `'${ilusUraian}'` : ilusUraian} where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian}'`)
+                                    console.log(result)
+                                    let ilusUraian = null
+                                    let ilusUraian2 = null
+                                    if ((pathFimgProblem || (req.body.deleteProblem1 == 1)) && i == 0) {
+                                        ilusUraian = pathFimgProblem
+                                        if (result.length > 0) {
+                                            qUraianUpdate.push(`UPDATE tb_r_uraian SET desc_nm = '${element.desc_name}', ilustration = ${ilusUraian ? `'${ilusUraian}'` : ilusUraian} where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian}'`)
                                     } else {
                                         qUraianInsert.push(`INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration, type_uraian) VALUES (${req.params.v_}, '${element.desc_name}', ${ilusUraian ? `'${ilusUraian}'` : ilusUraian}, '${element.type_uraian}')`)   
                                     }
