@@ -93,12 +93,12 @@ module.exports = {
                 })
         },
         getListParameterMcs: (req, res) => {
-            // SELECT * FROM u5364194_smartand_tmmin3_qmms.v_machine_parameter group by id_parameter;
-            // SELECT * FROM u5364194_smartand_tmmin3_qmms.v_machine_parameter where id_parameter = 1;
-            let qGroup = `SELECT * FROM u5364194_smartand_tmmin3_qmms.v_machine_parameter group by id_parameter`
+            // SELECT * FROM v_machine_parameter group by id_parameter;
+            // SELECT * FROM v_machine_parameter where id_parameter = 1;
+            let qGroup = `SELECT * FROM v_machine_parameter group by id_parameter`
             if (req.query.filterByParamId) {
                 let idSelectedParam = req.query.filterByParamId
-                let qMcList = `SELECT id_machine,mc_name FROM u5364194_smartand_tmmin3_qmms.v_machine_parameter where id_parameter = ${idSelectedParam}`
+                let qMcList = `SELECT id_machine,mc_name FROM v_machine_parameter where id_parameter = ${idSelectedParam}`
                     // console.log(qMcList);
                 console.log(qMcList);
                 return cmdMultipleQuery(qMcList)
@@ -121,7 +121,7 @@ module.exports = {
                         console.log(result);
                         let newArrRes = []
                         let newRes = (callback) => result.map((item, i) => {
-                            let qMcList = `SELECT id_machine,mc_name FROM u5364194_smartand_tmmin3_qmms.v_machine_parameter where id_parameter = ${item.id_parameter}`
+                            let qMcList = `SELECT id_machine,mc_name FROM v_machine_parameter where id_parameter = ${item.id_parameter}`
                                 // console.log(qMcList);
                             return cmdMultipleQuery(qMcList)
                                 .then(resultMc => {
@@ -255,7 +255,7 @@ module.exports = {
             })
     },
     monitoringParamDashboard: (req, res) => {
-        let q = `SELECT * FROM u5364194_smartand_tmmin3_qmms.v_machine_parameter group by id_parameter`
+        let q = `SELECT * FROM v_machine_parameter group by id_parameter`
         cmdMultipleQuery(q)
             .then(async result => {
                 // console.log(result);
@@ -484,7 +484,7 @@ module.exports = {
             });
     },
     parameterAlertHistory: (req, res) => {
-        let q = `SELECT * FROM u5364194_smartand_tmmin3_qmms.v_parameter_log WHERE (severity = 'WARNING' OR severity = 'NG')`
+        let q = `SELECT * FROM v_parameter_log WHERE (severity = 'WARNING' OR severity = 'NG')`
         let { startDate, endDate, limit } = req.query
         if (startDate && endDate) {
             q += ` AND TIMESTAMP(clock) >= '${req.query.startDate} 00:00:00' AND TIMESTAMP(clock) <= '${req.query.endDate} 23:59:59'`

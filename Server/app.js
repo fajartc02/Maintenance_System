@@ -12,7 +12,7 @@ async function checkIsMcActive(id, cmdMultipleQuery) {
     let q = `SELECT fmc_id, 
     ferror_name,
     fstart_time,
-    fend_time FROM u5364194_smartand_tmmin3_qmms.tb_error_log_2
+    fend_time FROM tb_error_log_2
   WHERE fmc_id = ${id} AND 
   fend_time IS NULL`
     cmdMultipleQuery(q)
@@ -53,7 +53,7 @@ cron.schedule('*/30 * * * * *', () => {
     const cmdMultipleQuery = require('./config/MultipleQueryConnection')
     console.log('RUN JOB check invalid data 30 minutes');
     // simple query
-    let q = `SELECT fid,fstatus FROM u5364194_smartand_tmmin3_qmms.tb_status WHERE fstatus = 1;`
+    let q = `SELECT fid,fstatus FROM tb_status WHERE fstatus = 1;`
     cmdMultipleQuery(q)
         .then((result) => {
             console.log(result);

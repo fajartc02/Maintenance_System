@@ -9,7 +9,7 @@ async function getDataOutput(id_report, selected_date = null) {
     console.log(formatDate.getYesterday(new Date()));
     let q = `SELECT * 
             FROM
-                u5364194_smartand_tmmin3_qmms.v_report_output
+                v_report_output
             WHERE id_tr_report = ${id_report}`
         // console.log(q);
     let outputData = null

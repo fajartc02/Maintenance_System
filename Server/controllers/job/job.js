@@ -123,7 +123,7 @@ module.exports = {
             filter = ` AND DATE(fstart_time) >= DATE('${req.query.fstart_time}') AND DATE(fstart_time) <= DATE('${req.query.fend_time}')`
         }
         members.forEach(member => {
-            let q = `SELECT foperator, fgroup, SUM(fdur) AS fdur FROM u5364194_smartand_tmmin3_qmms.v_jobdesk WHERE (fgroup LIKE '%Preventive%' OR fgroup LIKE '%training%' OR fgroup LIKE '%Repair%' OR fgroup LIKE '%Safety%' OR fgroup LIKE '%Project%' OR fgroup LIKE '%Others%') AND foperator LIKE '%${member}%'${filter} GROUP BY fgroup`
+            let q = `SELECT foperator, fgroup, SUM(fdur) AS fdur FROM v_jobdesk WHERE (fgroup LIKE '%Preventive%' OR fgroup LIKE '%training%' OR fgroup LIKE '%Repair%' OR fgroup LIKE '%Safety%' OR fgroup LIKE '%Project%' OR fgroup LIKE '%Others%') AND foperator LIKE '%${member}%'${filter} GROUP BY fgroup`
             containerQuery.push(q)
         })
         console.log(containerQuery);

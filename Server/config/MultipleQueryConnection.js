@@ -5,7 +5,7 @@ function cmdMultipleQuery(sql) {
         // connectionLimit: 100, // default = 10
         host: process.env.HOST_DB_NEW,
         user: process.env.USER_DB_NEW,
-        port: 3306,
+        port: 4111,
         password: process.env.PASSWORD_DB_NEW,
         database: process.env.NAME_DB_NEW,
         multipleStatements: true,

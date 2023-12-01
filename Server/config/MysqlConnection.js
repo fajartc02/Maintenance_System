@@ -1,4 +1,4 @@
-const mysql = require('mysql')
+const mysql = require('mysql2')
 
 var pool = mysql.createPool({
     // connectionLimit: 100, // default = 10
@@ -7,7 +7,7 @@ var pool = mysql.createPool({
     timeout: 60 * 60 * 1000,
     host: process.env.HOST_DB_NEW,
     user: process.env.USER_DB_NEW,
-    port: 3306,
+    port: 4111,
     password: process.env.PASSWORD_DB_NEW,
     database: process.env.NAME_DB_NEW,
     timezone: 'utc',
