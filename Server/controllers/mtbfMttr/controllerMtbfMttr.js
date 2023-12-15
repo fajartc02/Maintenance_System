@@ -89,7 +89,9 @@ module.exports = {
         let containerQueryTotalMc = []
         let containerQuerySumProblemMc = []
         let containerQueryCountProblemMc = []
-        let containerDurFetch = [30, 30, 30, 30, 30, 30, 5]
+        let containerDurFetch = [60, 60, 60, 60, 60, 60, 10]
+
+        if (new Date('2023-10-31').getTime() - new Date(start_date).getTime() < 0) containerDurFetch = [30, 30, 30, 30, 30, 30, 5]
             // let qTotalProblem
             // CAST(expression AS TYPE);
         let queryTime = `
@@ -98,7 +100,7 @@ module.exports = {
         for (let i = 0; i < containerLine.length; i++) {
             const line = containerLine[i];
             let qTotalMc = `SELECT fline, count(fid) as totalMc FROM ${tableMachine} WHERE fline like '%${line.name}%'`
-            let qSumProbMc = `SELECT fline, fmc_name, CAST(sum(fdur) AS INT) as totalRepair from ${ViewCurrentError2} 
+            let qSumProbMc = `SELECT fline, fmc_name, sum(fdur) as totalRepair from ${ViewCurrentError2} 
             where 
                 fdur >= ${containerDurFetch[i]} 
                 AND fline like '%${line.name}%' 
@@ -119,7 +121,7 @@ module.exports = {
         // 14 - 20 (count total problem / mc)
         cmdMultipleQuery(containerQueryTotalMc.join(';') + ';' + containerQuerySumProblemMc.join(';') + ';' + containerQueryCountProblemMc.join(';'))
             .then(async(result) => {
-                let workingHour = 1020
+                let workingHour = 1200
                 let machinesDataAll = await cmdMultipleQuery('SELECT * FROM tb_mc')
                     // result[0~6] => [{fline: LINE, totoalMc: 00}]
                     // result[7~13] => [{fline: LINE, fmc_name: MC, totalRepair: 00}]

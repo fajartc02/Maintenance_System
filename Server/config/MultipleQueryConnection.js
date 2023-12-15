@@ -1,6 +1,6 @@
 function cmdMultipleQuery(sql) {
-    const mysql = require('mysql2')
     require('dotenv').config()
+    const mysql = require('mysql2')
     var pool = mysql.createPool({
         // connectionLimit: 100, // default = 10
         host: process.env.HOST_DB_NEW,
@@ -12,8 +12,6 @@ function cmdMultipleQuery(sql) {
         queueLimit: 0,
         waitForConnections: true,
         timezone: 'Z',
-        // connectionLimit: 10,
-        // timezone: 'utc',
         connectTimeout: 60000
     });
     return new Promise((resolve, reject) => {
