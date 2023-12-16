@@ -49,12 +49,12 @@ cron.schedule('0 7 * * 1', () => {
 })
 
 // Every 3 seconds check fixing bug smartandon not closed
-cron.schedule('*/30 * * * * *', () => {
+cron.schedule('*/30 * * * * *',async () => {
     const cmdMultipleQuery = require('./config/MultipleQueryConnection')
-    console.log('RUN JOB check invalid data 30 minutes');
+    console.log('RUN JOB check invalid data 30 seconds');
     // simple query
     let q = `SELECT fid,fstatus FROM tb_status WHERE fstatus = 1;`
-    cmdMultipleQuery(q)
+    await cmdMultipleQuery(q)
         .then((result) => {
             console.log(result);
             let containerResult = result
@@ -68,9 +68,89 @@ cron.schedule('*/30 * * * * *', () => {
         });
 })
 
+const problemNotification = require("./functions/notification/problemNotification");
+cron.schedule('*/2 * * * *', async () => {
+    try {
+        
+        let qActiveProblem = `SELECT * FROM v_notif_problems`;
+        const problems = await cmdMultipleQuery(qActiveProblem)
+        if(problems.length > 0) {
+            let qInsertNotifRole = `INSERT INTO tb_r_notification_problems(problem_id,user_id, role) VALUES `
+            let containerNofifProblem = []
+            for (let index = 0; index < problems.length; index++) {
+                const problem = problems[index];
+                let duration = +problem.fdur
+
+                let durCondLH = duration >= 15 && duration < 30 
+                let durCondSH = duration >= 30 && duration < 60
+                let durCondDph = duration >= 60 && duration < 120
+                let durCondDh = duration >= 120
+
+                let userData = await cmdMultipleQuery(`SELECT * FROM v_user_notification`)
+                var message = `
+===SMART NOTIFICATION===
+*LINE* :
+${problem.fline}
+*START TIME* :
+${problem.fstart_time}
+*MACHINE* :
+${problem.fmc_name}
+*ERROR NAME* :
+${problem.ferror_name}
+*DURATION* :
+${duration} Min
+*MP* :
+ERWIN MULYANA
+*LINK* :
+https://smartandonsys.web.app/editProblem?v_=${problem.fid}   
+
+
+https://smartandonsys.web.app
+
+Tolong di save nomer ini jadi
+*SMART ANDON*`
+                for (let y = 0; y < userData.length; y++) {
+                    const user = userData[y];
+                    let userNotifNotyetSent = await cmdMultipleQuery(`SELECT id FROM tb_r_notification_problems WHERE problem_id = ${problem.fid} AND user_id = ${user.user_id}`)
+                    let isNotyetSent = userNotifNotyetSent.length == 0
+                    let userInLine = problem.line_id == user.line_id && isNotyetSent
+                    let userWhatsapp = user.fwa_no
+                    console.log('durCondLH', 'userInLine');
+                    console.log(durCondLH, userInLine);
+                    if(durCondLH && user.role == 'LH' && userInLine) {
+                        await problemNotification(message, userWhatsapp, 'NOTIF')
+                        await problemNotification(`NOTIF SENT TO: ${user.fname} \n\n ${message}`, '082211511213', 'NOTIF')
+                        containerNofifProblem.push(`(${problem.fid}, ${user.user_id}, 'LH')`)
+                        break;
+                    } else if (durCondSH && user.role == 'SH' && userInLine) {
+                        await problemNotification(message, userWhatsapp, 'NOTIF')
+                        await problemNotification(`NOTIF SENT TO: ${user.fname} \n\n ${message}`, '082211511213', 'NOTIF')
+                        containerNofifProblem.push(`(${problem.fid}, ${user.user_id}, 'SH')`)
+                        break;
+                    } else if (durCondDph && user.role == 'Dph' && userInLine) {
+                        await problemNotification(message, userWhatsapp, 'NOTIF')
+                        await problemNotification(`NOTIF SENT TO: ${user.fname} \n\n ${message}`, '082211511213', 'NOTIF')
+                        containerNofifProblem.push(`(${problem.fid}, ${user.user_id}, 'Dph')`)
+                        break;
+                    } else if (durCondDh && user.role == 'DH' && userInLine) {
+                        await problemNotification(message, userWhatsapp, 'NOTIF')
+                        await problemNotification(`NOTIF SENT TO: ${user.fname} \n\n ${message}`, '082211511213', 'NOTIF')
+                        containerNofifProblem.push(`(${problem.fid}, ${user.user_id}, 'DH')`)
+                        break;
+                    }
+                }
+            }
+
+            if(containerNofifProblem.length > 0) await cmdMultipleQuery(qInsertNotifRole + containerNofifProblem.join(','))
+        }
+    } catch (error) {
+        console.error(error)
+    }
+})
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+const cmdMultipleQuery = require("./config/MultipleQueryConnection");
 
 var app = express();
 
