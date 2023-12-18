@@ -653,10 +653,10 @@ module.exports = {
             idx++
             if (key == 'fstart_time' || key == 'fend_time') {
                 if(key == 'fend_time' && req.body['fend_time']) {
-                    qEditProb += ` ${key}=TIMESTAMP('${req.body[key][0]}', '${req.body[key][1]}')`
+                    qEditProb += ` ${key}=TIMESTAMP('${req.body['fend_time']}')`
                 }
                 if(key == 'fstart_time' && req.body['fstart_time']) {
-                    qEditProb += ` ${key}=TIMESTAMP('${req.body[key][0]}', '${req.body[key][1]}')`
+                    qEditProb += ` ${key}=TIMESTAMP('${req.body['fstart_time']}')`
                 }
             } else if (key == 'fiveWhyLhApprove' || key == 'fiveWhyShApprove' || key == 'cmLhApprove' || key == 'cmShApprove') {
                 qEditProb += ` ${key}=${req.body[key] == 0 ? false : true}`
