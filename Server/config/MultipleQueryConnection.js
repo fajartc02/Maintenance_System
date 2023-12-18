@@ -11,7 +11,7 @@ function cmdMultipleQuery(sql) {
         multipleStatements: true,
         queueLimit: 0,
         waitForConnections: true,
-        timezone: 'Z',
+        timezone: '+07:00',
         connectTimeout: 60000
     });
     return new Promise((resolve, reject) => {

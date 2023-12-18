@@ -121,22 +121,22 @@ Tolong di save nomer ini jadi
                         await problemNotification(message, userWhatsapp, 'NOTIF')
                         await problemNotification(`NOTIF SENT TO: ${user.fname} \n\n ${message}`, '082211511213', 'NOTIF')
                         containerNofifProblem.push(`(${problem.fid}, ${user.user_id}, 'LH')`)
-                        break;
+                        continue;
                     } else if (durCondSH && user.role == 'SH' && userInLine) {
                         await problemNotification(message, userWhatsapp, 'NOTIF')
                         await problemNotification(`NOTIF SENT TO: ${user.fname} \n\n ${message}`, '082211511213', 'NOTIF')
                         containerNofifProblem.push(`(${problem.fid}, ${user.user_id}, 'SH')`)
-                        break;
+                        continue;
                     } else if (durCondDph && user.role == 'Dph' && userInLine) {
                         await problemNotification(message, userWhatsapp, 'NOTIF')
                         await problemNotification(`NOTIF SENT TO: ${user.fname} \n\n ${message}`, '082211511213', 'NOTIF')
                         containerNofifProblem.push(`(${problem.fid}, ${user.user_id}, 'Dph')`)
-                        break;
+                        continue;
                     } else if (durCondDh && user.role == 'DH' && userInLine) {
                         await problemNotification(message, userWhatsapp, 'NOTIF')
                         await problemNotification(`NOTIF SENT TO: ${user.fname} \n\n ${message}`, '082211511213', 'NOTIF')
                         containerNofifProblem.push(`(${problem.fid}, ${user.user_id}, 'DH')`)
-                        break;
+                        continue;
                     }
                 }
             }
