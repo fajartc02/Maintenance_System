@@ -72,7 +72,7 @@ module.exports = {
                 qGetHenkaten += ` AND fmc = '${req.query.fmc}'`
             }
         }
-        qGetHenkaten += `ORDER BY fdate DESC`
+        qGetHenkaten += `ORDER BY fstatus ASC`
         cmdQuery(qGetHenkaten)
             .then((results) => {
                 res.status(200).json({
