@@ -569,11 +569,11 @@ module.exports = {
             return size;
         };
         let size = Object.size(req.body)
-            // console.log(size);
+        console.log(req.body);
         for (key in req.body) {
             console.log(idx);
             idx++
-            if (key == 'fstart_time' || key == 'fend_time') {
+            if (key == 'fstart_time' || (key == 'fend_time' && req.body['fend_time'] != ' ')) {
                 qEditProb += ` ${key}=TIMESTAMP('${req.body[key][0]}', '${req.body[key][1]}')`
             } else if (key == 'fiveWhyLhApprove' || key == 'fiveWhyShApprove' || key == 'cmLhApprove' || key == 'cmShApprove') {
                 qEditProb += ` ${key}=${req.body[key] == 0 ? false : true}`
@@ -638,10 +638,11 @@ module.exports = {
         };
         let size = Object.size(req.body)
             // console.log(size);
+        console.log(req.body);
         for (key in req.body) {
             console.log(idx);
             idx++
-            if (key == 'fstart_time' || key == 'fend_time') {
+            if (key == 'fstart_time' || (key == 'fend_time' && req.body['fend_time'] != ' ')) {
                 qEditProb += ` ${key}=TIMESTAMP('${req.body[key][0]}', '${req.body[key][1]}')`
             } else if (key == 'fiveWhyLhApprove' || key == 'fiveWhyShApprove' || key == 'cmLhApprove' || key == 'cmShApprove') {
                 qEditProb += ` ${key}=${req.body[key] == 0 ? false : true}`

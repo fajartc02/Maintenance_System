@@ -90,7 +90,7 @@ function sendNotif(data, cb, res) {
         .then((resNotif) => {
             // console.log(resNotif[0].isSentLh == 0);
             // console.log(data[4] >= 15);
-            if (data[4] >= 15 && data[4] < 30 && resNotif[0].isSentLh == 0) {
+            if (data[4] >= 15 && data[4] < 30 && resNotif[0]?.isSentLh == 0) {
                 configWa(message, noPakWahyu, res)
                 configWa(message, noPakTri, res)
                 configWa(message, noPakHerman, res)

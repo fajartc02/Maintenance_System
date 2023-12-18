@@ -647,12 +647,17 @@ module.exports = {
             // console.log(key);
             size++;
         }
-        // console.log('why disinii');
-        // console.log(req.body.why1_img);
+        console.log('ENDTIME BROOOOO!');
+        console.log(req.body.fend_time);
         for (key in req.body) {
             idx++
             if (key == 'fstart_time' || key == 'fend_time') {
-                qEditProb += ` ${key}=TIMESTAMP('${req.body[key]}')`
+                if(key == 'fend_time' && req.body['fend_time']) {
+                    qEditProb += ` ${key}=TIMESTAMP('${req.body[key][0]}', '${req.body[key][1]}')`
+                }
+                if(key == 'fstart_time' && req.body['fstart_time']) {
+                    qEditProb += ` ${key}=TIMESTAMP('${req.body[key][0]}', '${req.body[key][1]}')`
+                }
             } else if (key == 'fiveWhyLhApprove' || key == 'fiveWhyShApprove' || key == 'cmLhApprove' || key == 'cmShApprove') {
                 qEditProb += ` ${key}=${req.body[key] == 0 ? false : true}`
             }else if((key == 'why1_img' || key == 'why12_img' || key == 'why2_img' || key == 'why22_img')  && req.body[key]){
@@ -821,12 +826,17 @@ module.exports = {
             return size;
         };
         let size = Object.size(req.body)
-            // console.log(size);
+            console.log(req.body);
         for (key in req.body) {
             console.log(idx);
             idx++
             if (key == 'fstart_time' || key == 'fend_time') {
-                qEditProb += ` ${key}=TIMESTAMP('${req.body[key][0]}', '${req.body[key][1]}')`
+                if(key == 'fend_time' && req.body['fend_time']) {
+                    qEditProb += ` ${key}=TIMESTAMP('${req.body[key][0]}', '${req.body[key][1]}')`
+                }
+                if(key == 'fstart_time' && req.body['fstart_time']) {
+                    qEditProb += ` ${key}=TIMESTAMP('${req.body[key][0]}', '${req.body[key][1]}')`
+                }
             } else if (key == 'fiveWhyLhApprove' || key == 'fiveWhyShApprove' || key == 'cmLhApprove' || key == 'cmShApprove') {
                 qEditProb += ` ${key}=${req.body[key] == 0 ? false : true}`
             } else {

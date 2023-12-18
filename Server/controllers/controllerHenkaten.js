@@ -122,6 +122,7 @@ module.exports = {
         }
         q += ` WHERE fid = ${req.params.v_}`
         console.log(q);
+        console.log(req.params);
         cmdQuery(q)
             .then((results) => {
                 res.status(201).json({
