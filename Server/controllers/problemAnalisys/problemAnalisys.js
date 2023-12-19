@@ -22,7 +22,7 @@ module.exports = {
 
             let q = `
             SELECT 
-            fid,fline,fmc_name,ferror_name,HOUR(fstart_time) as start_hr,fstart_time ,CAST(FLOOR((fdur/60)) AS INT) as fdur 
+            fid,fline,fmc_name,ferror_name,HOUR(fstart_time) as start_hr,fstart_time ,CAST(FLOOR((fdur/60)) AS FLOAT) as fdur 
             FROM v_current_error_2 
             WHERE 
                 DATE(fstart_time) = DATE('${req.query.filterDate}') 
