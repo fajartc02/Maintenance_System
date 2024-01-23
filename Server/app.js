@@ -100,7 +100,7 @@ ${problem.ferror_name}
 *DURATION* :
 ${duration} Min
 *MP* :
-ERWIN MULYANA
+${problem.foperator}
 *LINK* :
 https://smartandonsys.web.app/editProblem?v_=${problem.fid}   
 
