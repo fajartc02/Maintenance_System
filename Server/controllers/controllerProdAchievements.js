@@ -652,7 +652,7 @@ module.exports = {
         for (key in req.body) {
             idx++
             if (key == 'fstart_time' || key == 'fend_time') {
-                if(key == 'fend_time' && req.body['fend_time']) {
+                if(key == 'fend_time' && req.body['fend_time'] && req.body['fend_time'] != ' ') {
                     qEditProb += ` ${key}=TIMESTAMP('${req.body['fend_time']}')`
                 }
                 if(key == 'fstart_time' && req.body['fstart_time']) {
@@ -669,10 +669,16 @@ module.exports = {
             else if((key == 'why1_img' || key == 'why12_img' || key == 'why2_img' || key == 'why22_img') && !req.body[key]){
                 continue
             }else{
-                qEditProb += ` ${key}='${req.body[key]}'`
+                if(key != 'fstart_time' || key != 'fend_time') {
+                    qEditProb += ` ${key}='${req.body[key]}'`
+                }
             }
             if (idx == size) {} else {
-                qEditProb += ','
+                if(key == 'fend_time' && req.body['fend_time'] == ' ') {
+                    qEditProb += ''
+                } else {
+                    qEditProb += ','
+                }
             }
         }
         qEditProb += ` where fid = ${req.params.v_}`
