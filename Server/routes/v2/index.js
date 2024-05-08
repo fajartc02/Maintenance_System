@@ -1,7 +1,10 @@
-var router = require('express').Router();
+var router = require("express").Router();
 
-const problemRoute = require('./problemRoute')
+const problemRoute = require("./problemRoute");
+const { getLtbHistory } = require("../../controllers/v2/LTBHistory");
 
-router.use('/master', problemRoute)
+router.get("/ltb-history", getLtbHistory);
 
-module.exports = router
+router.use("/master", problemRoute);
+
+module.exports = router;
