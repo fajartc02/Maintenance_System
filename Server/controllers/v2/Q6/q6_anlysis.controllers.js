@@ -1,7 +1,7 @@
 const cmdMultipleQuery = require("../../../config/MultipleQueryConnection");
 const response = require("../../../helpers/response");
 
-async function dataMap(data, is_abnormal = 'false') {
+async function dataMap(data, is_abnormal = 'false', is_freq = 'false') {
   var randomColor = require('randomcolor');
   /* 
                                                                             series: [{
@@ -71,20 +71,22 @@ async function dataMap(data, is_abnormal = 'false') {
     let mapStepRepair = await item.fstep_new.map(async (step, idxStep) => {
 
       let idxQ6 = +step.quick6.slice(1, step.quick6.length) - 1;
-      if(is_abnormal == 'true') {
+      if(is_abnormal == 'true' && is_freq != 'true') {
         if(+step.actualTime > +step.idealTime) {
           containerActual[idxQ6] += +step.actualTime;
           containerStandard[idxQ6] += +step.idealTime;
-          // responseMap.data.push(item);
-          console.log(step);
         } else {
           containerActual[idxQ6] += 0;
           containerStandard[idxQ6] += 0;
         }
         responseMap.data.push(item);
-      } else {
+      } else if (is_abnormal == 'false' && is_freq != 'true') {
         containerActual[idxQ6] += +step.actualTime;
         containerStandard[idxQ6] += +step.idealTime;
+        responseMap.data.push(item);
+      } else {
+        containerActual[idxQ6] += 1;
+        containerStandard[idxQ6] += 1;
         responseMap.data.push(item);
       }
       // console.log(idxQ6);
@@ -156,7 +158,7 @@ module.exports = {
       });
       let filterData = await mapData.filter((item) => item?.fstep_new);
       console.log(filterData);
-      let responseData = await dataMap(filterData, req.query.is_abnormal);
+      let responseData = await dataMap(filterData, req.query.is_abnormal, req.query.is_freq);
       response.success(res, "GET DATA", responseData);
     } catch (error) {
       console.log(error);
