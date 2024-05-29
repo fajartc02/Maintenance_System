@@ -1,5 +1,5 @@
-function cmdQuery(sql) {
-    const mysql = require('mysql2')
+async function cmdQuery(sql) {
+    const mysql = require("mysql2");
 
     var pool = mysql.createPool({
         // connectionLimit: 100, // default = 10
@@ -10,29 +10,33 @@ function cmdQuery(sql) {
         port: 4111,
         password: process.env.PASSWORD_DB_NEW,
         database: process.env.NAME_DB_NEW,
-        timezone: 'utc',
+        timezone: "utc",
         waitForConnections: true,
         queueLimit: 0,
         connectionLimit: 10,
     });
-    return new Promise((resolve, reject) => {
-        pool.getConnection(function(err, connection) {
-            if (err) {
-                reject(err);
-            }
-            console.log(err);
-            connection.query(sql, function(err, result) {
+    const promisePool = pool.promise();
+    const [rows, fields] = await promisePool.query(sql);
+    console.log(rows);
+    await promisePool.end();
+    return rows;
+    // return new Promise((resolve, reject) => {
+    //     pool.getConnection(function(err, connection) {
+    //         if (err) {
+    //             reject(err);
+    //         }
+    //         console.log(err);
+    //         connection.query(sql, function(err, result) {
 
-                if (err) {
-                    console.log(err);
-                    reject(err);
-                }
-                resolve(result);
-                connection.release();
-            });
-        });
-    });
+    //             if (err) {
+    //                 console.log(err);
+    //                 reject(err);
+    //             }
+    //             resolve(result);
+    //             connection.release();
+    //         });
+    //     });
+    // });
 }
 
-
-module.exports = cmdQuery
+module.exports = cmdQuery;
