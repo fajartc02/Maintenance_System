@@ -1,8 +1,8 @@
 const cmdMultipleQuery = require("../../../config/MultipleQueryConnection");
 const response = require("../../../helpers/response");
 
-async function dataMap(data, is_abnormal = 'false', is_freq = 'false') {
-  var randomColor = require('randomcolor');
+async function dataMap(data, is_abnormal = "false", is_freq = "false") {
+  var randomColor = require("randomcolor");
   /* 
                                                                             series: [{
                                                                                     name: 'Problem Name',
@@ -42,17 +42,19 @@ async function dataMap(data, is_abnormal = 'false', is_freq = 'false') {
       strokeWidth: [],
       enabledOnSeries: [],
       colors: [],
-      yaxis: [{
-        title: {
-            text: 'Actual (min)',
+      yaxis: [
+        {
+          title: {
+            text: "Actual (min)",
+          },
         },
-      }],
+      ],
     },
     data: [],
   };
 
   let containerStandard = [0, 0, 0, 0, 0, 0];
-  let containerColors = []
+  let containerColors = [];
   let mapSeries = await data.map(async (item, i) => {
     let containerActual = [0, 0, 0, 0, 0, 0];
     // console.log(item.fstep_new);
@@ -61,18 +63,17 @@ async function dataMap(data, is_abnormal = 'false', is_freq = 'false') {
     // idealTime: 1,
     // actualTime: 1,
     // result: null
-    containerColors.push(randomColor())
-    responseMap.chartOptions.strokeWidth.push(0)
-    responseMap.chartOptions.enabledOnSeries.push(i)
+    containerColors.push(randomColor());
+    responseMap.chartOptions.strokeWidth.push(0);
+    responseMap.chartOptions.enabledOnSeries.push(i);
     responseMap.chartOptions.yaxis.push({
       show: false,
       opposite: true,
-    })
+    });
     let mapStepRepair = await item.fstep_new.map(async (step, idxStep) => {
-
       let idxQ6 = +step.quick6.slice(1, step.quick6.length) - 1;
-      if(is_abnormal == 'true' && is_freq != 'true') {
-        if(+step.actualTime > +step.idealTime) {
+      if (is_abnormal == "true" && is_freq != "true") {
+        if (+step.actualTime > +step.idealTime) {
           containerActual[idxQ6] += +step.actualTime;
           containerStandard[idxQ6] += +step.idealTime;
         } else {
@@ -80,7 +81,7 @@ async function dataMap(data, is_abnormal = 'false', is_freq = 'false') {
           containerStandard[idxQ6] += 0;
         }
         responseMap.data.push(item);
-      } else if (is_abnormal == 'false' && is_freq != 'true') {
+      } else if (is_abnormal == "false" && is_freq != "true") {
         containerActual[idxQ6] += +step.actualTime;
         containerStandard[idxQ6] += +step.idealTime;
         responseMap.data.push(item);
@@ -99,23 +100,21 @@ async function dataMap(data, is_abnormal = 'false', is_freq = 'false') {
     };
   });
   responseMap.series = await Promise.all(mapSeries);
-  responseMap.chartOptions.colors = containerColors
-  responseMap.chartOptions.colors.push(randomColor())
+  responseMap.chartOptions.colors = containerColors;
+  responseMap.chartOptions.colors.push(randomColor());
   responseMap.series.push({
     name: "Standard",
     type: "line",
     data: containerStandard,
-  })
-  responseMap.chartOptions.strokeWidth.push(4)
-  responseMap.chartOptions.enabledOnSeries.push(responseMap.chartOptions.enabledOnSeries.length)
+  });
+  responseMap.chartOptions.strokeWidth.push(4);
+  responseMap.chartOptions.enabledOnSeries.push(
+    responseMap.chartOptions.enabledOnSeries.length
+  );
   responseMap.chartOptions.yaxis.push({
-    // opposite: true,
-    // title: {
-    //     text: 'Standard (min)',
-    // }
     show: false,
-})
-  return responseMap
+  });
+  return responseMap;
 }
 
 module.exports = {
@@ -158,7 +157,11 @@ module.exports = {
       });
       let filterData = await mapData.filter((item) => item?.fstep_new);
       console.log(filterData);
-      let responseData = await dataMap(filterData, req.query.is_abnormal, req.query.is_freq);
+      let responseData = await dataMap(
+        filterData,
+        req.query.is_abnormal,
+        req.query.is_freq
+      );
       response.success(res, "GET DATA", responseData);
     } catch (error) {
       console.log(error);
