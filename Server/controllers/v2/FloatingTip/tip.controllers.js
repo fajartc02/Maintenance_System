@@ -35,27 +35,27 @@ module.exports = {
             // limit
 
             /* 
-                                                                                                [{
-                                                                                                    machine: 'IKDM-0101',
-                                                                                                    param: 'Celah Tip Atas',
-                                                                                                    data: [
-                                                                                                        {
-                                                                                                            x: moment().format('YYYY-MM-DD'),
-                                                                                                            y: 0.1
-                                                                                                        }, {
-                                                                                                            x: moment().add(1, 'days').format('YYYY-MM-DD'),
-                                                                                                            y: 0
-                                                                                                        }, {
-                                                                                                            x: moment().add(2, 'days').format('YYYY-MM-DD'),
-                                                                                                            y: 0.3
-                                                                                                        }
-                                                                                                    ],
-                                                                                                    units: 'm',
-                                                                                                    min: 0,
-                                                                                                    max: 1,
-                                                                                                    limit: 30
-                                                                                                }]
-                                                                                                */
+                                                                                                      [{
+                                                                                                          machine: 'IKDM-0101',
+                                                                                                          param: 'Celah Tip Atas',
+                                                                                                          data: [
+                                                                                                              {
+                                                                                                                  x: moment().format('YYYY-MM-DD'),
+                                                                                                                  y: 0.1
+                                                                                                              }, {
+                                                                                                                  x: moment().add(1, 'days').format('YYYY-MM-DD'),
+                                                                                                                  y: 0
+                                                                                                              }, {
+                                                                                                                  x: moment().add(2, 'days').format('YYYY-MM-DD'),
+                                                                                                                  y: 0.3
+                                                                                                              }
+                                                                                                          ],
+                                                                                                          units: 'm',
+                                                                                                          min: 0,
+                                                                                                          max: 1,
+                                                                                                          limit: 30
+                                                                                                      }]
+                                                                                                      */
 
             const responseData = await cmdMultipleQuery(q);
 
@@ -190,7 +190,7 @@ module.exports = {
                             limit: paramInfo.limit,
                             units: paramInfo.units,
                             data: records.map((record) => ({
-                                x: record.check_date,
+                                x: moment(record.check_date).format("YYYY-MM-DD"),
                                 y: record[paramInfo.key],
                                 tip_counter: record.tip_counter,
                                 sleeve_counter: record.sleeve_counter,
