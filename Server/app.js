@@ -128,7 +128,7 @@ Tolong di save nomer ini jadi
                         await problemNotification(`NOTIF SENT TO: ${user.fname} \n\n ${message}`, '082211511213', 'NOTIF')
                         containerNofifProblem.push(`(${problem.fid}, ${user.user_id}, 'SH')`)
                         continue;
-                    } else if (durCondDph && user.role == 'Dph' && userInLine) {
+                    } else if (durCondDph && user.role == 'Dph') { // espesially Dph ignoring not yet send
                         await problemNotification(message, userWhatsapp, 'NOTIF')
                         await problemNotification(`NOTIF SENT TO: ${user.fname} \n\n ${message}`, '082211511213', 'NOTIF')
                         containerNofifProblem.push(`(${problem.fid}, ${user.user_id}, 'Dph')`)
