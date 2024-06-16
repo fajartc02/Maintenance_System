@@ -447,7 +447,8 @@ router.put(
             // console.log("req.file");
             // console.log(req.file);
             // WILL DEELTE FILE IN THE FUTURE
-            let path = req.file.path;
+            let path = `${req.file.destination}${req.file.filename}`;
+            console.log(req.file);
             let q = `UPDATE tb_error_log_2 SET file_report = '${path}' WHERE fid = ${req.body.fid}`;
             console.log(q);
             await cmdMultipleQuery(q);
