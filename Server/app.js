@@ -69,7 +69,7 @@ cron.schedule('*/30 * * * * *',async () => {
 })
 
 const problemNotification = require("./functions/notification/problemNotification");
-cron.schedule('*/2 * * * *', async () => {
+cron.schedule('*/1 * * * *', async () => {
     try {
         
         let qActiveProblem = `SELECT * FROM v_notif_problems`;
@@ -83,7 +83,8 @@ cron.schedule('*/2 * * * *', async () => {
 
                 let durCondLH = duration >= 15 && duration < 30 
                 let durCondSH = duration >= 30 && duration < 60
-                let durCondDph = duration >= 60 && duration < 120
+                // let durCondDph = duration >= 60 && duration < 120
+                let durCondDph = duration % 60 == 0
                 let durCondDh = duration >= 120
 
                 let userData = await cmdMultipleQuery(`SELECT * FROM v_user_notification`)
