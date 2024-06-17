@@ -115,6 +115,7 @@ Tolong di save nomer ini jadi
                     let userNotifNotyetSent = await cmdMultipleQuery(`SELECT id FROM tb_r_notification_problems WHERE problem_id = ${problem.fid} AND user_id = ${user.user_id}`)
                     let isNotyetSent = userNotifNotyetSent.length == 0
                     let userInLine = problem.line_id == user.line_id && isNotyetSent
+                    const inLineUser = problem.line_id == user.line_id
                     let userWhatsapp = user.fwa_no
                     console.log('durCondLH', 'userInLine');
                     console.log(durCondLH, userInLine);
@@ -128,7 +129,7 @@ Tolong di save nomer ini jadi
                         await problemNotification(`NOTIF SENT TO: ${user.fname} \n\n ${message}`, '082211511213', 'NOTIF')
                         containerNofifProblem.push(`(${problem.fid}, ${user.user_id}, 'SH')`)
                         continue;
-                    } else if (durCondDph && user.role == 'Dph') { // espesially Dph ignoring not yet send
+                    } else if (durCondDph && user.role == 'Dph' && inLineUser) { // espesially Dph ignoring not yet send
                         await problemNotification(message, userWhatsapp, 'NOTIF')
                         await problemNotification(`NOTIF SENT TO: ${user.fname} \n\n ${message}`, '082211511213', 'NOTIF')
                         containerNofifProblem.push(`(${problem.fid}, ${user.user_id}, 'Dph')`)
