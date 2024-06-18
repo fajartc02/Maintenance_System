@@ -84,7 +84,7 @@ cron.schedule('*/1 * * * *', async () => {
                 let durCondLH = duration >= 15 && duration < 30 
                 let durCondSH = duration >= 30 && duration < 60
                 // let durCondDph = duration >= 60 && duration < 120
-                let durCondDph = duration % 60 == 0
+                let durCondDph = duration % 60 == 0 && duration != 0
                 let durCondDh = duration >= 120
 
                 let userData = await cmdMultipleQuery(`SELECT * FROM v_user_notification`)
