@@ -19,9 +19,13 @@ module.exports = {
       let kyData = await cmdMultipleQuery(kyDataQueries.join(";"));
 
       let mapKyData = machinesData.map((item, i) => {
-        item.ky_data = kyData.length > 0 ? kyData[i] : [];
+        item.ky_data = kyData.length > 0 ? kyData : [];
         // console.log(item);
-        item.ky_total = kyData.length > 0 ? kyData[i].length : 0;
+        if (kyDataQueries.length == 1) {
+          item.ky_total = kyData.length;
+        } else {
+          item.ky_total = kyData.length > 0 ? kyData[i].length : 0;
+        }
         return item;
       });
       response.success(res, "success to get machines ky", mapKyData);
