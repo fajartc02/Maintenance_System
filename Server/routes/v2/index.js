@@ -21,6 +21,10 @@ router.get("/q6-analysis/graph", getGraphQ6);
 router.post("/floating-tip", addTip);
 router.get("/floating-tip", getTip);
 
+const ky = require("./ky.route");
+
+router.use("/ky", ky);
+
 router.get("/download-report", async (req, res) => {
   try {
     const ExcelJS = require("exceljs");

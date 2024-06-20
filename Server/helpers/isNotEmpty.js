@@ -1,9 +1,10 @@
 function isNotEmpty(input) {
-    if (!isNaN(input) || input == "" || input == "null" || !input) {
-        return false;
-    } else {
-        return true;
-    }
+  console.log(input);
+  if (input == "" || input == "null" || input == -1) {
+    return false;
+  } else {
+    return true;
+  }
 }
 
 module.exports = isNotEmpty;
