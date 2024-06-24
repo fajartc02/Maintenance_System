@@ -27,7 +27,7 @@ module.exports = {
       let machinesData = await cmdMultipleQuery(query);
       console.log(machinesData);
       let containerKyQueries = await machinesData.map(async (item) => {
-        return `SELECT * FROM tb_m_kymachine WHERE machine_id = ${item.machine_id}`;
+        return `SELECT *, IF(ilustration IS NOT NULL, CONCAT('https://smartandonsys.web.app/image?path=', ilustration), null) as ilustration FROM tb_m_kymachine WHERE machine_id = ${item.machine_id}`;
       });
 
       let kyDataQueries = await Promise.all(containerKyQueries);
@@ -56,15 +56,22 @@ module.exports = {
   addKY: async (req, res) => {
     try {
       //
-      // const { machine_id, details, created_by, stop6_category } = req.body;
-      // let q = `INSERT INTO 
-      //   tb_m_kymachine(machine_id, details, created_by, stop6_category) 
-      //       VALUES 
-      //   (${machine_id}, '${details}', '${created_by}', '${stop6_category}')`;
-      // const resInst = await cmdMultipleQuery(q);
-      console.log(req.file);
-      response.success(res, "inserted KY DATA", req.file);
+      const { machine_id, details, created_by, stop6_category } = req.body;
+      
+      // console.log(req.file);
+      let path = null;
+      if(req.file) {
+        path = `${req.file.destination}${req.file.filename}`;
+      }
+      
+      let q = `INSERT INTO 
+        tb_m_kymachine(machine_id, details, created_by, stop6_category, ilustration) 
+            VALUES 
+        (${machine_id}, '${details}', '${created_by}', '${stop6_category}', ${req.file ? `'${path}'` : 'NULL'})`;
+      const resInst = await cmdMultipleQuery(q);
+      response.success(res, "inserted KY DATA", resInst);
     } catch (error) {
+      console.log(error);
       response.failed(res, "Error to add new ky");
     }
   },
