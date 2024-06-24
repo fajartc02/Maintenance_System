@@ -1,14 +1,15 @@
 const {
-  getKY,
-  addKY,
-  editKY,
-  deleteKY,
+    getKY,
+    addKY,
+    editKY,
+    deleteKY,
 } = require("../../controllers/v2/ky/ky.controllers");
+const uploadKyImg = require("../../functions/newUploadKy");
 
 const router = require("express").Router();
 
 router.get("/get", getKY);
-router.post("/add", addKY);
+router.post("/add", uploadKyImg.single("ilustration"), addKY);
 router.put("/edit", editKY);
 router.delete("/delete/:id", deleteKY);
 

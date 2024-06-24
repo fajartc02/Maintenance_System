@@ -6,11 +6,26 @@ module.exports = {
   getKY: async (req, res) => {
     try {
       req.query.is_deleted = 0;
+      // console.log(req.query);
+      const userData = await cmdMultipleQuery(
+        `SELECT line_nm FROM tb_mt_member WHERE fname = '${req.query.name}'`
+      );
+      delete req.query.name;
+      let lineOfUser = userData[0]?.line_nm;
+      lineOfUser = lineOfUser ? lineOfUser.split(",")[0] : null;
+      // CAM,CR,CH,CB,ASSY,LP,DC
+      // console.log(lineOfUser);
+
+      if (lineOfUser && req.query.INIT_COUNT == 0) {
+        req.query.fline = lineOfUser;
+      }
+      delete req.query.INIT_COUNT;
       console.log(req.query);
       let whereCond = whereConditionQuery(req.query);
       let query = `SELECT fid as machine_id, fline as line_nm, fmc_name as machine_nm FROM tb_mc ${whereCond}`;
-      console.log(query);
+      // console.log(query);
       let machinesData = await cmdMultipleQuery(query);
+      console.log(machinesData);
       let containerKyQueries = await machinesData.map(async (item) => {
         return `SELECT * FROM tb_m_kymachine WHERE machine_id = ${item.machine_id}`;
       });
@@ -29,7 +44,10 @@ module.exports = {
         }
         return item;
       });
-      response.success(res, "success to get machines ky", mapKyData);
+      response.success(res, "success to get machines ky", [
+        mapKyData,
+        req.query.fline,
+      ]);
     } catch (error) {
       console.log(error);
       response.failed(res, "Error get ky");
@@ -37,13 +55,15 @@ module.exports = {
   },
   addKY: async (req, res) => {
     try {
-      const { machine_id, details, created_by, stop6_category } = req.body;
-      let q = `INSERT INTO 
-        tb_m_kymachine(machine_id, details, created_by, stop6_category) 
-            VALUES 
-        (${machine_id}, '${details}', '${created_by}', '${stop6_category}')`;
-      const resInst = await cmdMultipleQuery(q);
-      response.success(res, "inserted KY DATA", resInst);
+      //
+      // const { machine_id, details, created_by, stop6_category } = req.body;
+      // let q = `INSERT INTO 
+      //   tb_m_kymachine(machine_id, details, created_by, stop6_category) 
+      //       VALUES 
+      //   (${machine_id}, '${details}', '${created_by}', '${stop6_category}')`;
+      // const resInst = await cmdMultipleQuery(q);
+      console.log(req.file);
+      response.success(res, "inserted KY DATA", req.file);
     } catch (error) {
       response.failed(res, "Error to add new ky");
     }
