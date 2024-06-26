@@ -27,7 +27,8 @@ module.exports = {
       let machinesData = await cmdMultipleQuery(query);
       console.log(machinesData);
       let containerKyQueries = await machinesData.map(async (item) => {
-        return `SELECT *, IF(ilustration IS NOT NULL, CONCAT('https://mt-system.id/image?path=', ilustration), null) as ilustration FROM tb_m_kymachine WHERE machine_id = ${item.machine_id}`;
+        return `SELECT *, IF(ilustration IS NOT NULL, CONCAT('http://localhost:3100/image?path=', ilustration), null) as ilustration FROM tb_m_kymachine WHERE machine_id = ${item.machine_id}`;
+        // return `SELECT *, IF(ilustration IS NOT NULL, CONCAT('https://mt-system.id/image?path=', ilustration), null) as ilustration FROM tb_m_kymachine WHERE machine_id = ${item.machine_id}`;
       });
 
       let kyDataQueries = await Promise.all(containerKyQueries);
@@ -57,17 +58,19 @@ module.exports = {
     try {
       //
       const { machine_id, details, created_by, stop6_category } = req.body;
-      
+
       // console.log(req.file);
       let path = null;
-      if(req.file) {
+      if (req.file) {
         path = `${req.file.destination}${req.file.filename}`;
       }
-      
+
       let q = `INSERT INTO 
         tb_m_kymachine(machine_id, details, created_by, stop6_category, ilustration) 
             VALUES 
-        (${machine_id}, '${details}', '${created_by}', '${stop6_category}', ${req.file ? `'${path}'` : 'NULL'})`;
+        (${machine_id}, '${details}', '${created_by}', '${stop6_category}', ${
+        req.file ? `'${path}'` : "NULL"
+      })`;
       const resInst = await cmdMultipleQuery(q);
       response.success(res, "inserted KY DATA", resInst);
     } catch (error) {
@@ -78,15 +81,23 @@ module.exports = {
   editKY: async (req, res) => {
     try {
       const { machine_id, details, created_by, stop6_category, id } = req.body;
+
+      let path = null;
+
+      if (req.file) {
+        path = `${req.file.destination}${req.file.filename}`;
+      }
+
       let q = `UPDATE 
         tb_m_kymachine 
         SET 
           details = '${details}', 
           created_by = '${created_by}', 
-          stop6_category = '${stop6_category}', 
+          stop6_category = '${stop6_category}',
+          ilustration = ${req.file ? `'${path}'` : "NULL"},
           created_dt = CURRENT_TIMESTAMP 
         WHERE id = ${id}`;
-
+      console.log(q);
       const resp = await cmdMultipleQuery(q);
       response.success(res, "KY data updated", resp);
     } catch (error) {

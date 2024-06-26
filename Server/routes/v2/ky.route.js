@@ -10,7 +10,7 @@ const router = require("express").Router();
 
 router.get("/get", getKY);
 router.post("/add", uploadKyImg.single("ilustration"), addKY);
-router.put("/edit", editKY);
+router.put("/edit", uploadKyImg.single("ilustration"), editKY);
 router.delete("/delete/:id", deleteKY);
 
 module.exports = router;
