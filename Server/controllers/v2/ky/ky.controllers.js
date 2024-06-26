@@ -27,8 +27,8 @@ module.exports = {
       let machinesData = await cmdMultipleQuery(query);
       console.log(machinesData);
       let containerKyQueries = await machinesData.map(async (item) => {
-        return `SELECT *, IF(ilustration IS NOT NULL, CONCAT('http://localhost:3100/image?path=', ilustration), null) as ilustration FROM tb_m_kymachine WHERE machine_id = ${item.machine_id}`;
-        // return `SELECT *, IF(ilustration IS NOT NULL, CONCAT('https://mt-system.id/image?path=', ilustration), null) as ilustration FROM tb_m_kymachine WHERE machine_id = ${item.machine_id}`;
+        // return `SELECT *, IF(ilustration IS NOT NULL, CONCAT('http://localhost:3100/image?path=', ilustration), null) as ilustration FROM tb_m_kymachine WHERE machine_id = ${item.machine_id}`;
+        return `SELECT *, IF(ilustration IS NOT NULL, CONCAT('https://mt-system.id/image?path=', ilustration), null) as ilustration FROM tb_m_kymachine WHERE machine_id = ${item.machine_id}`;
       });
 
       let kyDataQueries = await Promise.all(containerKyQueries);
