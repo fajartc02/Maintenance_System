@@ -16,10 +16,11 @@ module.exports = {
       // CAM,CR,CH,CB,ASSY,LP,DC
       // console.log(lineOfUser);
 
-      if (lineOfUser && req.query.INIT_COUNT == 0) {
+      if (lineOfUser && req.query.INIT_COUNT == 0 && !req.query.IS_IGNORE) {
         req.query.fline = lineOfUser;
       }
       delete req.query.INIT_COUNT;
+      delete req.query.IS_IGNORE;
       console.log(req.query);
       let whereCond = whereConditionQuery(req.query);
       let query = `SELECT fid as machine_id, fline as line_nm, fmc_name as machine_nm FROM tb_mc ${whereCond}`;
