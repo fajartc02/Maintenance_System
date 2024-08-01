@@ -93,7 +93,7 @@ module.exports = {
     let containerDurFetch = [60, 60, 60, 60, 60, 60, 10];
 
     if (new Date("2023-10-31").getTime() - new Date(start_date).getTime() < 0)
-      containerDurFetch = [30, 30, 30, 30, 30, 30, 5];
+      containerDurFetch = [15, 15, 15, 15, 15, 15, 3];
     // let qTotalProblem
     // CAST(expression AS TYPE);
     let queryTime = `
@@ -180,25 +180,27 @@ module.exports = {
           let separatorTimeRepairMcs = totalTimeRepairMcs[i];
           let mapMttrMtbfMcs = separatorTimeRepairMcs.map((mc, j) => {
             // mttrByMc = totalTimeRepair / totalProblem
-            let totalRepairDiv = mc.totalRepair / 60;
+            let totalRepairDiv = +mc.totalRepair / 60;
             let mttrByMc =
-              totalRepairDiv / totalProblemMcs[i][j].countTotalProblem;
-            mc.totalProblem = totalProblemMcs[i][j].countTotalProblem;
+              +totalRepairDiv / +totalProblemMcs[i][j].countTotalProblem;
+            mc.totalProblem = +totalProblemMcs[i][j].countTotalProblem;
             mc.mttr = mttrByMc;
+            // console.log(mttrByMc);
 
             // mtbfByMc = workingHour = workingHour = 20s hari kerja / totalProblem
             mc.mtbf = workingHour / totalProblemMcs[i][j].countTotalProblem;
-            console.log(totalProblemMcs[i][j].countTotalProblem);
-            console.log(mc.totalRepair);
-            console.log(mc);
+            // console.log(totalProblemMcs[i][j].countTotalProblem);
+            // console.log(mc.totalRepair);
+            // console.log(mc);
             return mc;
           });
-
-          // console.log(mapMttrMtbfMcs);
+          debugger;
+          console.log(mapMttrMtbfMcs);
           line.mcs = mapMttrMtbfMcs;
           let totalRepairLine = totalTimeRepairMcs[i].reduce(
             (accumulator, currentValue) => {
-              return accumulator + currentValue.totalRepair;
+              //   console.log(accumulator, currentValue.totalRepair);
+              return accumulator + +currentValue.totalRepair;
             },
             0
           );
@@ -216,13 +218,14 @@ module.exports = {
           // mttrByLine = totalMTTRAllMcs / jumlahMcs
           let totalMttrByLines = mapMttrMtbfMcs.reduce(
             (accumulator, currentValue) => {
+              console.log(accumulator, currentValue.mttr);
               return accumulator + currentValue.mttr;
             },
             0
           );
 
           let mttrByLine = totalMttrByLines / totalMcs;
-
+          console.log(mttrByLine, totalMcs);
           // RUMUS 2
           // MTBF = totalMTBFAllMc / Jumlah mesin
           let totalMtbfMcs = mapMttrMtbfMcs.reduce(
@@ -235,9 +238,9 @@ module.exports = {
           // console.log(totalMtbfMcs / totalMcs);
           let mtbfByLine =
             (totalMtbfMcs + (totalMcs - 10) * workingHour) / totalMcs;
-          line.totalRepair = totalRepairLine;
-          line.totalProblem = totalProbLine;
-          line.mttr = +mttrByLine.toFixed(1);
+          line.totalRepair = +totalRepairLine;
+          line.totalProblem = +totalProbLine;
+          line.mttr = +mttrByLine.toFixed(2);
           line.mtbf = +mtbfByLine.toFixed(0);
 
           for (let idx = 0; idx < machinesDataAll.length; idx++) {
@@ -247,8 +250,8 @@ module.exports = {
 
             let mttr = mc.mttr || 0;
             let mtbf = mc.mtbf || 1300 - i * 15;
-            console.log(mttr);
-            console.log(mtbf);
+            // console.log(mttr);
+            // console.log(mtbf);
             let typeMttr = 1;
             let typeMtbf = 1;
             // MTTR:
@@ -271,19 +274,19 @@ module.exports = {
             else if (mtbf < 250) typeMtbf = 4;
 
             /*
-                                                                RANGED A:
-                                                                    1 && 1 || 2 && 1 || 1 && 2
-                                                                RANGED B:
-                                                                    1 && 3 || 2 && 2 || 3 && 1
-                                                                RANGED C:
-                                                                    1 && 4 || 2 && 3 || 3 && 2 || 4 && 1
-                                                                RANGED D:
-                                                                    2 && 4 || 3 && 3 || 4 && 2
-                                                                RANGED E:
-                                                                    3 && 4 || 4 && 3
-                                                                RANGED F:
-                                                                    4 && 4
-                                                            */
+                                                                                                                                                                                                                                                                            RANGED A:
+                                                                                                                                                                                                                                                                                1 && 1 || 2 && 1 || 1 && 2
+                                                                                                                                                                                                                                                                            RANGED B:
+                                                                                                                                                                                                                                                                                1 && 3 || 2 && 2 || 3 && 1
+                                                                                                                                                                                                                                                                            RANGED C:
+                                                                                                                                                                                                                                                                                1 && 4 || 2 && 3 || 3 && 2 || 4 && 1
+                                                                                                                                                                                                                                                                            RANGED D:
+                                                                                                                                                                                                                                                                                2 && 4 || 3 && 3 || 4 && 2
+                                                                                                                                                                                                                                                                            RANGED E:
+                                                                                                                                                                                                                                                                                3 && 4 || 4 && 3
+                                                                                                                                                                                                                                                                            RANGED F:
+                                                                                                                                                                                                                                                                                4 && 4
+                                                                                                                                                                                                                                                                        */
             mc.typeMttr = typeMttr;
             mc.typeMtbf = typeMtbf;
             let scatter = [mttr, mtbf];
@@ -398,7 +401,7 @@ module.exports = {
           scatters: objScatter,
           containerScatters,
         };
-
+        console.log(resObj);
         gettingSuccess(res, 200, resObj);
       })
       .catch((err) => {
