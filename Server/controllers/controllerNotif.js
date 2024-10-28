@@ -17,14 +17,14 @@ function configWa(msg, receiverNo, res) {
     };
 
     axios(config)
-        .then(function(response) {
+        .then(function (response) {
             console.log(JSON.stringify(response.data));
             res.status(200).json({
                 message: 'notif success send',
                 data: response.data
             })
         })
-        .catch(function(error) {
+        .catch(function (error) {
             res.status(500).json({
                 message: 'failed to send notif',
                 err: error
@@ -84,7 +84,7 @@ function sendNotif(data, cb, res) {
         }
     }
     var message = `===SMART NOTIFICATION=== \n\n${messageInfo}\n\nhttps://smartandonsys.web.app \n\nTolong di save nomer ini jadi \n\nSMART ANDON`
-        // console.log(data[4] > );
+    // console.log(data[4] > );
     let qSelectNotif = `SELECT * FROM tb_notif WHERE line LIKE '%${data[0]}%'`
     cmdQuery(qSelectNotif)
         .then((resNotif) => {
@@ -145,7 +145,7 @@ function sendNotif(data, cb, res) {
                         console.log(err)
                     });
             } else if (data[4] >= 120 && resNotif[0].isSentDiv == 0) {
-                configWa(message, noPakDaud, res)
+                // configWa(message, noPakDaud, res)
                 configWa(message, noPakEdi, res)
                 configWa(message, noPakParman, res)
                 configWa(message, noPakDaud, res)
@@ -184,7 +184,7 @@ function getCurrentStop(cb) {
     for (let i = 0; i < arrLines.length; i++) {
         const line = arrLines[i];
         let qDurCurStop = `SELECT fline, fdur FROM v_current_error_2 WHERE fend_time IS NULL AND fline LIKE '%${line}%' ORDER BY fdur DESC LIMIT 1`
-            // console.log(qDurCurStop);
+        // console.log(qDurCurStop);
         cmdQuery(qDurCurStop)
             .then((resDurCurStop) => {
                 // console.log(resDurCurStop);
@@ -209,23 +209,23 @@ module.exports = {
             console.log('THIS RES NOTIF');
             if (result.length > 0) {
                 containerFalse.push(true)
-                    // [ RowDataPacket { fline: 'Cylinder Block', fdur: 5 } ]
+                // [ RowDataPacket { fline: 'Cylinder Block', fdur: 5 } ]
                 let dur = result[0].fdur
                 getProblemActive(result[0].fline, (resProblem) => {
                     if (resProblem.length > 0) {
                         // ["LINE", "START TIME", 'MACHINE', "ERROR NAME", "DURATION", "MP"]
                         // console.log(resProblem[0].fstart_time);
                         let d = new Date(resProblem[0].fstart_time)
-                        Number.prototype.padLeft = function(base, chr) {
+                        Number.prototype.padLeft = function (base, chr) {
                             var len = (String(base || 10).length - String(this).length) + 1;
                             return len > 0 ? new Array(len).join(chr || '0') + this : this;
                         }
                         let dformat = [d.getDate().padLeft(),
-                            (d.getMonth() + 1).padLeft(),
-                            d.getFullYear()
+                        (d.getMonth() + 1).padLeft(),
+                        d.getFullYear()
                         ].join('/') + ' ' + [d.getHours().padLeft(),
-                            d.getMinutes().padLeft(),
-                            d.getSeconds().padLeft()
+                        d.getMinutes().padLeft(),
+                        d.getSeconds().padLeft()
                         ].join(':');
                         let data = [resProblem[0].fline, dformat, resProblem[0].fmc_name, resProblem[0].ferror_name, dur, resProblem[0].foperator, resProblem[0].fid]
                         sendNotif(data, (resNotif) => {
@@ -245,42 +245,42 @@ module.exports = {
     },
     sendWhatsapp: (req, res) => {
         let arrLine = [{
-                fline: 'CAM SHAFT',
-                query: 'CAM'
-            },
-            {
-                fline: 'CRANK SHAFT',
-                query: 'CR'
-            },
-            {
-                fline: 'CYLINDER HEAD',
-                query: 'CH'
-            },
-            {
-                fline: 'CYLINDER BLOCK',
-                query: 'CB'
-            },
-            {
-                fline: 'ASSY LINE',
-                query: 'ASSY'
-            },
-            {
-                fline: 'LPDC',
-                query: 'LP'
-            },
-            {
-                fline: 'HPDC',
-                query: 'DC'
-            }
+            fline: 'CAM SHAFT',
+            query: 'CAM'
+        },
+        {
+            fline: 'CRANK SHAFT',
+            query: 'CR'
+        },
+        {
+            fline: 'CYLINDER HEAD',
+            query: 'CH'
+        },
+        {
+            fline: 'CYLINDER BLOCK',
+            query: 'CB'
+        },
+        {
+            fline: 'ASSY LINE',
+            query: 'ASSY'
+        },
+        {
+            fline: 'LPDC',
+            query: 'LP'
+        },
+        {
+            fline: 'HPDC',
+            query: 'DC'
+        }
         ]
         let searchLine = arrLine.filter(line => {
-                if (line.fline === req.body.targetLine.toUpperCase()) {
-                    return line.query
-                }
-            })
-            // QUERY SEND FEEDBACK
-            // if GH / TM => (query: fshift, frole,)
-            // targetRole, fline, role, 
+            if (line.fline === req.body.targetLine.toUpperCase()) {
+                return line.query
+            }
+        })
+        // QUERY SEND FEEDBACK
+        // if GH / TM => (query: fshift, frole,)
+        // targetRole, fline, role, 
         console.log(searchLine);
         let q = `SELECT * FROM tb_mt_member 
             WHERE fshift = '${req.body.shift}' AND fline LIKE '%${searchLine[0].query}%'`
@@ -318,12 +318,12 @@ module.exports = {
                             data: data,
                         };
                         axios(config)
-                            .then(function(response) {
+                            .then(function (response) {
                                 console.log(JSON.stringify(response.data));
                                 judg = true
                                 responseData = JSON.stringify(response.data)
                             })
-                            .catch(function(error) {
+                            .catch(function (error) {
                                 judg = false
                                 responseData = JSON.stringify(error)
                             });
@@ -348,14 +348,14 @@ module.exports = {
                     };
 
                     axios(config)
-                        .then(function(response) {
+                        .then(function (response) {
                             console.log(JSON.stringify(response.data));
                             res.status(200).json({
                                 message: 'notif success send',
                                 data: response.data
                             })
                         })
-                        .catch(function(error) {
+                        .catch(function (error) {
                             res.status(500).json({
                                 message: 'failed to send notif',
                                 err: error
