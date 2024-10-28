@@ -52,7 +52,9 @@ router.get("/download-report", async(req, res) => {
         const worksheet = wb.worksheets[0];
 
         const problemData = await responseData[0];
-        if (!isNotEmpty(problemData.file_report)) {
+        console.log(problemData[0]);
+        console.log(uraianData[0]);
+        if (!problemData.file_report) {
             // ---HEADER---
             // F12 = tanggal
             const F12 = worksheet.getCell("F12");
@@ -150,7 +152,7 @@ router.get("/download-report", async(req, res) => {
                 uraianData[2].ilustration != "null"
             ) {
                 const chartImageIdAct = workbook.addImage({
-                    filename: uraianData[2].ilustration,
+                    filename: uraianData[2].ilustration ?? 'tidak ada gambar',
                     extension: "jpeg",
                 });
 
@@ -315,7 +317,7 @@ router.get("/download-report", async(req, res) => {
                 let row1 = 36; // Specify the row number
                 let colIndex1 = worksheet.getColumn(col1).number;
                 let imageSave = workbook.addImage({
-                    filename: why1_img,
+                    filename: why1_img ?? 'tidak ada gambar',
                     extension: "jpeg",
                 });
                 worksheet.addImage(imageSave, {
@@ -337,7 +339,7 @@ router.get("/download-report", async(req, res) => {
                 let row1 = 36; // Specify the row number
                 let colIndex1 = worksheet.getColumn(col1).number;
                 let imageSave = workbook.addImage({
-                    filename: why1_img,
+                    filename: why1_img ?? 'tidak ada gambar',
                     extension: "jpeg",
                 });
                 worksheet.addImage(imageSave, {
@@ -351,7 +353,7 @@ router.get("/download-report", async(req, res) => {
                 let row1 = 36; // Specify the row number
                 let colIndex1 = worksheet.getColumn(col1).number;
                 let imageSave = workbook.addImage({
-                    filename: why1_img,
+                    filename: why1_img ?? 'tidak ada gambar',
                     extension: "jpeg",
                 });
                 worksheet.addImage(imageSave, {
@@ -365,7 +367,7 @@ router.get("/download-report", async(req, res) => {
                 let row1 = 36; // Specify the row number
                 let colIndex1 = worksheet.getColumn(col1).number;
                 let imageSave = workbook.addImage({
-                    filename: why1_img,
+                    filename: why1_img ?? 'tidak ada gambar',
                     extension: "jpeg",
                 });
                 worksheet.addImage(imageSave, {
@@ -433,6 +435,7 @@ router.get("/download-report", async(req, res) => {
             // res.sendFile(`../../reports/ltb/${problemData.ferror_name}.xlsx`);
             res.download(`${dirFile}/${problemData.ferror_name}.xlsx`);
         } else {
+            console.log(problemData.file_report);
             res.download(problemData.file_report);
         }
     } catch (error) {
