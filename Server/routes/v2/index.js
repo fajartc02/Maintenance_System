@@ -1,7 +1,7 @@
 var router = require("express").Router();
 
 const problemRoute = require("./problemRoute");
-const { getLtbHistory } = require("../../controllers/v2/LTBHistory");
+const {getLtbHistory} = require("../../controllers/v2/LTBHistory");
 const {
     getGraphQ6,
 } = require("../../controllers/v2/Q6/q6_anlysis.controllers");
@@ -24,17 +24,18 @@ router.get("/floating-tip", getTip);
 router.get("/floating-tip/table", getTipTable);
 
 const ky = require("./ky.route");
+const fs = require("fs");
 
 router.use("/ky", ky);
 
-router.get("/download-report", async(req, res) => {
+router.get("/download-report", async (req, res) => {
     try {
         const ExcelJS = require("exceljs");
         const XLSXChart = require("xlsx-chart");
         const moment = require("moment");
 
         var fs = require("fs");
-        const { fid } = req.query;
+        const {fid} = req.query;
         // check availablity report
         // no, get template, get db data insert into excel
         // yes, fetch report /<fid>_<problem>/<machine>_<problem>.xlsx
@@ -47,13 +48,17 @@ router.get("/download-report", async(req, res) => {
         );
         const workbook = new ExcelJS.Workbook();
         const wb = await workbook.xlsx.readFile(
-            "./reports/template/draft_ltb.xlsx"
+            "./reports/template/clone_draft_ltb.xlsx"
         );
+
         const worksheet = wb.worksheets[0];
 
         const problemData = await responseData[0];
+<<<<<<< HEAD
         console.log(problemData[0]);
         console.log(uraianData[0]);
+=======
+>>>>>>> 0ec2b59d9e535280f62feff524a86129b42e8d5f
         if (!problemData.file_report) {
             // ---HEADER---
             // F12 = tanggal
@@ -112,7 +117,8 @@ router.get("/download-report", async(req, res) => {
             if (
                 uraianData[0].ilustration &&
                 uraianData[0].ilustration != "" &&
-                uraianData[0].ilustration != "null"
+                uraianData[0].ilustration != "null" &&
+                fs.existsSync(uraianData[0].ilustration)
             ) {
                 const chartImageIdGeneral = workbook.addImage({
                     filename: uraianData[0].ilustration,
@@ -122,8 +128,8 @@ router.get("/download-report", async(req, res) => {
                 const row = 21; // Specify the row number
                 const colIndex = worksheet.getColumn(column).number;
                 worksheet.addImage(chartImageIdGeneral, {
-                    tl: { col: colIndex, row: row },
-                    ext: { width: 280, height: 180 },
+                    tl: {col: colIndex, row: row},
+                    ext: {width: 280, height: 180},
                 });
             }
 
@@ -131,7 +137,8 @@ router.get("/download-report", async(req, res) => {
             if (
                 uraianData[1].ilustration &&
                 uraianData[1].ilustration != "" &&
-                uraianData[1].ilustration != "null"
+                uraianData[1].ilustration != "null" &&
+                fs.existsSync(uraianData[1].ilustration)
             ) {
                 const chartImageIdStd = workbook.addImage({
                     filename: uraianData[1].ilustration,
@@ -142,14 +149,15 @@ router.get("/download-report", async(req, res) => {
                 const row2 = 17; // Specify the row number
                 const colIndex2 = worksheet.getColumn(col2).number;
                 worksheet.addImage(chartImageIdStd, {
-                    tl: { col: colIndex2, row: row2 },
-                    ext: { width: 200, height: 150 },
+                    tl: {col: colIndex2, row: row2},
+                    ext: {width: 200, height: 150},
                 });
             }
             if (
                 uraianData[2].ilustration &&
                 uraianData[2].ilustration != "" &&
-                uraianData[2].ilustration != "null"
+                uraianData[2].ilustration != "null" &&
+                fs.existsSync(uraianData[2].ilustration)
             ) {
                 const chartImageIdAct = workbook.addImage({
                     filename: uraianData[2].ilustration ?? 'tidak ada gambar',
@@ -161,9 +169,10 @@ router.get("/download-report", async(req, res) => {
                 const col3 = "P"; // Specify the column name
                 const row3 = 27; // Specify the row number
                 const colIndex3 = worksheet.getColumn(col3).number;
+
                 worksheet.addImage(chartImageIdAct, {
-                    tl: { col: colIndex3, row: row3 },
-                    ext: { width: 200, height: 150 },
+                    tl: {col: colIndex3, row: row3},
+                    ext: {width: 200, height: 150},
                 });
             }
 
@@ -174,15 +183,15 @@ router.get("/download-report", async(req, res) => {
             const L17 = worksheet.getCell("L17");
             L17.value =
                 uraianData[1].desc_nm == "" ?
-                "<no-description>" :
-                uraianData[1].desc_nm;
+                    "<no-description>" :
+                    uraianData[1].desc_nm;
 
             // L27 = desc actual
             const L27 = worksheet.getCell("L27");
             L27.value =
                 uraianData[2].desc_nm == "" ?
-                "<no-description>" :
-                uraianData[2].desc_nm;
+                    "<no-description>" :
+                    uraianData[2].desc_nm;
 
             // --- 5. STEP REPAIR ---
             // W17-W22 = no (std)
@@ -202,6 +211,7 @@ router.get("/download-report", async(req, res) => {
 
                 // tstStyle.style.fill = "#000";
                 let containerParent = [];
+                let initialDurationIdx = 17;
                 for (let i = 17; i < 17 + 6; i++) {
                     let containerChild = [];
                     const element = jsonStepRepair[idxAct];
@@ -237,21 +247,38 @@ router.get("/download-report", async(req, res) => {
                     colDesStdPos.value = element.stepDesc;
                     colTimeStdPos.value = element.idealTime;
                     colQ6StdPos.value = element.quick6;
-                    // if (i == 17) {
-                    //     for (let j = 0; j < staticCols.length; j++) {
-                    //         const element = staticCols[j];
-                    //         let fillCol = worksheet.getCell(`${element}17`);
-                    //         console.log(`${element}17`);
-                    //         fillCol.style.fill = {
-                    //             type: "pattern",
-                    //             pattern: "solid",
-                    //             fgColor: { argb: "FFFF0000" },
-                    //         };
-                    //     }
-                    // }
+
+                    /*for (let j = 0; j < staticCols.length; j++) {
+                        const element = `${staticCols[j]}17`;
+                        let fillCol = worksheet.getCell(element);
+                        fillCol.style.fill = {
+                            type: "pattern",
+                            pattern: "solid",
+                            //fgColor: { argb: "FFFF0000" },
+                            fgColor: { argb: "FF1128d6" },
+                        };
+                    }*/
+
                     idxAct++;
                     no++;
+                    initialDurationIdx++;
                 }
+
+                worksheet.getCell("AM17").fill = {
+                    type: "pattern",
+                    pattern: "solid",
+                    //fgColor: { argb: "FFFF0000" },
+                    fgColor: { argb: "FF1128d6" },
+                    //bgColor: {argb: 'FF1128d6'}
+                };
+
+                worksheet.getCell("AQ17").fill = {
+                    type: "pattern",
+                    pattern: "solid",
+                    //fgColor: { argb: "FFFF0000" },
+                    fgColor: { argb: "FF1128d6" },
+                    //bgColor: {argb: 'FF1128d6'}
+                };
 
                 // Grouping steps by quick6
                 const groupedSteps = jsonStepRepair.reduce((acc, step) => {
@@ -268,7 +295,7 @@ router.get("/download-report", async(req, res) => {
                     const highestGap = Math.max(
                         ...group.map((step) => step.actualTime - step.idealTime)
                     );
-                    return { quick6: key, steps: group, highestGap: highestGap };
+                    return {quick6: key, steps: group, highestGap: highestGap};
                 });
 
                 // Sort groups by highest gap in descending order
@@ -292,15 +319,15 @@ router.get("/download-report", async(req, res) => {
 
             const whyTerjadi =
                 dataAnalysis[0].json_string != "" ?
-                await JSON.parse(dataAnalysis[0].json_string) :
-                [];
+                    await JSON.parse(dataAnalysis[0].json_string) :
+                    [];
 
             const whyLama =
                 dataAnalysis.length > 1 ?
-                dataAnalysis[1].json_string != "" ?
-                await JSON.parse(dataAnalysis[1].json_string) :
-                [] :
-                [];
+                    dataAnalysis[1].json_string != "" ?
+                        await JSON.parse(dataAnalysis[1].json_string) :
+                        [] :
+                    [];
             // console.log(whyTerjadi);
             // console.log(whyLama);
             // E36, E39, E42, E45, E48  = WHY ANALYSSIS
@@ -312,7 +339,7 @@ router.get("/download-report", async(req, res) => {
             // why1_img
             const why1_img = problemData.why1_img;
 
-            if (isNotEmpty(why1_img)) {
+            if (isNotEmpty(why1_img) && fs.existsSync(why1_img)) {
                 let col1 = "M"; // Specify the column name
                 let row1 = 36; // Specify the row number
                 let colIndex1 = worksheet.getColumn(col1).number;
@@ -320,9 +347,10 @@ router.get("/download-report", async(req, res) => {
                     filename: why1_img ?? 'tidak ada gambar',
                     extension: "jpeg",
                 });
+
                 worksheet.addImage(imageSave, {
-                    tl: { col: colIndex1, row: row1 },
-                    ext: { width: 250, height: 200 },
+                    tl: {col: colIndex1, row: row1},
+                    ext: {width: 250, height: 200},
                 });
             }
 
@@ -334,7 +362,7 @@ router.get("/download-report", async(req, res) => {
             const why12_img = problemData.why12_img;
             const why22_img = problemData.why22_img;
 
-            if (isNotEmpty(why1_img)) {
+            if (isNotEmpty(why1_img) && fs.existsSync(why1_img)) {
                 let col1 = "M"; // Specify the column name
                 let row1 = 36; // Specify the row number
                 let colIndex1 = worksheet.getColumn(col1).number;
@@ -343,26 +371,30 @@ router.get("/download-report", async(req, res) => {
                     extension: "jpeg",
                 });
                 worksheet.addImage(imageSave, {
-                    tl: { col: colIndex1, row: row1 },
-                    ext: { width: 250, height: 200 },
+                    tl: {col: colIndex1, row: row1},
+                    ext: {width: 250, height: 200},
                 });
             }
 
-            if (isNotEmpty(why12_img)) {
+            if (isNotEmpty(why12_img) && fs.existsSync(why12_img)) {
                 let col1 = "AM"; // Specify the column name
                 let row1 = 36; // Specify the row number
                 let colIndex1 = worksheet.getColumn(col1).number;
                 let imageSave = workbook.addImage({
+<<<<<<< HEAD
                     filename: why1_img ?? 'tidak ada gambar',
+=======
+                    filename: why12_img,
+>>>>>>> 0ec2b59d9e535280f62feff524a86129b42e8d5f
                     extension: "jpeg",
                 });
                 worksheet.addImage(imageSave, {
-                    tl: { col: colIndex1, row: row1 },
-                    ext: { width: 250, height: 200 },
+                    tl: {col: colIndex1, row: row1},
+                    ext: {width: 250, height: 200},
                 });
             }
 
-            if (isNotEmpty(why22_img)) {
+            if (isNotEmpty(why22_img) && fs.existsSync(why22_img)) {
                 let col1 = "BR"; // Specify the column name
                 let row1 = 36; // Specify the row number
                 let colIndex1 = worksheet.getColumn(col1).number;
@@ -371,8 +403,8 @@ router.get("/download-report", async(req, res) => {
                     extension: "jpeg",
                 });
                 worksheet.addImage(imageSave, {
-                    tl: { col: colIndex1, row: row1 },
-                    ext: { width: 250, height: 200 },
+                    tl: {col: colIndex1, row: row1},
+                    ext: {width: 250, height: 200},
                 });
             }
             let cm_lama = isNotEmpty(problemData.fpermanet_cm_lama) ?
@@ -426,14 +458,14 @@ router.get("/download-report", async(req, res) => {
             if (!fs.existsSync(dirFile)) {
                 fs.mkdirSync(dirFile);
             }
-            await workbook.xlsx.writeFile(
-                `${dirFile}/${problemData.ferror_name}.xlsx`
-            );
+
+            const fullPath = `${dirFile}/${problemData.ferror_name}.xlsx`;
+            await workbook.xlsx.writeFile(fullPath);
             // res.status(200).json({
             //     responseData,
             // });
             // res.sendFile(`../../reports/ltb/${problemData.ferror_name}.xlsx`);
-            res.download(`${dirFile}/${problemData.ferror_name}.xlsx`);
+            res.download(fullPath);
         } else {
             console.log(problemData.file_report);
             res.download(problemData.file_report);
@@ -451,7 +483,7 @@ router.get("/download-report", async(req, res) => {
 router.put(
     "/upload-report",
     uploadFileReport.single("file"),
-    async(req, res) => {
+    async (req, res) => {
         try {
             // console.log("req.file");
             // console.log(req.file);

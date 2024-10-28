@@ -54,7 +54,7 @@ cron.schedule("35 9 * * 1", () => {
 });
 
 // Every 3 seconds check fixing bug smartandon not closed
-cron.schedule("*/30 * * * * *", async() => {
+cron.schedule("*/30 * * * * *", async () => {
     const cmdMultipleQuery = require("./config/MultipleQueryConnection");
     console.log("RUN JOB check invalid data 30 seconds");
     // simple query
@@ -75,7 +75,7 @@ cron.schedule("*/30 * * * * *", async() => {
 });
 
 const problemNotification = require("./functions/notification/problemNotification");
-cron.schedule("*/1 * * * *", async() => {
+cron.schedule("*/1 * * * *", async () => {
     try {
         let qActiveProblem = `SELECT * FROM v_notif_problems`;
         const problems = await cmdMultipleQuery(qActiveProblem);
@@ -86,8 +86,8 @@ cron.schedule("*/1 * * * *", async() => {
                 const problem = problems[index];
                 let duration = +problem.fdur;
 
-                let durCondLH = duration >= 15 && duration < 30;
-                let durCondSH = duration >= 30 && duration < 60;
+                let durCondLH = duration % 15 == 0 && duration != 0;
+                let durCondSH = duration % 30 == 0 && duration != 0;
                 // let durCondDph = duration >= 60 && duration < 120
                 let durCondDph = duration % 60 == 0 && duration != 0;
                 let durCondDh = duration >= 120;
@@ -100,7 +100,7 @@ cron.schedule("*/1 * * * *", async() => {
 *LINE* :
 ${problem.fline}
 *START TIME* :
-${problem.fstart_time}
+${moment(problem.fstart_time).format("YYYY-MM-DD HH:mm:ss")}
 *MACHINE* :
 ${problem.fmc_name}
 *ERROR NAME* :
@@ -125,8 +125,8 @@ Tolong di save nomer ini jadi
                     let userInLine = problem.line_id == user.line_id && isNotyetSent;
                     const inLineUser = problem.line_id == user.line_id;
                     let userWhatsapp = user.fwa_no;
-                    console.log("durCondLH", "userInLine");
-                    console.log(durCondLH, userInLine);
+                    // console.log("durCondLH", "userInLine");
+                    // console.log(durCondLH, userInLine);
                     if (durCondLH && user.role == "LH" && userInLine) {
                         await problemNotification(message, userWhatsapp, "NOTIF");
                         await problemNotification(
