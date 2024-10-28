@@ -5,6 +5,7 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const cors = require("cors");
+const moment = require('moment')
 
 const cron = require("node-cron");
 
@@ -127,7 +128,7 @@ Tolong di save nomer ini jadi
                     let userWhatsapp = user.fwa_no;
                     // console.log("durCondLH", "userInLine");
                     // console.log(durCondLH, userInLine);
-                    if (durCondLH && user.role == "LH" && userInLine) {
+                    if (durCondLH && user.role == "LH" && inLineUser) {
                         await problemNotification(message, userWhatsapp, "NOTIF");
                         await problemNotification(
                             `NOTIF SENT TO: ${user.fname} \n\n ${message}`,
@@ -138,7 +139,7 @@ Tolong di save nomer ini jadi
                             `(${problem.fid}, ${user.user_id}, 'LH')`
                         );
                         continue;
-                    } else if (durCondSH && user.role == "SH" && userInLine) {
+                    } else if (durCondSH && user.role == "SH" && inLineUser) {
                         await problemNotification(message, userWhatsapp, "NOTIF");
                         await problemNotification(
                             `NOTIF SENT TO: ${user.fname} \n\n ${message}`,

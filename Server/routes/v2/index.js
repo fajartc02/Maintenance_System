@@ -54,11 +54,6 @@ router.get("/download-report", async (req, res) => {
         const worksheet = wb.worksheets[0];
 
         const problemData = await responseData[0];
-<<<<<<< HEAD
-        console.log(problemData[0]);
-        console.log(uraianData[0]);
-=======
->>>>>>> 0ec2b59d9e535280f62feff524a86129b42e8d5f
         if (!problemData.file_report) {
             // ---HEADER---
             // F12 = tanggal
@@ -381,11 +376,7 @@ router.get("/download-report", async (req, res) => {
                 let row1 = 36; // Specify the row number
                 let colIndex1 = worksheet.getColumn(col1).number;
                 let imageSave = workbook.addImage({
-<<<<<<< HEAD
-                    filename: why1_img ?? 'tidak ada gambar',
-=======
                     filename: why12_img,
->>>>>>> 0ec2b59d9e535280f62feff524a86129b42e8d5f
                     extension: "jpeg",
                 });
                 worksheet.addImage(imageSave, {
