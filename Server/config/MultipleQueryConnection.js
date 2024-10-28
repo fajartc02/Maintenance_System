@@ -1,19 +1,24 @@
+const conf = {
+  // connectionLimit: 100, // default = 10
+  host: process.env.HOST_DB_NEW,
+  user: process.env.USER_DB_NEW,
+  port: process.env.DB_PORT,
+  password: process.env.PASSWORD_DB_NEW,
+  database: process.env.NAME_DB_NEW,
+  multipleStatements: true,
+  queueLimit: 0,
+  waitForConnections: true,
+  timezone: "+07:00",
+  connectTimeout: 60000,
+};
+
+console.log('database config', conf);
+
 async function cmdMultipleQuery(sql) {
   require("dotenv").config();
   const mysql = require("mysql2");
-  var pool = mysql.createPool({
-    // connectionLimit: 100, // default = 10
-    host: process.env.HOST_DB_NEW,
-    user: process.env.USER_DB_NEW,
-    port: 4111,
-    password: process.env.PASSWORD_DB_NEW,
-    database: process.env.NAME_DB_NEW,
-    multipleStatements: true,
-    queueLimit: 0,
-    waitForConnections: true,
-    timezone: "+07:00",
-    connectTimeout: 60000,
-  });
+
+  const pool = mysql.createPool(conf);
   const promisePool = pool.promise();
   const [rows, fields] = await promisePool.query(sql);
   // console.log(rows);
