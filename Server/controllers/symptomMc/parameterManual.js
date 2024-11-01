@@ -1,5 +1,6 @@
 const cmdMultipleQuery = require('../../config/MultipleQueryConnection');
 const checkSeverity = require('../../rules/checkSeverity')
+const cmdQuery = require("../../config/MysqlConnection");
 
 function gettingSuccess(res, data) {
     res.status(200).json({
