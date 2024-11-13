@@ -25,442 +25,437 @@ router.get("/floating-tip/table", getTipTable);
 
 const ky = require("./ky.route");
 const fs = require("fs");
+const moment = require("moment/moment");
+const {data} = require("express-session/session/cookie");
+const ExcelJS = require("exceljs");
+
+const mappedImageFile = async (res, problemData, uraianData, generatedExcelPath) => {
+    const workbook = new ExcelJS.Workbook();
+    const wb = await workbook.xlsx.readFile(generatedExcelPath);
+    const worksheet = wb.worksheets[0];
+
+    // ---3. PROBLEM DESC---
+    // C21 = image problem
+    if (
+        uraianData.length >= 1 &&
+        uraianData[0].ilustration &&
+        uraianData[0].ilustration != "" &&
+        uraianData[0].ilustration != "null" &&
+        fs.existsSync(uraianData[0].ilustration)
+    ) {
+        const chartImageIdGeneral = workbook.addImage({
+            filename: uraianData[0].ilustration,
+            extension: "jpeg",
+        });
+        const column = "C"; // Specify the column name
+        const row = 21; // Specify the row number
+        const colIndex = worksheet.getColumn(column).number;
+        worksheet.addImage(chartImageIdGeneral, {
+            tl: {col: colIndex, row: row},
+            ext: {width: 280, height: 180},
+        });
+    }
+
+    // P17 = image standard
+    if (
+        uraianData.length >= 2 &&
+        uraianData[1].ilustration &&
+        uraianData[1].ilustration != "" &&
+        uraianData[1].ilustration != "null" &&
+        fs.existsSync(uraianData[1].ilustration)
+    ) {
+        const chartImageIdStd = workbook.addImage({
+            filename: uraianData[1].ilustration,
+            extension: "jpeg",
+        });
+        const P17 = worksheet.getCell("P17");
+        const col2 = "P"; // Specify the column name
+        const row2 = 17; // Specify the row number
+        const colIndex2 = worksheet.getColumn(col2).number;
+        worksheet.addImage(chartImageIdStd, {
+            tl: {col: colIndex2, row: row2},
+            ext: {width: 200, height: 150},
+        });
+    }
+    if (
+        uraianData.length >= 3 &&
+        uraianData[2].ilustration &&
+        uraianData[2].ilustration != "" &&
+        uraianData[2].ilustration != "null" &&
+        fs.existsSync(uraianData[2].ilustration)
+    ) {
+        const chartImageIdAct = workbook.addImage({
+            filename: uraianData[2].ilustration ?? 'tidak ada gambar',
+            extension: "jpeg",
+        });
+
+        // P27 = img actual
+        const P27 = worksheet.getCell("P27");
+        const col3 = "P"; // Specify the column name
+        const row3 = 27; // Specify the row number
+        const colIndex3 = worksheet.getColumn(col3).number;
+
+        worksheet.addImage(chartImageIdAct, {
+            tl: {col: colIndex3, row: row3},
+            ext: {width: 200, height: 150},
+        });
+
+        const why1_img = problemData.why1_img;
+
+        if (isNotEmpty(why1_img) && fs.existsSync(why1_img)) {
+            let col1 = "M"; // Specify the column name
+            let row1 = 36; // Specify the row number
+            let colIndex1 = worksheet.getColumn(col1).number;
+            let imageSave = workbook.addImage({
+                filename: why1_img ?? 'tidak ada gambar',
+                extension: "jpeg",
+            });
+
+            worksheet.addImage(imageSave, {
+                tl: {col: colIndex1, row: row1},
+                ext: {width: 250, height: 200},
+            });
+        }
+
+        const why12_img = problemData.why12_img;
+        const why22_img = problemData.why22_img;
+
+        if (isNotEmpty(why1_img) && fs.existsSync(why1_img)) {
+            let col1 = "M"; // Specify the column name
+            let row1 = 36; // Specify the row number
+            let colIndex1 = worksheet.getColumn(col1).number;
+            let imageSave = workbook.addImage({
+                filename: why1_img ?? 'tidak ada gambar',
+                extension: "jpeg",
+            });
+            worksheet.addImage(imageSave, {
+                tl: {col: colIndex1, row: row1},
+                ext: {width: 250, height: 200},
+            });
+        }
+
+        if (isNotEmpty(why12_img) && fs.existsSync(why12_img)) {
+            let col1 = "AM"; // Specify the column name
+            let row1 = 36; // Specify the row number
+            let colIndex1 = worksheet.getColumn(col1).number;
+            let imageSave = workbook.addImage({
+                filename: why12_img,
+                extension: "jpeg",
+            });
+
+            worksheet.addImage(imageSave, {
+                tl: {col: colIndex1, row: row1},
+                ext: {width: 250, height: 200},
+            });
+        }
+
+        if (isNotEmpty(why22_img) && fs.existsSync(why22_img)) {
+            let col1 = "BR"; // Specify the column name
+            let row1 = 36; // Specify the row number
+            let colIndex1 = worksheet.getColumn(col1).number;
+            let imageSave = workbook.addImage({
+                filename: why22_img ?? 'tidak ada gambar',
+                extension: "jpeg",
+            });
+            worksheet.addImage(imageSave, {
+                tl: {col: colIndex1, row: row1},
+                ext: {width: 250, height: 200},
+            });
+        }
+    }
+
+    await workbook.xlsx.writeFile(generatedExcelPath);
+    res.download(generatedExcelPath);
+}
+
+const filledColor = [];
+const generateCellDuration = (sheet, duration, startColumn = "AM", startRow = 17) => {
+    const totalCell = duration / 10;
+
+    const columnToIndex = (column) => {
+        let sum = 0;
+        for (let i = 0; i < column.length; i++) {
+            sum *= 26;
+            sum += column.charCodeAt(i) - 'A'.charCodeAt(0) + 1;
+        }
+        return sum;
+    }
+
+    const indexToColumn = (index) => {
+        let column = '';
+        while (index > 0) {
+            let mod = (index - 1) % 26;
+            column = String.fromCharCode(65 + mod) + column;
+            index = Math.floor((index - 1) / 26);
+        }
+        return column;
+    }
+
+    let startColumnIndex = columnToIndex(startColumn);
+
+    for (let i = 0; i < totalCell; i++) {
+        if (i > 49) {
+            break;
+        }
+
+        let currentColumnIndex = startColumnIndex + i;
+        let currentColumn = indexToColumn(currentColumnIndex);
+
+        if (filledColor.includes(`${currentColumn}${startRow}`)) {
+            continue;
+        }
+
+        sheet.cell(`${currentColumn}${startRow}`)
+            //.value("")
+            .style({
+                fill: {
+                    type: 'pattern',
+                    pattern: 'darkDown',
+                    foreground: {
+                        rgb: '0000FF',
+                    },
+                    background: {
+                        theme: 3,
+                        tint: 0.4,
+                    },
+                }
+            });
+
+        filledColor.push(`${currentColumn}${startRow}`);
+    }
+}
+
+const generatedStepRepairCellDuration = async (res, problemData, uraianData, fullPath) => {
+    const XLSXPopulate = require('xlsx-populate');
+    const workbook = await XLSXPopulate.fromFileAsync(fullPath);
+    const sheet = workbook.sheet(0); // Mengakses sheet pertama
+    const startTime = moment(problemData.fstart_time);
+    const endTime = moment(problemData.fend_time);
+
+    sheet.cell("F12").value(startTime.format("DD"));
+    sheet.cell("H12").value(startTime.format("MM"));
+    sheet.cell("J12").value(startTime.format("MM"));
+    sheet.cell("L12").value(problemData.fshift == "r" ? "RED" : "WHITE");
+    sheet.cell("M12").value(startTime.format("HH:mm:ss"));
+    sheet.cell("O12").value(endTime.format("HH:mm:ss"));
+    sheet.cell("Q12").value(`${problemData.fdur}`);
+    sheet.cell("S11").value(problemData.ferror_name);
+    sheet.cell("BO10").value(problemData.fline);
+    sheet.cell("BO11").value(problemData.fmc_name);
+    sheet.cell("CH11").value(problemData.foperator);
+    sheet.cell("CY11").value(problemData.fid);
+
+
+    sheet.cell("C31").value(uraianData.length ? uraianData[0].desc_nm : "");
+    sheet.cell("L17").value(
+        uraianData.length >= 1 && !uraianData[1].desc_nm
+            ? "<no-description>"
+            : uraianData[1].desc_nm
+    );
+    sheet.cell("L27").value(
+        uraianData.length >= 2 && !uraianData[2].desc_nm
+            ? "<no-description>"
+            : uraianData[2].desc_nm
+    );
+
+    const jsonStepRepair = JSON.parse(problemData.fstep_new);
+    if (jsonStepRepair.length > 0) {
+        let no = 1;
+        let idxAct = 0;
+        let idxOffsetStd = 10;
+        // const tstStyle = worksheet.getCell("AM17");
+
+        // tstStyle.style.fill = "#000";
+        let initialDurationIdx = 17;
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        for (let i = 17; i < 17 + 6; i++) {
+            const element = jsonStepRepair[idxAct];
+            sheet.cell(`W${i}`).value(no);
+            sheet.cell(`X${i}`).value(element.stepDesc);
+            sheet.cell(`AI${i}`).value(element.actualTime);
+            sheet.cell(`CK${i}`).value(element.quick6);
+            // console.log(container);
+
+
+            // console.log(rows[0]._cells);
+
+            // W27-W32 = no (act)
+            // X27-X32 = step repair desc (act)
+            // AI27-AI32 = step repair time (act)
+            // AM27-AM32 = start color background (act)
+            // CK27-CK32 = q6 (act)
+            // const X27 = worksheet.getCell("X27");
+
+            sheet.cell(`W${i + idxOffsetStd}`).value(no);
+            sheet.cell(`X${i + idxOffsetStd}`).value(element.stepDesc);
+            sheet.cell(`AI${i + idxOffsetStd}`).value(element.idealTime);
+            sheet.cell(`CK${i + idxOffsetStd}`).value(element.quick6);
+
+            generateCellDuration(sheet, element.actualTime, "AM", i);
+            generateCellDuration(sheet, element.idealTime, "AM", i + idxOffsetStd);
+
+            idxAct++;
+            no++;
+            initialDurationIdx++;
+        }
+
+        // Grouping steps by quick6
+        const groupedSteps = jsonStepRepair.reduce((acc, step) => {
+            if (!acc[step.quick6]) {
+                acc[step.quick6] = [];
+            }
+            acc[step.quick6].push(step);
+            return acc;
+        }, {});
+
+        // Calculate the highest gap for each group
+        const groupsWithHighestGap = Object.keys(groupedSteps).map((key) => {
+            const group = groupedSteps[key];
+            const highestGap = Math.max(
+                ...group.map((step) => step.actualTime - step.idealTime)
+            );
+            return {quick6: key, steps: group, highestGap: highestGap};
+        });
+
+        // Sort groups by highest gap in descending order
+        let sortedStep = groupsWithHighestGap.sort(
+            (a, b) => b.highestGap - a.highestGap
+        );
+
+        if (sortedStep.length > 0) {
+            let findHigh = q6.find(
+                (item) => item.category === sortedStep[0].quick6
+            );
+
+            sheet.cell("CN24").value(`${findHigh.category} = ${findHigh.description}`);
+        }
+    }
+
+    let dataAnalysis = await cmdMultipleQuery(
+        `SELECT * FROM o_analisys WHERE id_problem = ${problemData.fid}`
+    );
+    console.log(dataAnalysis);
+
+    const whyTerjadi =
+        dataAnalysis.length && dataAnalysis[0].json_string != "" ?
+            await JSON.parse(dataAnalysis[0].json_string) :
+            [];
+
+    const whyLama =
+        dataAnalysis.length > 1 ?
+            dataAnalysis[1].json_string != "" ?
+                await JSON.parse(dataAnalysis[1].json_string) :
+                [] :
+            [];
+
+    const containerWhyCols = ["E36", "E39", "E42", "E45", "E48"];
+    const flattenTerjadi = flattenArray(whyTerjadi);
+    flattenTerjadi.map((item, i) => {
+        sheet.cell(containerWhyCols[i]).value(item.name);
+    });
+
+    const containerLamaCols = ["W36", "W38", "E40", "E42", "E44"];
+    const flattenLama = flattenArray(whyLama);
+    flattenLama.map((item, i) => {
+        sheet.cell(containerLamaCols[i]).value(item.name);
+    });
+
+    let cm_lama = isNotEmpty(problemData.fpermanet_cm_lama) ?
+        JSON.parse(problemData.fpermanet_cm_lama) :
+        [];
+    let cm_terjadi = isNotEmpty(problemData.fpermanet_cm) ?
+        JSON.parse(problemData.fpermanet_cm) :
+        [];
+
+    let countermeasure = cm_terjadi && cm_lama ? cm_terjadi.concat(cm_lama).splice(0, 5) : null;
+    console.log("countermeasure");
+    console.log(countermeasure);
+
+    //region countermeasure
+    {
+        const containerCmColNo = ["W47", "W48", "W49", "W50"];
+        const containerCmColDesc = ["X47", "X48", "X49", "X50"];
+        const containerCmColCat = ["AL47", "AL48", "AL49", "AL50"];
+        const containerCmColPic = ["AY47", "AY48", "AY49", "AY50"];
+        const containerCmColDate = ["BO47", "BO48", "BO49", "BO50"];
+        const containerCmColJudg = ["BX47", "BX48", "BX49", "BX50"];
+        if (countermeasure.length > 0) {
+            countermeasure.map((item, i) => {
+                sheet.cell(containerCmColNo[i]).value(i + 1);
+                sheet.cell(containerCmColDesc[i]).value(item.cmDesc);
+                sheet.cell(containerCmColCat[i]).value(item.cmCategory);
+                sheet.cell(containerCmColPic[i]).value(item.pic);
+                sheet.cell(containerCmColDate[i]).value(item.datePlan);
+                sheet.cell(containerCmColJudg[i]).value(item.judg ?
+                    "OK" :
+                    "Not Yet")
+            });
+        }
+    }
+    //endregion
+
+    //region yokoten
+    const containerYokoColMc = ["CD47", "CD49"];
+    const containerYokoColPic = ["CO47", "CO49"];
+    const containerYokoColDate = ["DD47", "DD49"];
+    const containerYokoColJudg = ["DJ47", "CJ49"];
+    let yokoten = isNotEmpty(problemData.fyokoten) ?
+        JSON.parse(problemData.fyokoten) :
+        [];
+
+    console.log(yokoten);
+
+    if (yokoten.length > 0) {
+        yokoten.map((item, i) => {
+            sheet.cell(containerYokoColMc[i]).value(item.machine)
+            sheet.cell(containerYokoColPic[i]).value(item.pic)
+            sheet.cell(containerYokoColDate[i]).value(item.datePlan)
+            sheet.cell(containerYokoColJudg[i]).value(item.judg ? "OK" : "Not Yet")
+        });
+    }
+    //endregion
+
+    const dirFile = `./reports/ltb/${problemData.fid}_${problemData.ferror_name}`;
+    if (!fs.existsSync(dirFile)) {
+        fs.mkdirSync(dirFile);
+    }
+
+    await workbook.toFileAsync(`${dirFile}/${problemData.ferror_name}.xlsx`);
+    //return `${dirFile}/${problemData.ferror_name}.xlsx`
+    const excel = await workbook.outputAsync();
+
+    res.attachment(`${problemData.ferror_name}.xlsx`);
+    res.send(excel);
+};
 
 router.use("/ky", ky);
 
 router.get("/download-report", async (req, res) => {
     try {
-        const ExcelJS = require("exceljs");
-        const XLSXChart = require("xlsx-chart");
-        const moment = require("moment");
-
-        var fs = require("fs");
         const {fid} = req.query;
-        // check availablity report
-        // no, get template, get db data insert into excel
-        // yes, fetch report /<fid>_<problem>/<machine>_<problem>.xlsx
-
         let responseData = await cmdMultipleQuery(
             `select * from v_current_error_2 where fid = ${fid}`
         );
         let uraianData = await cmdMultipleQuery(
             `select * from tb_r_uraian where error_id = ${fid}`
         );
-        const workbook = new ExcelJS.Workbook();
-        const wb = await workbook.xlsx.readFile(
-            "./reports/template/clone_draft_ltb.xlsx"
-        );
-
-        const worksheet = wb.worksheets[0];
 
         const problemData = await responseData[0];
-        if (!problemData.file_report) {
-            // ---HEADER---
-            // F12 = tanggal
-            const F12 = worksheet.getCell("F12");
-            // H12 = bulan
-            const H12 = worksheet.getCell("H12");
-            // J12 = tahun
-            const J12 = worksheet.getCell("J12");
-            // L12 = shift
-            const L12 = worksheet.getCell("L12");
-            // M12 = time start
-            const M12 = worksheet.getCell("M12");
-            // O12 = time end
-            const O12 = worksheet.getCell("O12");
-            // Q12 = duration
-            const Q12 = worksheet.getCell("Q12");
-            // S11 = descproblem
-            const S11 = worksheet.getCell("S11");
-            // BO10 = line
-            const BO10 = worksheet.getCell("BO10");
-            // BO11 = machine
-            const BO11 = worksheet.getCell("BO11");
-            // CH11 = pic
-            const CH11 = worksheet.getCell("CH11");
-            // CY11 = REPORT NUMBER
-            const CY11 = worksheet.getCell("CY11");
 
-            const day = moment(problemData.fstart_time).format("DD");
-            const month = moment(problemData.fstart_time).format("MM");
-            const year = moment(problemData.fstart_time).format("YYYY");
-            const shift = problemData.fshift == "r" ? "RED" : "WHITE";
-            const start_time = moment(problemData.fstart_time).format("HH:mm:ss");
-            const end_time = moment(problemData.fend_time).format("HH:mm:ss");
-            const fdur = `${problemData.fdur}`;
-            const ferror_name = problemData.ferror_name;
-            const line = problemData.fline;
-            const machine = problemData.fmc_name;
-            const pic = problemData.foperator;
-            const problem_id = problemData.fid;
+        const generatedExcelPath = await generatedStepRepairCellDuration(
+            res,
+            problemData,
+            uraianData,
+            "./reports/template/draft_ltb.xlsx"
+        );
 
-            F12.value = day;
-            H12.value = month;
-            J12.value = year;
-            L12.value = shift;
-            M12.value = start_time;
-            O12.value = end_time;
-            Q12.value = fdur;
-            S11.value = ferror_name;
-            BO10.value = line;
-            BO11.value = machine;
-            CH11.value = pic;
-            CY11.value = problem_id;
+        /*await mappedImageFile(
+            res,
+            problemData,
+            uraianData,
+            generatedExcelPath
+        );*/
 
-            // ---3. PROBLEM DESC---
-            // C21 = image problem
-            if (
-                uraianData[0].ilustration &&
-                uraianData[0].ilustration != "" &&
-                uraianData[0].ilustration != "null" &&
-                fs.existsSync(uraianData[0].ilustration)
-            ) {
-                const chartImageIdGeneral = workbook.addImage({
-                    filename: uraianData[0].ilustration,
-                    extension: "jpeg",
-                });
-                const column = "C"; // Specify the column name
-                const row = 21; // Specify the row number
-                const colIndex = worksheet.getColumn(column).number;
-                worksheet.addImage(chartImageIdGeneral, {
-                    tl: {col: colIndex, row: row},
-                    ext: {width: 280, height: 180},
-                });
-            }
-
-            // P17 = image standard
-            if (
-                uraianData[1].ilustration &&
-                uraianData[1].ilustration != "" &&
-                uraianData[1].ilustration != "null" &&
-                fs.existsSync(uraianData[1].ilustration)
-            ) {
-                const chartImageIdStd = workbook.addImage({
-                    filename: uraianData[1].ilustration,
-                    extension: "jpeg",
-                });
-                const P17 = worksheet.getCell("P17");
-                const col2 = "P"; // Specify the column name
-                const row2 = 17; // Specify the row number
-                const colIndex2 = worksheet.getColumn(col2).number;
-                worksheet.addImage(chartImageIdStd, {
-                    tl: {col: colIndex2, row: row2},
-                    ext: {width: 200, height: 150},
-                });
-            }
-            if (
-                uraianData[2].ilustration &&
-                uraianData[2].ilustration != "" &&
-                uraianData[2].ilustration != "null" &&
-                fs.existsSync(uraianData[2].ilustration)
-            ) {
-                const chartImageIdAct = workbook.addImage({
-                    filename: uraianData[2].ilustration ?? 'tidak ada gambar',
-                    extension: "jpeg",
-                });
-
-                // P27 = img actual
-                const P27 = worksheet.getCell("P27");
-                const col3 = "P"; // Specify the column name
-                const row3 = 27; // Specify the row number
-                const colIndex3 = worksheet.getColumn(col3).number;
-
-                worksheet.addImage(chartImageIdAct, {
-                    tl: {col: colIndex3, row: row3},
-                    ext: {width: 200, height: 150},
-                });
-            }
-
-            // C31 = problem desc
-            const C31 = worksheet.getCell("C31");
-            C31.value = uraianData[0].desc_nm;
-            // L17 = desc standard
-            const L17 = worksheet.getCell("L17");
-            L17.value =
-                uraianData[1].desc_nm == "" ?
-                    "<no-description>" :
-                    uraianData[1].desc_nm;
-
-            // L27 = desc actual
-            const L27 = worksheet.getCell("L27");
-            L27.value =
-                uraianData[2].desc_nm == "" ?
-                    "<no-description>" :
-                    uraianData[2].desc_nm;
-
-            // --- 5. STEP REPAIR ---
-            // W17-W22 = no (std)
-            // X17-X22 = step repair desc (std)
-            // AI17-AI22 = step repair time (std)
-            // AM17-AM22 = start color background (std)
-            // CK17-CK22 = q6 (std)
-            // const X17 = worksheet.getCell("X17");
-            const jsonStepRepair = JSON.parse(problemData.fstep_new);
-            // console.log(jsonStepRepair);
-            if (jsonStepRepair.length > 0) {
-                let no = 1;
-                let idxAct = 0;
-                let idxOffsetStd = 10;
-                worksheet.getColumn(3);
-                // const tstStyle = worksheet.getCell("AM17");
-
-                // tstStyle.style.fill = "#000";
-                let containerParent = [];
-                let initialDurationIdx = 17;
-                for (let i = 17; i < 17 + 6; i++) {
-                    let containerChild = [];
-                    const element = jsonStepRepair[idxAct];
-                    const colNoActPos = worksheet.getCell(`W${i}`);
-                    const colDesActPos = worksheet.getCell(`X${i}`);
-                    const colTimeActPos = worksheet.getCell(`AI${i}`);
-                    const colQ6ActPos = worksheet.getCell(`CK${i}`);
-                    colNoActPos.value = no;
-                    colDesActPos.value = element.stepDesc;
-                    colTimeActPos.value = element.actualTime;
-                    colQ6ActPos.value = element.quick6;
-
-                    const rows = worksheet.getRow(i);
-                    let offsetCol = 39 + Math.ceil(element.actualTime / 10);
-                    // let container = [];
-                    containerParent.push(containerChild);
-                    // console.log(container);
-
-                    // console.log(rows[0]._cells);
-
-                    // W27-W32 = no (act)
-                    // X27-X32 = step repair desc (act)
-                    // AI27-AI32 = step repair time (act)
-                    // AM27-AM32 = start color background (act)
-                    // CK27-CK32 = q6 (act)
-                    // const X27 = worksheet.getCell("X27");
-                    const staticCols = ["AM", "AN", "AO", "AP", "AQ", "AR", "AS"];
-                    const colNoStdPos = worksheet.getCell(`W${i + idxOffsetStd}`);
-                    const colDesStdPos = worksheet.getCell(`X${i + idxOffsetStd}`);
-                    const colTimeStdPos = worksheet.getCell(`AI${i + idxOffsetStd}`);
-                    const colQ6StdPos = worksheet.getCell(`CK${i + idxOffsetStd}`);
-                    colNoStdPos.value = no;
-                    colDesStdPos.value = element.stepDesc;
-                    colTimeStdPos.value = element.idealTime;
-                    colQ6StdPos.value = element.quick6;
-
-                    /*for (let j = 0; j < staticCols.length; j++) {
-                        const element = `${staticCols[j]}17`;
-                        let fillCol = worksheet.getCell(element);
-                        fillCol.style.fill = {
-                            type: "pattern",
-                            pattern: "solid",
-                            //fgColor: { argb: "FFFF0000" },
-                            fgColor: { argb: "FF1128d6" },
-                        };
-                    }*/
-
-                    idxAct++;
-                    no++;
-                    initialDurationIdx++;
-                }
-
-                worksheet.getCell("AM17").fill = {
-                    type: "pattern",
-                    pattern: "solid",
-                    //fgColor: { argb: "FFFF0000" },
-                    fgColor: { argb: "FF1128d6" },
-                    //bgColor: {argb: 'FF1128d6'}
-                };
-
-                worksheet.getCell("AQ17").fill = {
-                    type: "pattern",
-                    pattern: "solid",
-                    //fgColor: { argb: "FFFF0000" },
-                    fgColor: { argb: "FF1128d6" },
-                    //bgColor: {argb: 'FF1128d6'}
-                };
-
-                // Grouping steps by quick6
-                const groupedSteps = jsonStepRepair.reduce((acc, step) => {
-                    if (!acc[step.quick6]) {
-                        acc[step.quick6] = [];
-                    }
-                    acc[step.quick6].push(step);
-                    return acc;
-                }, {});
-
-                // Calculate the highest gap for each group
-                const groupsWithHighestGap = Object.keys(groupedSteps).map((key) => {
-                    const group = groupedSteps[key];
-                    const highestGap = Math.max(
-                        ...group.map((step) => step.actualTime - step.idealTime)
-                    );
-                    return {quick6: key, steps: group, highestGap: highestGap};
-                });
-
-                // Sort groups by highest gap in descending order
-                let sortedStep = groupsWithHighestGap.sort(
-                    (a, b) => b.highestGap - a.highestGap
-                );
-                if (sortedStep.length > 0) {
-                    let findHigh = q6.find(
-                        (item) => item.category === sortedStep[0].quick6
-                    );
-                    worksheet.getCell(
-                        "CN24"
-                    ).value = `${findHigh.category} = ${findHigh.description}`;
-                }
-            }
-
-            let dataAnalysis = await cmdMultipleQuery(
-                `SELECT * FROM o_analisys WHERE id_problem = ${problem_id}`
-            );
-            console.log(dataAnalysis);
-
-            const whyTerjadi =
-                dataAnalysis[0].json_string != "" ?
-                    await JSON.parse(dataAnalysis[0].json_string) :
-                    [];
-
-            const whyLama =
-                dataAnalysis.length > 1 ?
-                    dataAnalysis[1].json_string != "" ?
-                        await JSON.parse(dataAnalysis[1].json_string) :
-                        [] :
-                    [];
-            // console.log(whyTerjadi);
-            // console.log(whyLama);
-            // E36, E39, E42, E45, E48  = WHY ANALYSSIS
-            const containerWhyCols = ["E36", "E39", "E42", "E45", "E48"];
-            const flattenTerjadi = flattenArray(whyTerjadi);
-            flattenTerjadi.map((item, i) => {
-                worksheet.getCell(containerWhyCols[i]).value = item.name;
-            });
-            // why1_img
-            const why1_img = problemData.why1_img;
-
-            if (isNotEmpty(why1_img) && fs.existsSync(why1_img)) {
-                let col1 = "M"; // Specify the column name
-                let row1 = 36; // Specify the row number
-                let colIndex1 = worksheet.getColumn(col1).number;
-                let imageSave = workbook.addImage({
-                    filename: why1_img ?? 'tidak ada gambar',
-                    extension: "jpeg",
-                });
-
-                worksheet.addImage(imageSave, {
-                    tl: {col: colIndex1, row: row1},
-                    ext: {width: 250, height: 200},
-                });
-            }
-
-            const containerLamaCols = ["W36", "W38", "E40", "E42", "E44"];
-            const flattenLama = flattenArray(whyLama);
-            flattenLama.map((item, i) => {
-                worksheet.getCell(containerLamaCols[i]).value = item.name;
-            });
-            const why12_img = problemData.why12_img;
-            const why22_img = problemData.why22_img;
-
-            if (isNotEmpty(why1_img) && fs.existsSync(why1_img)) {
-                let col1 = "M"; // Specify the column name
-                let row1 = 36; // Specify the row number
-                let colIndex1 = worksheet.getColumn(col1).number;
-                let imageSave = workbook.addImage({
-                    filename: why1_img ?? 'tidak ada gambar',
-                    extension: "jpeg",
-                });
-                worksheet.addImage(imageSave, {
-                    tl: {col: colIndex1, row: row1},
-                    ext: {width: 250, height: 200},
-                });
-            }
-
-            if (isNotEmpty(why12_img) && fs.existsSync(why12_img)) {
-                let col1 = "AM"; // Specify the column name
-                let row1 = 36; // Specify the row number
-                let colIndex1 = worksheet.getColumn(col1).number;
-                let imageSave = workbook.addImage({
-                    filename: why12_img,
-                    extension: "jpeg",
-                });
-                worksheet.addImage(imageSave, {
-                    tl: {col: colIndex1, row: row1},
-                    ext: {width: 250, height: 200},
-                });
-            }
-
-            if (isNotEmpty(why22_img) && fs.existsSync(why22_img)) {
-                let col1 = "BR"; // Specify the column name
-                let row1 = 36; // Specify the row number
-                let colIndex1 = worksheet.getColumn(col1).number;
-                let imageSave = workbook.addImage({
-                    filename: why1_img ?? 'tidak ada gambar',
-                    extension: "jpeg",
-                });
-                worksheet.addImage(imageSave, {
-                    tl: {col: colIndex1, row: row1},
-                    ext: {width: 250, height: 200},
-                });
-            }
-            let cm_lama = isNotEmpty(problemData.fpermanet_cm_lama) ?
-                JSON.parse(problemData.fpermanet_cm_lama) :
-                [];
-            let cm_terjadi = isNotEmpty(problemData.fpermanet_cm) ?
-                JSON.parse(problemData.fpermanet_cm) :
-                [];
-            let countermeasure = cm_terjadi.concat(cm_lama).splice(0, 5);
-            console.log("countermeasure");
-            console.log(countermeasure);
-            const containerCmColNo = ["W47", "W48", "W49", "W50"];
-            const containerCmColDesc = ["X47", "X48", "X49", "X50"];
-            const containerCmColCat = ["AL47", "AL48", "AL49", "AL50"];
-            const containerCmColPic = ["AY47", "AY48", "AY49", "AY50"];
-            const containerCmColDate = ["BO47", "BO48", "BO49", "BO50"];
-            const containerCmColJudg = ["BX47", "BX48", "BX49", "BX50"];
-            if (countermeasure.length > 0) {
-                countermeasure.map((item, i) => {
-                    worksheet.getCell(containerCmColNo[i]).value = i + 1;
-                    worksheet.getCell(containerCmColDesc[i]).value = item.cmDesc;
-                    worksheet.getCell(containerCmColCat[i]).value = item.cmCategory;
-                    worksheet.getCell(containerCmColPic[i]).value = item.pic;
-                    worksheet.getCell(containerCmColDate[i]).value = item.datePlan;
-                    worksheet.getCell(containerCmColJudg[i]).value = item.judg ?
-                        "OK" :
-                        "Not Yet";
-                });
-            }
-            const containerYokoColMc = ["CD47", "CD49"];
-            const containerYokoColPic = ["CO47", "CO49"];
-            const containerYokoColDate = ["DD47", "DD49"];
-            const containerYokoColJudg = ["DJ47", "CJ49"];
-            let yokoten = isNotEmpty(problemData.fyokoten) ?
-                JSON.parse(problemData.fyokoten) :
-                [];
-            console.log(yokoten);
-            if (yokoten.length > 0) {
-                yokoten.map((item, i) => {
-                    worksheet.getCell(containerYokoColMc[i]).value = item.machine;
-                    worksheet.getCell(containerYokoColPic[i]).value = item.pic;
-                    worksheet.getCell(containerYokoColDate[i]).value = item.datePlan;
-                    worksheet.getCell(containerYokoColJudg[i]).value = item.judg ?
-                        "OK" :
-                        "Not Yet";
-                });
-            }
-
-            var dirFile = `./reports/ltb/${problemData.fid}_${problemData.ferror_name}`;
-
-            if (!fs.existsSync(dirFile)) {
-                fs.mkdirSync(dirFile);
-            }
-
-            const fullPath = `${dirFile}/${problemData.ferror_name}.xlsx`;
-            await workbook.xlsx.writeFile(fullPath);
-            // res.status(200).json({
-            //     responseData,
-            // });
-            // res.sendFile(`../../reports/ltb/${problemData.ferror_name}.xlsx`);
-            res.download(fullPath);
-        } else {
-            console.log(problemData.file_report);
-            res.download(problemData.file_report);
-        }
     } catch (error) {
         console.log(error);
         res.send(
@@ -471,6 +466,7 @@ router.get("/download-report", async (req, res) => {
         // });
     }
 });
+
 router.put(
     "/upload-report",
     uploadFileReport.single("file"),
