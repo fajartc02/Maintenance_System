@@ -303,7 +303,7 @@ module.exports = {
             }
           }
           if (key == "line") {
-            qLine = ` and fline = '${req.query[key]}'`;
+            qLine = ` and fline like '%${req.query[key]}%'`;
           }
           if (key == "problem") {
             qProblem = ` and ferror_name LIKE '%${req.query[key]}%'`;
@@ -602,20 +602,15 @@ module.exports = {
               ilusUraian = pathFimgProblem;
               if (result.length > 0) {
                 qUraianUpdate.push(
-                  `UPDATE tb_r_uraian SET desc_nm = '${
-                    element.desc_name
-                  }', ilustration = ${
-                    ilusUraian ? `'${ilusUraian}'` : ilusUraian
-                  } where error_id = ${req.params.v_} AND type_uraian='${
-                    element.type_uraian
+                  `UPDATE tb_r_uraian SET desc_nm = '${element.desc_name
+                  }', ilustration = ${ilusUraian ? `'${ilusUraian}'` : ilusUraian
+                  } where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian
                   }'`
                 );
               } else {
                 qUraianInsert.push(
-                  `INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration, type_uraian) VALUES (${
-                    req.params.v_
-                  }, '${element.desc_name}', ${
-                    ilusUraian ? `'${ilusUraian}'` : ilusUraian
+                  `INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration, type_uraian) VALUES (${req.params.v_
+                  }, '${element.desc_name}', ${ilusUraian ? `'${ilusUraian}'` : ilusUraian
                   }, '${element.type_uraian}')`
                 );
               }
@@ -624,20 +619,15 @@ module.exports = {
               ilusUraian2 = pathFimgProblem2;
               if (result.length > 0) {
                 qUraianUpdate.push(
-                  `UPDATE tb_r_uraian SET desc_nm = '${
-                    element.desc_name
-                  }', ilustration2 = ${
-                    ilusUraian2 ? `'${ilusUraian2}'` : ilusUraian2
-                  } where error_id = ${req.params.v_} AND type_uraian='${
-                    element.type_uraian
+                  `UPDATE tb_r_uraian SET desc_nm = '${element.desc_name
+                  }', ilustration2 = ${ilusUraian2 ? `'${ilusUraian2}'` : ilusUraian2
+                  } where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian
                   }'`
                 );
               } else {
                 qUraianInsert.push(
-                  `INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration2, type_uraian) VALUES (${
-                    req.params.v_
-                  }, '${element.desc_name}', ${
-                    ilusUraian2 ? `'${ilusUraian2}'` : ilusUraian2
+                  `INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration2, type_uraian) VALUES (${req.params.v_
+                  }, '${element.desc_name}', ${ilusUraian2 ? `'${ilusUraian2}'` : ilusUraian2
                   }, '${element.type_uraian}')`
                 );
               }
@@ -646,20 +636,15 @@ module.exports = {
               ilusUraian = pathStdImg;
               if (result.length > 0) {
                 qUraianUpdate.push(
-                  `UPDATE tb_r_uraian SET desc_nm = '${
-                    element.desc_name
-                  }', ilustration = ${
-                    ilusUraian ? `'${ilusUraian}'` : ilusUraian
-                  } where error_id = ${req.params.v_} AND type_uraian='${
-                    element.type_uraian
+                  `UPDATE tb_r_uraian SET desc_nm = '${element.desc_name
+                  }', ilustration = ${ilusUraian ? `'${ilusUraian}'` : ilusUraian
+                  } where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian
                   }'`
                 );
               } else {
                 qUraianInsert.push(
-                  `INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration, type_uraian) VALUES (${
-                    req.params.v_
-                  }, '${element.desc_name}', ${
-                    ilusUraian ? `'${ilusUraian}'` : ilusUraian
+                  `INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration, type_uraian) VALUES (${req.params.v_
+                  }, '${element.desc_name}', ${ilusUraian ? `'${ilusUraian}'` : ilusUraian
                   }, '${element.type_uraian}')`
                 );
               }
@@ -668,20 +653,15 @@ module.exports = {
               ilusUraian2 = pathStdImg2;
               if (result.length > 0) {
                 qUraianUpdate.push(
-                  `UPDATE tb_r_uraian SET desc_nm = '${
-                    element.desc_name
-                  }', ilustration2 = ${
-                    ilusUraian2 ? `'${ilusUraian2}'` : ilusUraian2
-                  } where error_id = ${req.params.v_} AND type_uraian='${
-                    element.type_uraian
+                  `UPDATE tb_r_uraian SET desc_nm = '${element.desc_name
+                  }', ilustration2 = ${ilusUraian2 ? `'${ilusUraian2}'` : ilusUraian2
+                  } where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian
                   }'`
                 );
               } else {
                 qUraianInsert.push(
-                  `INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration2, type_uraian) VALUES (${
-                    req.params.v_
-                  }, '${element.desc_name}', ${
-                    ilusUraian2 ? `'${ilusUraian2}'` : ilusUraian2
+                  `INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration2, type_uraian) VALUES (${req.params.v_
+                  }, '${element.desc_name}', ${ilusUraian2 ? `'${ilusUraian2}'` : ilusUraian2
                   }, '${element.type_uraian}')`
                 );
               }
@@ -690,20 +670,15 @@ module.exports = {
               ilusUraian = pathActImg;
               if (result.length > 0) {
                 qUraianUpdate.push(
-                  `UPDATE tb_r_uraian SET desc_nm = '${
-                    element.desc_name
-                  }', ilustration = ${
-                    ilusUraian ? `'${ilusUraian}'` : ilusUraian
-                  } where error_id = ${req.params.v_} AND type_uraian='${
-                    element.type_uraian
+                  `UPDATE tb_r_uraian SET desc_nm = '${element.desc_name
+                  }', ilustration = ${ilusUraian ? `'${ilusUraian}'` : ilusUraian
+                  } where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian
                   }'`
                 );
               } else {
                 qUraianInsert.push(
-                  `INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration, type_uraian) VALUES (${
-                    req.params.v_
-                  }, '${element.desc_name}', ${
-                    ilusUraian ? `'${ilusUraian}'` : ilusUraian
+                  `INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration, type_uraian) VALUES (${req.params.v_
+                  }, '${element.desc_name}', ${ilusUraian ? `'${ilusUraian}'` : ilusUraian
                   }, '${element.type_uraian}')`
                 );
               }
@@ -712,20 +687,15 @@ module.exports = {
               ilusUraian2 = pathActImg2;
               if (result.length > 0) {
                 qUraianUpdate.push(
-                  `UPDATE tb_r_uraian SET desc_nm = '${
-                    element.desc_name
-                  }', ilustration2 = ${
-                    ilusUraian2 ? `'${ilusUraian2}'` : ilusUraian2
-                  } where error_id = ${req.params.v_} AND type_uraian='${
-                    element.type_uraian
+                  `UPDATE tb_r_uraian SET desc_nm = '${element.desc_name
+                  }', ilustration2 = ${ilusUraian2 ? `'${ilusUraian2}'` : ilusUraian2
+                  } where error_id = ${req.params.v_} AND type_uraian='${element.type_uraian
                   }'`
                 );
               } else {
                 qUraianInsert.push(
-                  `INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration2, type_uraian) VALUES (${
-                    req.params.v_
-                  }, '${element.desc_name}', ${
-                    ilusUraian2 ? `'${ilusUraian2}'` : ilusUraian2
+                  `INSERT INTO tb_r_uraian(error_id, desc_nm, ilustration2, type_uraian) VALUES (${req.params.v_
+                  }, '${element.desc_name}', ${ilusUraian2 ? `'${ilusUraian2}'` : ilusUraian2
                   }, '${element.type_uraian}')`
                 );
               }
