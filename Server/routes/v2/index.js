@@ -299,6 +299,22 @@ const generatedStepRepairCellDuration = async (res, problemData, uraianData, ful
             initialDurationIdx++;
         }
 
+      /*  sheet.cell(`AM17`)
+            //.value("")
+            .style({
+                fill: {
+                    type: 'pattern',
+                    pattern: 'darkDown',
+                    foreground: {
+                        rgb: '0000FF',
+                    },
+                    background: {
+                        theme: 3,
+                        tint: 0.4,
+                    },
+                }
+            });*/
+
         // Grouping steps by quick6
         const groupedSteps = jsonStepRepair.reduce((acc, step) => {
             if (!acc[step.quick6]) {
@@ -327,7 +343,9 @@ const generatedStepRepairCellDuration = async (res, problemData, uraianData, ful
                 (item) => item.category === sortedStep[0].quick6
             );
 
-            sheet.cell("CN24").value(`${findHigh.category} = ${findHigh.description}`);
+            if (findHigh) {
+                sheet.cell("CN24").value(`${findHigh.category} = ${findHigh.description}`);
+            }
         }
     }
 
