@@ -29,6 +29,7 @@ const moment = require("moment/moment");
 const {data} = require("express-session/session/cookie");
 const ExcelJS = require("exceljs");
 
+//region exceljs
 const mappedImageFile = async (res, problemData, uraianData, generatedExcelPath) => {
     const workbook = new ExcelJS.Workbook();
     const wb = await workbook.xlsx.readFile(generatedExcelPath);
@@ -167,6 +168,7 @@ const mappedImageFile = async (res, problemData, uraianData, generatedExcelPath)
     await workbook.xlsx.writeFile(generatedExcelPath);
     res.download(generatedExcelPath);
 }
+//endregion
 
 const filledColor = [];
 const generateCellDuration = (sheet, duration, startColumn = "AM", startRow = 17) => {
@@ -225,6 +227,7 @@ const generateCellDuration = (sheet, duration, startColumn = "AM", startRow = 17
     }
 }
 
+//region generated using xlsx-populate
 const generatedStepRepairCellDuration = async (res, problemData, uraianData, fullPath) => {
     const XLSXPopulate = require('xlsx-populate');
     const workbook = await XLSXPopulate.fromFileAsync(fullPath);
@@ -443,12 +446,16 @@ const generatedStepRepairCellDuration = async (res, problemData, uraianData, ful
     }
 
     await workbook.toFileAsync(`${dirFile}/${problemData.ferror_name}.xlsx`);
-    //return `${dirFile}/${problemData.ferror_name}.xlsx`
-    const excel = await workbook.outputAsync();
 
+    // remap for image file
+    return `${dirFile}/${problemData.ferror_name}.xlsx`
+
+    // direct generate using xlsx-populate
+    /*const excel = await workbook.outputAsync();
     res.attachment(`${problemData.ferror_name}.xlsx`);
-    res.send(excel);
+    res.send(excel);*/
 };
+//endregion
 
 router.use("/ky", ky);
 
@@ -471,12 +478,12 @@ router.get("/download-report", async (req, res) => {
             "./reports/template/draft_ltb.xlsx"
         );
 
-        /*await mappedImageFile(
+        await mappedImageFile(
             res,
             problemData,
             uraianData,
             generatedExcelPath
-        );*/
+        );
 
     } catch (error) {
         console.log(error);
