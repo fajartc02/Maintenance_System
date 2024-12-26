@@ -440,15 +440,23 @@ const generatedStepRepairCellDuration = async (res, problemData, uraianData, ful
     }
     //endregion
 
-    const dirFile = `./reports/ltb/${problemData.fid}_${problemData.ferror_name}`;
+    let dirFile = `./reports/ltb/${problemData.fid}_${problemData.ferror_name}`;
+    if (dirFile.includes(":")) {
+        dirFile = dirFile.replace(new RegExp(":", "g"), "_")
+    }
+
     if (!fs.existsSync(dirFile)) {
         fs.mkdirSync(dirFile);
     }
 
-    await workbook.toFileAsync(`${dirFile}/${problemData.ferror_name}.xlsx`);
-
     // remap for image file
-    return `${dirFile}/${problemData.ferror_name}.xlsx`
+    let r = `${dirFile}/${problemData.ferror_name}.xlsx`
+    if (r.includes(":")) {
+        r = r.replace(new RegExp(":", "g"), "_")
+    }
+
+    await workbook.toFileAsync(r);
+    return r;
 
     // direct generate using xlsx-populate
     /*const excel = await workbook.outputAsync();
