@@ -299,21 +299,21 @@ const generatedStepRepairCellDuration = async (res, problemData, uraianData, ful
             initialDurationIdx++;
         }
 
-      /*  sheet.cell(`AM17`)
-            //.value("")
-            .style({
-                fill: {
-                    type: 'pattern',
-                    pattern: 'darkDown',
-                    foreground: {
-                        rgb: '0000FF',
-                    },
-                    background: {
-                        theme: 3,
-                        tint: 0.4,
-                    },
-                }
-            });*/
+        /*  sheet.cell(`AM17`)
+              //.value("")
+              .style({
+                  fill: {
+                      type: 'pattern',
+                      pattern: 'darkDown',
+                      foreground: {
+                          rgb: '0000FF',
+                      },
+                      background: {
+                          theme: 3,
+                          tint: 0.4,
+                      },
+                  }
+              });*/
 
         // Grouping steps by quick6
         const groupedSteps = jsonStepRepair.reduce((acc, step) => {
@@ -369,13 +369,17 @@ const generatedStepRepairCellDuration = async (res, problemData, uraianData, ful
     const containerWhyCols = ["E36", "E39", "E42", "E45", "E48"];
     const flattenTerjadi = flattenArray(whyTerjadi);
     flattenTerjadi.map((item, i) => {
-        sheet.cell(containerWhyCols[i]).value(item.name);
+        if (containerWhyCols[i]) {
+            sheet.cell(containerWhyCols[i]).value(item.name);
+        }
     });
 
     const containerLamaCols = ["W36", "W38", "E40", "E42", "E44"];
     const flattenLama = flattenArray(whyLama);
     flattenLama.map((item, i) => {
-        sheet.cell(containerLamaCols[i]).value(item.name);
+        if (containerLamaCols[i]) {
+            sheet.cell(containerLamaCols[i]).value(item.name);
+        }
     });
 
     let cm_lama = isNotEmpty(problemData.fpermanet_cm_lama) ?
