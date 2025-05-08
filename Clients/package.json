@@ -1,0 +1,82 @@
+{
+    "name": "smart-andon-mobile",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "serve": "vue-cli-service serve",
+        "build": "vue-cli-service build",
+        "lint": "vue-cli-service lint"
+    },
+    "dependencies": {
+        "@uublue/vue-excel-viewer": "^0.1.17",
+        "apexcharts": "^3.28.1",
+        "axios": "^0.21.1",
+        "bootstrap-vue": "^2.21.2",
+        "brain.js": "^2.0.0-beta.2",
+        "chart.js": "^2.9.4",
+        "core-js": "^3.6.5",
+        "easy-circular-progress": "^1.0.4",
+        "export-excel-sheet-vue-js": "^1.0.2",
+        "html-table-to-excel": "^1.0.1",
+        "html2pdf.js": "^0.9.2",
+        "jquery": "^3.5.1",
+        "moment": "^2.29.1",
+        "pdfjs": "^2.4.6",
+        "pwa-badge": "^1.1.1",
+        "register-service-worker": "^1.7.1",
+        "sweetalert2": "^10.13.3",
+        "vue": "^2.6.11",
+        "vue-apexcharts": "^1.6.2",
+        "vue-chartjs": "^3.5.1",
+        "vue-form-wizard": "^0.8.4",
+        "vue-json-excel": "^0.3.0",
+        "vue-material": "^1.0.0-beta-15",
+        "vue-multiple-progress": "^1.6.0",
+        "vue-page-transition": "^0.2.2",
+        "vue-pagination-2": "^3.0.8",
+        "vue-pdf": "^4.3.0",
+        "vue-pdf-app": "^2.1.0",
+        "vue-pdf-reader": "^0.2.9",
+        "vue-router": "^3.2.0",
+        "vue-scrollable-container": "^1.8.2",
+        "vue-search-select": "^2.9.3",
+        "vue-select": "^3.11.2",
+        "vuetify": "^2.4.0",
+        "vuex": "^3.4.0"
+    },
+    "devDependencies": {
+        "@vue/cli-plugin-babel": "^4.5.0",
+        "@vue/cli-plugin-eslint": "^4.5.0",
+        "@vue/cli-plugin-pwa": "^4.5.0",
+        "@vue/cli-plugin-router": "^4.5.0",
+        "@vue/cli-plugin-vuex": "^4.5.0",
+        "@vue/cli-service": "^4.5.0",
+        "babel-eslint": "^10.1.0",
+        "eslint": "^6.7.2",
+        "eslint-plugin-vue": "^6.2.2",
+        "sass": "^1.32.0",
+        "sass-loader": "^10.0.0",
+        "vue-cli-plugin-vuetify": "^2.1.0",
+        "vue-template-compiler": "^2.6.11",
+        "vuetify-loader": "^1.7.0"
+    },
+    "eslintConfig": {
+        "root": true,
+        "env": {
+            "node": true
+        },
+        "extends": [
+            "plugin:vue/essential",
+            "eslint:recommended"
+        ],
+        "parserOptions": {
+            "parser": "babel-eslint"
+        },
+        "rules": {}
+    },
+    "browserslist": [
+        "> 1%",
+        "last 2 versions",
+        "not dead"
+    ]
+}
