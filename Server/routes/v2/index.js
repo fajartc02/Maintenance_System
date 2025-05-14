@@ -467,9 +467,6 @@ const generatedStepRepairCellDuration = async (res, problemData, uraianData, ful
 
 router.use("/ky", ky);
 
-const fs = require("fs");
-const path = require("path");
-
 router.get("/download-report", async (req, res) => {
     try {
         const { fid, problem } = req.query;
@@ -498,7 +495,7 @@ router.get("/download-report", async (req, res) => {
         }
 
         // Fallback: serve latest file in folder
-        const targetDir = `./reports/ltb/${fid}_${problem}/`;
+        const targetDir = `./reports/Uploads/${fid}_${problem}/`;
 
         if (!fs.existsSync(targetDir)) {
             console.error(`Report folder not found: ${targetDir}`);
@@ -531,84 +528,123 @@ router.get("/download-report", async (req, res) => {
     }
 });
 
-const fs = require("fs");
-const path = require("path");
+router.get("/download-template", async (req, res) => {
+    try {
+        const {fid} = req.query;
+        let responseData = await cmdMultipleQuery(
+            `select * from v_current_error_2 where fid = ${fid}`
+        );
+        let uraianData = await cmdMultipleQuery(
+            `select * from tb_r_uraian where error_id = ${fid}`
+        );
+
+        const problemData = await responseData[0];
+
+        const generatedExcelPath = await generatedStepRepairCellDuration(
+            res,
+            problemData,
+            uraianData,
+            "./reports/template/draft_ltb.xlsx"
+        );
+
+        await mappedImageFile(
+            res,
+            problemData,
+            uraianData,
+            generatedExcelPath
+        );
+
+    } catch (error) {
+        console.log(error);
+        res.send(
+            'File Belum Lengkap! <a href="https:smartandonsys.web.app/problemHistory">Back</a>'
+        );
+        // res.status(401).json({
+        //     error,
+        // });
+    }
+});
+
+const pathModule = require("path");
+
+
 
 router.put(
     "/upload-report",
     uploadFileReport.single("file"),
     async (req, res) => {
         try {
-            const oldPath = req.file.path;
-            const targetDir = `./Uploads/ltb/${req.body.fid}_${req.body.problem}/`;
-            if (!fs.existsSync(targetDir)) {
-                fs.mkdirSync(targetDir, { recursive: true });
+            // Build new directory and filename based on req.body
+            const newDir = `./reports/Uploads/${req.body.fid}_${req.body.problem}/`;
+            const newFilename = `${req.body.problem}.xlsx`;
+
+            // Ensure new directory exists
+            if (!fs.existsSync(newDir)) {
+                fs.mkdirSync(newDir, { recursive: true });
             }
 
-            // Generate unique filename with timestamp
-            const timestamp = Date.now();
-            const uniqueFileName = `${req.body.problem}_${timestamp}.xlsx`;
-            const targetPath = path.join(targetDir, uniqueFileName);
+            // Current uploaded file path
+            const oldPath = req.file.path;
+            console.log("Old file path:", oldPath);
 
-            fs.renameSync(oldPath, targetPath);
+            // New file path
+            const newPath = pathModule.join(newDir, newFilename);
+            console.log("New file path:", newPath);
 
-            // Update database with the new file path
-            let q = `UPDATE tb_error_log_2 SET file_report = '${targetPath}' WHERE fid = ${req.body.fid}`;
-            console.log("New file path:", targetDir);
+            // Move/rename the file
+            fs.renameSync(oldPath, newPath);
+            console.log("File moved successfully");
+
+            // Save relative path to DB (use forward slashes)
+            const dbPath = newPath.replace(/\\/g, "/");
+            console.log("DB path to save:", dbPath);
+
+            let q = `UPDATE tb_error_log_2 SET file_report = '${dbPath}' WHERE fid = ${req.body.fid}`;
             console.log(q);
             await cmdMultipleQuery(q);
-
             res.status(201).json({
-                message: "success to upload 1",
-                filePath: targetPath,
+                message: "success to upload 2",
             });
         } catch (error) {
-            console.error(error);
+            console.error("Upload error:", error);
             res.status(500).json({
-                error,
+                error: error.message || error,
             });
         }
     }
 );
 
-router.get("/download-template", async (req, res) => {
+router.get("/download-uploaded-report", async (req, res) => {
     try {
         const { fid } = req.query;
-
         if (!fid) {
-            return res.status(400).send("Missing fid parameter");
+            return res.status(400).json({ error: "Missing fid parameter" });
         }
-
-        // Query database for problem data and uraian data
-        const problemDataResult = await cmdMultipleQuery(
-            `SELECT * FROM tb_error_log_2 WHERE fid = ${fid} LIMIT 1`
+        const result = await cmdMultipleQuery(
+            `SELECT file_report FROM tb_error_log_2 WHERE fid = ${fid}`
         );
-
-        if (problemDataResult.length === 0) {
-            return res.status(404).send("Problem data not found");
+        if (!result || result.length === 0 || !result[0].file_report) {
+            return res.status(404).json({ error: "Uploaded report file not found" });
         }
-
-        const problemData = problemDataResult[0];
-
-        const uraianData = await cmdMultipleQuery(
-            `SELECT * FROM tb_uraian WHERE fid = ${fid} ORDER BY id_uraian ASC`
-        );
-
-        // Generate the Excel template file path
-        const dirFile = `./reports/template/${fid}_${problemData.ferror_name}`;
-        if (!fs.existsSync(dirFile)) {
-            fs.mkdirSync(dirFile, { recursive: true });
+        let filePath = result[0].file_report;
+        const path = require("path");
+        if (!path.isAbsolute(filePath)) {
+            filePath = path.join(__dirname, "../../../", filePath);
         }
-        const generatedExcelPath = `${dirFile}/${problemData.ferror_name}_template.xlsx`;
-
-        // Use existing function to generate the Excel file with images and data
-        await mappedImageFile(res, problemData, uraianData, generatedExcelPath);
-
-        // The mappedImageFile function calls res.download internally, so no need to call res.download here again
-
+        filePath = path.normalize(filePath);
+        console.log("Resolved file path:", filePath);
+        const fs = require("fs");
+        if (!fs.existsSync(filePath)) {
+            console.error("File not found at path:", filePath);
+            return res.status(404).json({ error: "File does not exist on server" });
+        }
+        // Encode URI to handle spaces and special characters in file path
+        const encodedFilePath = encodeURI(filePath);
+        console.log("Encoded file path for download:", encodedFilePath);
+        res.download(encodedFilePath);
     } catch (error) {
         console.error(error);
-        res.status(500).send("Error generating template");
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 

@@ -1,22 +1,22 @@
 const multer = require("multer");
 
 const path = require("path");
-const fs = require("fs");
 
 //Setting storage engine
+const fs = require("fs");
 const storageEngine = multer.diskStorage({
     destination: function(req, file, cb) {
         console.log(file);
-        const uploadPath = `./reports/Uploads/${req.body.fid}_${req.body.problem}/`;
-        if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, { recursive: true });
+        // Ensure temp folder exists
+        const tempDir = `./reports/ltb/temp/`;
+        if (!fs.existsSync(tempDir)) {
+            fs.mkdirSync(tempDir, { recursive: true });
         }
-        cb(null, uploadPath);
+        cb(null, tempDir);
     },
     filename: (req, file, cb) => {
-        const timestamp = Date.now();
-        const ext = path.extname(file.originalname) || ".xlsx";
-        cb(null, `${req.body.problem}_${timestamp}${ext}`);
+        // Use original filename or timestamped filename temporarily
+        cb(null, `${Date.now()}_${file.originalname}`);
     },
 });
 
