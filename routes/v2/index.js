@@ -469,6 +469,67 @@ router.use("/ky", ky);
 
 router.get("/download-report", async (req, res) => {
     try {
+        const { fid, problem } = req.query;
+
+        if (!fid || !problem) {
+            console.error("Missing fid or problem parameter");
+            return res.status(400).send("Missing fid or problem parameter");
+        }
+
+        // Query database for file_report path
+        const result = await cmdMultipleQuery(
+            `SELECT file_report FROM tb_error_log_2 WHERE fid = ${fid} LIMIT 1`
+        );
+
+        if (result.length > 0 && result[0].file_report) {
+            const filePath = result[0].file_report;
+            if (fs.existsSync(filePath)) {
+                console.log(`Serving uploaded report file: ${filePath}`);
+                return res.download(filePath);
+            } else {
+                console.error(`Uploaded report file not found on server: ${filePath}`);
+                return res.status(404).send("Uploaded report file not found on server");
+            }
+        } else {
+            console.warn(`No file_report entry found in database for fid: ${fid}`);
+        }
+
+        // Fallback: serve latest file in folder
+        const targetDir = `./reports/Uploads/${fid}_${problem}/`;
+
+        if (!fs.existsSync(targetDir)) {
+            console.error(`Report folder not found: ${targetDir}`);
+            return res.status(404).send("Report folder not found");
+        }
+
+        // Read files in the target directory
+        const files = fs.readdirSync(targetDir)
+            .filter(file => file.endsWith(".xlsx"))
+            .map(file => ({
+                name: file,
+                time: fs.statSync(path.join(targetDir, file)).mtime.getTime()
+            }))
+            .sort((a, b) => b.time - a.time); // Sort descending by modified time
+
+        if (files.length === 0) {
+            console.error(`No report files found in folder: ${targetDir}`);
+            return res.status(404).send("No report files found");
+        }
+
+        const latestFile = files[0].name;
+        const filePath = path.join(targetDir, latestFile);
+
+        console.log(`Serving latest report file from folder: ${filePath}`);
+        res.download(filePath, latestFile);
+
+    } catch (error) {
+        console.error("Error downloading report:", error);
+        res.status(500).send("Error downloading report");
+    }
+});
+
+router.get("/download-template", async (req, res) => {
+    try {
         const {fid} = req.query;
         let responseData = await cmdMultipleQuery(
             `select * from v_current_error_2 where fid = ${fid}`
@@ -506,13 +567,15 @@ router.get("/download-report", async (req, res) => {
 
 const pathModule = require("path");
 
+
+
 router.put(
     "/upload-report",
     uploadFileReport.single("file"),
     async (req, res) => {
         try {
             // Build new directory and filename based on req.body
-            const newDir = `./reports/ltb/${req.body.fid}_${req.body.problem}/`;
+            const newDir = `./reports/Uploads/${req.body.fid}_${req.body.problem}/`;
             const newFilename = `${req.body.problem}.xlsx`;
 
             // Ensure new directory exists
@@ -540,7 +603,7 @@ router.put(
             console.log(q);
             await cmdMultipleQuery(q);
             res.status(201).json({
-                message: "success to upload",
+                message: "success to upload 2",
             });
         } catch (error) {
             console.error("Upload error:", error);

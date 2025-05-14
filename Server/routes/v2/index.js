@@ -469,6 +469,67 @@ router.use("/ky", ky);
 
 router.get("/download-report", async (req, res) => {
     try {
+        const { fid, problem } = req.query;
+
+        if (!fid || !problem) {
+            console.error("Missing fid or problem parameter");
+            return res.status(400).send("Missing fid or problem parameter");
+        }
+
+        // Query database for file_report path
+        const result = await cmdMultipleQuery(
+            `SELECT file_report FROM tb_error_log_2 WHERE fid = ${fid} LIMIT 1`
+        );
+
+        if (result.length > 0 && result[0].file_report) {
+            const filePath = result[0].file_report;
+            if (fs.existsSync(filePath)) {
+                console.log(`Serving uploaded report file: ${filePath}`);
+                return res.download(filePath);
+            } else {
+                console.error(`Uploaded report file not found on server: ${filePath}`);
+                return res.status(404).send("Uploaded report file not found on server");
+            }
+        } else {
+            console.warn(`No file_report entry found in database for fid: ${fid}`);
+        }
+
+        // Fallback: serve latest file in folder
+        const targetDir = `./reports/Uploads/${fid}_${problem}/`;
+
+        if (!fs.existsSync(targetDir)) {
+            console.error(`Report folder not found: ${targetDir}`);
+            return res.status(404).send("Report folder not found");
+        }
+
+        // Read files in the target directory
+        const files = fs.readdirSync(targetDir)
+            .filter(file => file.endsWith(".xlsx"))
+            .map(file => ({
+                name: file,
+                time: fs.statSync(path.join(targetDir, file)).mtime.getTime()
+            }))
+            .sort((a, b) => b.time - a.time); // Sort descending by modified time
+
+        if (files.length === 0) {
+            console.error(`No report files found in folder: ${targetDir}`);
+            return res.status(404).send("No report files found");
+        }
+
+        const latestFile = files[0].name;
+        const filePath = path.join(targetDir, latestFile);
+
+        console.log(`Serving latest report file from folder: ${filePath}`);
+        res.download(filePath, latestFile);
+
+    } catch (error) {
+        console.error("Error downloading report:", error);
+        res.status(500).send("Error downloading report");
+    }
+});
+
+router.get("/download-template", async (req, res) => {
+    try {
         const {fid} = req.query;
         let responseData = await cmdMultipleQuery(
             `select * from v_current_error_2 where fid = ${fid}`
@@ -504,32 +565,88 @@ router.get("/download-report", async (req, res) => {
     }
 });
 
+const pathModule = require("path");
+
+
+
 router.put(
     "/upload-report",
     uploadFileReport.single("file"),
     async (req, res) => {
         try {
-            // console.log("req.file");
-            // console.log(req.file);
-            // WILL DEELTE FILE IN THE FUTURE
-            let path = `${req.file.destination}${req.file.filename}`;
-            console.log(req.file);
-            let q = `UPDATE tb_error_log_2 SET file_report = '${path}' WHERE fid = ${req.body.fid}`;
+            // Build new directory and filename based on req.body
+            const newDir = `./reports/Uploads/${req.body.fid}_${req.body.problem}/`;
+            const newFilename = `${req.body.problem}.xlsx`;
+
+            // Ensure new directory exists
+            if (!fs.existsSync(newDir)) {
+                fs.mkdirSync(newDir, { recursive: true });
+            }
+
+            // Current uploaded file path
+            const oldPath = req.file.path;
+            console.log("Old file path:", oldPath);
+
+            // New file path
+            const newPath = pathModule.join(newDir, newFilename);
+            console.log("New file path:", newPath);
+
+            // Move/rename the file
+            fs.renameSync(oldPath, newPath);
+            console.log("File moved successfully");
+
+            // Save relative path to DB (use forward slashes)
+            const dbPath = newPath.replace(/\\/g, "/");
+            console.log("DB path to save:", dbPath);
+
+            let q = `UPDATE tb_error_log_2 SET file_report = '${dbPath}' WHERE fid = ${req.body.fid}`;
             console.log(q);
             await cmdMultipleQuery(q);
             res.status(201).json({
-                message: "success to upload",
+                message: "success to upload 2",
             });
-            // upload file
-            // ./reports/ltb/${fid}_${error_name}/${error_name}.xlsx
-            // update column on database
         } catch (error) {
+            console.error("Upload error:", error);
             res.status(500).json({
-                error,
+                error: error.message || error,
             });
         }
     }
 );
+
+router.get("/download-uploaded-report", async (req, res) => {
+    try {
+        const { fid } = req.query;
+        if (!fid) {
+            return res.status(400).json({ error: "Missing fid parameter" });
+        }
+        const result = await cmdMultipleQuery(
+            `SELECT file_report FROM tb_error_log_2 WHERE fid = ${fid}`
+        );
+        if (!result || result.length === 0 || !result[0].file_report) {
+            return res.status(404).json({ error: "Uploaded report file not found" });
+        }
+        let filePath = result[0].file_report;
+        const path = require("path");
+        if (!path.isAbsolute(filePath)) {
+            filePath = path.join(__dirname, "../../../", filePath);
+        }
+        filePath = path.normalize(filePath);
+        console.log("Resolved file path:", filePath);
+        const fs = require("fs");
+        if (!fs.existsSync(filePath)) {
+            console.error("File not found at path:", filePath);
+            return res.status(404).json({ error: "File does not exist on server" });
+        }
+        // Encode URI to handle spaces and special characters in file path
+        const encodedFilePath = encodeURI(filePath);
+        console.log("Encoded file path for download:", encodedFilePath);
+        res.download(encodedFilePath);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
 
 router.use("/master", problemRoute);
 
