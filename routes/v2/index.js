@@ -247,39 +247,57 @@ const generatedStepRepairCellDuration = async (res, problemData, uraianData, ful
     sheet.cell("BO11").value(problemData.fmc_name);
     sheet.cell("CH11").value(problemData.foperator);
     sheet.cell("CY11").value(problemData.fid);
-    // Q6
-    let q6 = null;
-    if(problemData.qCategory === 1){
-        q6 = 'L';
-    }else if(problemData.qCategory === 2){
-        q6 = 'M';
-    }else if(problemData.qCategory === 3){
-        q6 = 'O';
-    }else if(problemData.qCategory === 4){
-        q6 = 'Q';
-    }else if(problemData.qCategory === 5){
-        q6 = 'S';
-    }else if(problemData.qCategory === 6){
-        q6 = 'U';
-    };
-    sheet.cell(`${q6}35`).value("O"); // Mark or set value as needed
+
+    // // O6
+    // let o6 = null;
+    // if(problemData.oCategory === 1){
+    //     o6 = 'L';
+    // }else if(problemData.oCategory === 2){
+    //     o6 = 'M';
+    // }else if(problemData.oCategory === 3){
+    //     o6 = 'O';
+    // }else if(problemData.oCategory === 4){
+    //     o6 = 'Q';
+    // }else if(problemData.oCategory === 5){
+    //     o6 = 'S';
+    // }else if(problemData.oCategory === 6){
+    //     o6 = 'U';
+    // }
+    // sheet.cell(`${o6}35`).value("O"); // Mark or set value as needed
 
     // O6
     let o6 = null;
-    if(problemData.oCategory === 1){
-        o6 = 'AM';
-    }else if(problemData.oCategory === 2){
-        o6 = 'AZ';
-    }else if(problemData.oCategory === 3){
-        o6 = 'BM';
-    }else if(problemData.oCategory === 4){
-        o6 = 'BZ';
-    }else if(problemData.oCategory === 5){
-        o6 = 'CM';
-    }else if(problemData.oCategory === 6){
-        o6 = 'CZ';
-    };
+    if(problemData.oCategory === '1'){
+        o6 = 'L';
+    }else if(problemData.oCategory === '2'){
+        o6 = 'M';
+    }else if(problemData.oCategory === '3'){
+        o6 = 'O';
+    }else if(problemData.oCategory === '4'){
+        o6 = 'Q';
+    }else if(problemData.oCategory === '5'){
+        o6 = 'S';
+    }else if(problemData.oCategory === '6'){
+        o6 = 'U';
+    }
     sheet.cell(`${o6}35`).value("O"); // Mark or set value as needed
+
+    // Q6
+    let q6 = null;
+    if(problemData.qCategory === '1'){
+        q6 = 'AM';
+    }else if(problemData.qCategory === '2'){
+        q6 = 'AZ';
+    }else if(problemData.qCategory === '3'){
+        q6 = 'BM';
+    }else if(problemData.qCategory === '4'){
+        q6 = 'BZ';
+    }else if(problemData.qCategory === '5'){
+        q6 = 'CM';
+    }else if(problemData.qCategory === '6'){
+        q6 = 'CZ';
+    }
+    sheet.cell(`${q6}35`).value("O"); // Mark or set value as needed
     
 
 
