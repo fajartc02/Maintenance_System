@@ -516,6 +516,7 @@ module.exports = {
         });
       });
   },
+  // Edit Problem
   editProblem: async (req, res) => {
     let pathFimgProblem = req.files.fimage_problem
       ? `${req.files.fimage_problem[0].destination}${req.files.fimage_problem[0].filename}`
