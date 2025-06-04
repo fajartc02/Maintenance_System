@@ -1,6 +1,5 @@
 const cmdMultipleQuery = require('../config/MultipleQueryConnection');
 
-
 function configWa(msg, receiverNo) {
     var axios = require('axios');
     var FormData = require('form-data');

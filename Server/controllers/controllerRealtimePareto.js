@@ -4,7 +4,6 @@ const mysql = require('mysql');
 const cmdQuery = require('../config/MysqlConnection');
 const cmdMultipleQuery = require('../config/MultipleQueryConnection');
 
-
 module.exports = {
     getDataPareto: (req, res) => {
         // let startDate = ''
