@@ -105,7 +105,10 @@ module.exports = {
             (fdur >= 15 AND
                 date(fstart_time) >= date('${startDate}') AND 
                 date(fstart_time) <= date('${endDate}')${fline}${fmc_name} AND
-                fline LIKE '%ASSY%')`
+                fline LIKE '%ASSY%') OR
+            (problemCategory = 3 AND
+                date(fstart_time) >= date('${startDate}') AND 
+                date(fstart_time) <= date('${endDate}')${fline}${fmc_name})`
         cmdMultipleQuery(qFreq)
             .then((result) => {
                 res.status(200).json({

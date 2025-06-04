@@ -282,7 +282,7 @@ ORDER BY fstart_time DESC`
     getDetailFT: (req, res) => {
         let q = `SELECT * FROM o_problem_member_detail WHERE id_p_m = ${req.params.id_p_m}`
     },
-    checkFocusTheme: (req, res) => {
+checkFocusTheme: (req, res) => {
         try {
             let q = `select * from v_ft_member where id_m_problem = ${req.params.problem_id}`
             cmdMultipleQuery(q)
@@ -291,7 +291,10 @@ ORDER BY fstart_time DESC`
                     if (result.length > 0) {
                         gettingSuccess(res, result)
                     } else {
-                        gettingError(res, result, 500)
+                        res.status(404).json({
+                            message: 'Not Found',
+                            data: []
+                        });
                     }
                 })
         } catch (error) {

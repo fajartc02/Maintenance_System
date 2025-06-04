@@ -221,6 +221,5 @@ module.exports = {
             }).catch((err) => {
                 gettingErrror(res, err)
             });
-
     }
 }

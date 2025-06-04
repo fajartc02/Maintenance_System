@@ -248,6 +248,58 @@ const generatedStepRepairCellDuration = async (res, problemData, uraianData, ful
     sheet.cell("CH11").value(problemData.foperator);
     sheet.cell("CY11").value(problemData.fid);
 
+    // // O6
+    // let o6 = null;
+    // if(problemData.oCategory === 1){
+    //     o6 = 'L';
+    // }else if(problemData.oCategory === 2){
+    //     o6 = 'M';
+    // }else if(problemData.oCategory === 3){
+    //     o6 = 'O';
+    // }else if(problemData.oCategory === 4){
+    //     o6 = 'Q';
+    // }else if(problemData.oCategory === 5){
+    //     o6 = 'S';
+    // }else if(problemData.oCategory === 6){
+    //     o6 = 'U';
+    // }
+    // sheet.cell(`${o6}35`).value("O"); // Mark or set value as needed
+
+    // O6
+    let o6 = null;
+    if(problemData.oCategory === '1'){
+        o6 = 'L';
+    }else if(problemData.oCategory === '2'){
+        o6 = 'M';
+    }else if(problemData.oCategory === '3'){
+        o6 = 'O';
+    }else if(problemData.oCategory === '4'){
+        o6 = 'Q';
+    }else if(problemData.oCategory === '5'){
+        o6 = 'S';
+    }else if(problemData.oCategory === '6'){
+        o6 = 'U';
+    }
+    sheet.cell(`${o6}35`).value("O"); // Mark or set value as needed
+
+    // Q6
+    let q6 = null;
+    if(problemData.qCategory === '1'){
+        q6 = 'AM';
+    }else if(problemData.qCategory === '2'){
+        q6 = 'AZ';
+    }else if(problemData.qCategory === '3'){
+        q6 = 'BM';
+    }else if(problemData.qCategory === '4'){
+        q6 = 'BZ';
+    }else if(problemData.qCategory === '5'){
+        q6 = 'CM';
+    }else if(problemData.qCategory === '6'){
+        q6 = 'CZ';
+    }
+    sheet.cell(`${q6}35`).value("O"); // Mark or set value as needed
+    
+
 
     sheet.cell("C31").value(uraianData.length ? uraianData[0].desc_nm : "");
     sheet.cell("L17").value(
@@ -273,6 +325,13 @@ const generatedStepRepairCellDuration = async (res, problemData, uraianData, ful
         const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         for (let i = 17; i < 17 + 6; i++) {
             const element = jsonStepRepair[idxAct];
+            if (!element) {
+                // Problem cek data untuk template
+                idxAct++;
+                no++;
+                initialDurationIdx++;
+                continue;
+            }
             sheet.cell(`W${i}`).value(no);
             sheet.cell(`X${i}`).value(element.stepDesc);
             sheet.cell(`AI${i}`).value(element.actualTime);

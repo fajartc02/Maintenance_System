@@ -1,6 +1,5 @@
 const validator = require('validator');
 const { Op } = require("sequelize");
-
 const { Division } = require('../models').models;
 
 const divisionAttributes = [

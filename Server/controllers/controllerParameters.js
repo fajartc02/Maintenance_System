@@ -3,7 +3,6 @@ const pool = require('../config/MysqlConnection');
 const cmdMultipleQuery = require('../config/MultipleQueryConnection');
 
 
-
 function gettingError(res, err) {
     res.status(203).json({
         message: 'Error',
