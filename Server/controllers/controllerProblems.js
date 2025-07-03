@@ -120,7 +120,7 @@ module.exports = {
             });
     },
     // Problem Chokotei
-    getProblemChokotei: (req, res) => {
+    getProblemRepeat: (req, res) => {
         let fline = "";
         let fmc_name = "";
         let startDate = "";
@@ -146,7 +146,7 @@ module.exports = {
         cmdMultipleQuery(qFreq)
             .then((result) => {
                 res.status(200).json({
-                    message: "Success to get Chokotei Problem",
+                    message: "Success to get Repeat Problem",
                     data: result,
                 });
             })

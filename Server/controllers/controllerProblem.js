@@ -119,8 +119,8 @@ module.exports = {
                 gettingError(res, err)
             });
     },
-    // Problem Chokotei
-    getProblemChokotei: (req, res) => {
+    // Problem Repeat
+    getProblemRepeat: (req, res) => {
         let fline = "";
         let fmc_name = "";
         let startDate = "";
@@ -146,7 +146,7 @@ module.exports = {
         cmdMultipleQuery(qFreq)
             .then((result) => {
                 res.status(200).json({
-                    message: "Success to get Chokotei Problem",
+                    message: "Success to get Repeat Problem",
                     data: result,
                 });
             })

@@ -81,7 +81,7 @@ const {
     getProblemTemporary,
     getProblemFreq,
     getProblemLtb,
-    getProblemChokotei,
+    getProblemRepeat,
     getProblemSmall,
     getSummaryWeekly,
     getProblemByCategory
@@ -288,7 +288,7 @@ router.get('/getAllActiveProblem', getAllActiveProblem)
 router.get('/problemTemporary', getProblemTemporary)
 router.get('/problemFreq', getProblemFreq)
 router.get('/problemLtb', getProblemLtb)
-router.get('/problemChokotei', getProblemChokotei)
+router.get('/problemRepeat', getProblemRepeat)
 router.get('/problemSmall', getProblemSmall)
 
 // NOTIF

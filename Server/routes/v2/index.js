@@ -283,21 +283,21 @@ const generatedStepRepairCellDuration = async (res, problemData, uraianData, ful
     sheet.cell(`${o6}35`).value("O"); // Mark or set value as needed
 
     // Q6
-    let q6 = null;
+    let q = null;
     if(problemData.qCategory === '1'){
-        q6 = 'AM';
+        q = 'AM';
     }else if(problemData.qCategory === '2'){
-        q6 = 'AZ';
+        q = 'AZ';
     }else if(problemData.qCategory === '3'){
-        q6 = 'BM';
+        q = 'BM';
     }else if(problemData.qCategory === '4'){
-        q6 = 'BZ';
+        q = 'BZ';
     }else if(problemData.qCategory === '5'){
-        q6 = 'CM';
+        q = 'CM';
     }else if(problemData.qCategory === '6'){
-        q6 = 'CZ';
+        q = 'CZ';
     }
-    sheet.cell(`${q6}35`).value("O"); // Mark or set value as needed
+    sheet.cell(`${q}35`).value("O"); // Mark or set value as needed
     
 
 
