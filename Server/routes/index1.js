@@ -81,8 +81,6 @@ const {
     getProblemTemporary,
     getProblemFreq,
     getProblemLtb,
-    getProblemRepeat,
-    getProblemSmall,
     getSummaryWeekly,
     getProblemByCategory
 } = require("../controllers/controllerProblem")
@@ -288,8 +286,6 @@ router.get('/getAllActiveProblem', getAllActiveProblem)
 router.get('/problemTemporary', getProblemTemporary)
 router.get('/problemFreq', getProblemFreq)
 router.get('/problemLtb', getProblemLtb)
-router.get('/problemRepeat', getProblemRepeat)
-router.get('/problemSmall', getProblemSmall)
 
 // NOTIF
 router.get('/sendNotifWhatsapp', sendNotifWhatsapp)
