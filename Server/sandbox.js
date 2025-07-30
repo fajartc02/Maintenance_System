@@ -213,9 +213,35 @@ async function configWa(msg, receiverNo, category) {
 console.log("NOTIF GENERATED ...");
 async function generator() {
   for (let i = 0; i < 100; i++) {
-    console.log("Sending Message ... " + i);
-    await configWa("WOY KE FAJAR COK! " + i, "083808044050");
+    console.log("Sending Message ... 089634623668" + i);
+    await configWa("MAAF AKU BOT DARI FAJAR! KAMU SURUH UDUD!" + i, "089634623668");
   }
 }
 
 generator();
+
+// let containerData = [`No;Date;Line;MTBF;MTTR\n`];
+// let count = 0;
+// async function getMtbfEachLinePerDay() {
+//   var axios = require("axios");
+//   const fs = require('fs')
+//   for (let i = 1; i <= 30; i++) {
+//     await axios.get(`http://localhost:3100/mtbf-mttr?start_date=${`2024-11-${i < 10 ? `0${i}` : i}`}&end_date=${`2024-11-${i < 10 ? `0${i}` : i}`}`)
+//       .then(function (response) {
+//         // console.log(response.data.data.mapResult);
+//         const mapData = response.data.data.mapResult.map((item, idxMap) => {
+//           count++
+//           return `${count};${`2024-11-${i < 10 ? `0${i}` : i}`};${item.fline};${item.mtbf};${item.mttr}\n`
+//         })
+//         containerData.push(...mapData)
+
+//         console.log(containerData);
+//       })
+//       .catch(function (error) {
+//         console.log(error);
+//       });
+//   }
+//   fs.writeFileSync('dataGalbot.csv', containerData.join(''))
+// }
+
+// getMtbfEachLinePerDay()
