@@ -96,6 +96,7 @@ module.exports = {
         if (req.query.fmc) {
             fmc_name = ` AND fmc_name LIKE '%${req.query.fmc}%'`
         }
+
         let qFreq = `SELECT * FROM v_current_error_2 
         WHERE
             (fdur >= 120 AND
@@ -114,76 +115,6 @@ module.exports = {
                 })
             }).catch((err) => {
                 gettingError(res, err)
-            });
-    },
-    // Problem Repeat
-    getProblemRepeat: (req, res) => {
-        let fline = "";
-        let fmc_name = "";
-        let startDate = "";
-        let endDate = "";
-        if (req.query.startDate) {
-            startDate = `${req.query.startDate}`;
-        }
-        if (req.query.endDate) {
-            endDate = `${req.query.endDate}`;
-        }
-
-        if (req.query.fline) {
-            fline = ` AND fline LIKE '%${req.query.fline}%'`;
-        }
-        if (req.query.fmc) {
-            fmc_name = ` AND fmc_name LIKE '%${req.query.fmc}%'`;
-        }
-        let qFreq = `SELECT * FROM v_current_error_2 
-        WHERE
-            (problemCategory = 2 AND
-                date(fstart_time) >= date('${startDate}') AND 
-                date(fstart_time) <= date('${endDate}')${fline}${fmc_name})`
-        cmdMultipleQuery(qFreq)
-            .then((result) => {
-                res.status(200).json({
-                    message: "Success to get Repeat Problem",
-                    data: result,
-                });
-            })
-            .catch((err) => {
-                gettingError(res, err);
-            });
-    },
-
-    getProblemSmall: (req, res) => {
-        let fline = "";
-        let fmc_name = "";
-        let startDate = "";
-        let endDate = "";
-        if (req.query.startDate) {
-            startDate = `${req.query.startDate}`;
-        }
-        if (req.query.endDate) {
-            endDate = `${req.query.endDate}`;
-        }
-
-        if (req.query.fline) {
-            fline = ` AND fline LIKE '%${req.query.fline}%'`;
-        }
-        if (req.query.fmc) {
-            fmc_name = ` AND fmc_name LIKE '%${req.query.fmc}%'`;
-        }
-        let qFreq = `SELECT * FROM v_current_error_2 
-        WHERE
-            (problemCategory = 1 AND
-                date(fstart_time) >= date('${startDate}') AND 
-                date(fstart_time) <= date('${endDate}')${fline}${fmc_name})`
-        cmdMultipleQuery(qFreq)
-            .then((result) => {
-                res.status(200).json({
-                    message: "Success to get Chokotei Problem",
-                    data: result,
-                });
-            })
-            .catch((err) => {
-                gettingError(res, err);
             });
     },
     getSummaryWeekly: (req, res) => {
@@ -238,8 +169,8 @@ module.exports = {
             (fline = 'LPDC' OR fline = 'HPDC') AND
             fpermanet_cm LIKE '%[{%' AND
             fdur >= 30`
-        // (fdur >= 30 AND MONTH(fstart_time) <= MONTH(NOW())))
-        // (fdur >= 120 AND(MONTH(fstart_time) - MONTH(NOW())) <= 3))
+            // (fdur >= 30 AND MONTH(fstart_time) <= MONTH(NOW())))
+            // (fdur >= 120 AND(MONTH(fstart_time) - MONTH(NOW())) <= 3))
         let qGetAll = `SELECT * FROM v_current_error_2 WHERE
             fshift <> '-' AND
             fshift <> '' AND

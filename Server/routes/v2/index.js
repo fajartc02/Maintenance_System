@@ -1,7 +1,7 @@
 var router = require("express").Router();
 
 const problemRoute = require("./problemRoute");
-const {getLtbHistory} = require("../../controllers/v2/LTBHistory");
+const { getLtbHistory } = require("../../controllers/v2/LTBHistory");
 const {
     getGraphQ6,
 } = require("../../controllers/v2/Q6/q6_anlysis.controllers");
@@ -26,7 +26,7 @@ router.get("/floating-tip/table", getTipTable);
 const ky = require("./ky.route");
 const fs = require("fs");
 const moment = require("moment/moment");
-const {data} = require("express-session/session/cookie");
+const { data } = require("express-session/session/cookie");
 const ExcelJS = require("exceljs");
 
 //region exceljs
@@ -52,8 +52,8 @@ const mappedImageFile = async (res, problemData, uraianData, generatedExcelPath)
         const row = 21; // Specify the row number
         const colIndex = worksheet.getColumn(column).number;
         worksheet.addImage(chartImageIdGeneral, {
-            tl: {col: colIndex, row: row},
-            ext: {width: 280, height: 180},
+            tl: { col: colIndex, row: row },
+            ext: { width: 280, height: 180 },
         });
     }
 
@@ -74,8 +74,8 @@ const mappedImageFile = async (res, problemData, uraianData, generatedExcelPath)
         const row2 = 17; // Specify the row number
         const colIndex2 = worksheet.getColumn(col2).number;
         worksheet.addImage(chartImageIdStd, {
-            tl: {col: colIndex2, row: row2},
-            ext: {width: 200, height: 150},
+            tl: { col: colIndex2, row: row2 },
+            ext: { width: 200, height: 150 },
         });
     }
     if (
@@ -97,8 +97,8 @@ const mappedImageFile = async (res, problemData, uraianData, generatedExcelPath)
         const colIndex3 = worksheet.getColumn(col3).number;
 
         worksheet.addImage(chartImageIdAct, {
-            tl: {col: colIndex3, row: row3},
-            ext: {width: 200, height: 150},
+            tl: { col: colIndex3, row: row3 },
+            ext: { width: 200, height: 150 },
         });
 
         const why1_img = problemData.why1_img;
@@ -113,8 +113,8 @@ const mappedImageFile = async (res, problemData, uraianData, generatedExcelPath)
             });
 
             worksheet.addImage(imageSave, {
-                tl: {col: colIndex1, row: row1},
-                ext: {width: 250, height: 200},
+                tl: { col: colIndex1, row: row1 },
+                ext: { width: 250, height: 200 },
             });
         }
 
@@ -130,8 +130,8 @@ const mappedImageFile = async (res, problemData, uraianData, generatedExcelPath)
                 extension: "jpeg",
             });
             worksheet.addImage(imageSave, {
-                tl: {col: colIndex1, row: row1},
-                ext: {width: 250, height: 200},
+                tl: { col: colIndex1, row: row1 },
+                ext: { width: 250, height: 200 },
             });
         }
 
@@ -145,8 +145,8 @@ const mappedImageFile = async (res, problemData, uraianData, generatedExcelPath)
             });
 
             worksheet.addImage(imageSave, {
-                tl: {col: colIndex1, row: row1},
-                ext: {width: 250, height: 200},
+                tl: { col: colIndex1, row: row1 },
+                ext: { width: 250, height: 200 },
             });
         }
 
@@ -159,8 +159,8 @@ const mappedImageFile = async (res, problemData, uraianData, generatedExcelPath)
                 extension: "jpeg",
             });
             worksheet.addImage(imageSave, {
-                tl: {col: colIndex1, row: row1},
-                ext: {width: 250, height: 200},
+                tl: { col: colIndex1, row: row1 },
+                ext: { width: 250, height: 200 },
             });
         }
     }
@@ -267,38 +267,38 @@ const generatedStepRepairCellDuration = async (res, problemData, uraianData, ful
 
     // O6
     let o6 = null;
-    if(problemData.oCategory === '1'){
+    if (problemData.oCategory === '1') {
         o6 = 'L';
-    }else if(problemData.oCategory === '2'){
+    } else if (problemData.oCategory === '2') {
         o6 = 'M';
-    }else if(problemData.oCategory === '3'){
+    } else if (problemData.oCategory === '3') {
         o6 = 'O';
-    }else if(problemData.oCategory === '4'){
+    } else if (problemData.oCategory === '4') {
         o6 = 'Q';
-    }else if(problemData.oCategory === '5'){
+    } else if (problemData.oCategory === '5') {
         o6 = 'S';
-    }else if(problemData.oCategory === '6'){
+    } else if (problemData.oCategory === '6') {
         o6 = 'U';
     }
     sheet.cell(`${o6}35`).value("O"); // Mark or set value as needed
 
     // Q6
-    let q6 = null;
-    if(problemData.qCategory === '1'){
-        q6 = 'AM';
-    }else if(problemData.qCategory === '2'){
-        q6 = 'AZ';
-    }else if(problemData.qCategory === '3'){
-        q6 = 'BM';
-    }else if(problemData.qCategory === '4'){
-        q6 = 'BZ';
-    }else if(problemData.qCategory === '5'){
-        q6 = 'CM';
-    }else if(problemData.qCategory === '6'){
-        q6 = 'CZ';
+    let q = null;
+    if (problemData.qCategory === '1') {
+        q = 'AM';
+    } else if (problemData.qCategory === '2') {
+        q = 'AZ';
+    } else if (problemData.qCategory === '3') {
+        q = 'BM';
+    } else if (problemData.qCategory === '4') {
+        q = 'BZ';
+    } else if (problemData.qCategory === '5') {
+        q = 'CM';
+    } else if (problemData.qCategory === '6') {
+        q = 'CZ';
     }
-    sheet.cell(`${q6}35`).value("O"); // Mark or set value as needed
-    
+    sheet.cell(`${q}35`).value("O"); // Mark or set value as needed
+
 
 
     sheet.cell("C31").value(uraianData.length ? uraianData[0].desc_nm : "");
@@ -392,7 +392,7 @@ const generatedStepRepairCellDuration = async (res, problemData, uraianData, ful
             const highestGap = Math.max(
                 ...group.map((step) => step.actualTime - step.idealTime)
             );
-            return {quick6: key, steps: group, highestGap: highestGap};
+            return { quick6: key, steps: group, highestGap: highestGap };
         });
 
         // Sort groups by highest gap in descending order
@@ -589,7 +589,7 @@ router.get("/download-report", async (req, res) => {
 
 router.get("/download-template", async (req, res) => {
     try {
-        const {fid} = req.query;
+        const { fid } = req.query;
         let responseData = await cmdMultipleQuery(
             `select * from v_current_error_2 where fid = ${fid}`
         );

@@ -1,20 +1,11 @@
 #!/usr/bin/env node
-
-/**
- * Module dependencies.
- */
-
 var app = require('../app');
 var debug = require('debug')('adaptserver:server');
 var http = require('http');
 
-/**
- * Get port from environment and store in Express.
- */
 
-
-// var port = normalizePort(process.env.PORT || '3100');
-var port = '3100'
+// var port = normalizePort(process.env.PORT || '3200');
+var port = normalizePort(process.env.PORT || '3100');
 app.set('port', port);
 console.log(`Server Running at Port: ${port}`);
 
