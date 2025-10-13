@@ -25,23 +25,23 @@ from v_current_error_2
 WHERE MONTH(fstart_time) = MONTH('${req.query.date}') AND year(fstart_time) = year('${req.query.date}')
 GROUP BY date(fstart_time),fline
 order by fstart_time ASC;`
-            //         let q2 = `SELECT fid, fline, fmc_name, fstart_time, fdur, fshift, ferror_name
-            // FROM v_current_error_2 
-            // WHERE fline IN ('LPDC', 'HPDC', 'Crank Shaft', 'Cam Shaft', 'Cylinder Head', 'Cylinder Block', 'ASSY LINE') AND YEAR(fstart_time) = YEAR(NOW()) AND MONTH(fstart_time) = MONTH(NOW()) ORDER BY fdur DESC`
+        //         let q2 = `SELECT fid, fline, fmc_name, fstart_time, fdur, fshift, ferror_name
+        // FROM v_current_error_2 
+        // WHERE fline IN ('LPDC', 'HPDC', 'Crank Shaft', 'Cam Shaft', 'Cylinder Head', 'Cylinder Block', 'ASSY LINE') AND YEAR(fstart_time) = YEAR(NOW()) AND MONTH(fstart_time) = MONTH(NOW()) ORDER BY fdur DESC`
         console.log(qOeeLinesOfMonth);
         cmdMultipleQuery(`${qOeeLinesOfMonth}`)
             .then((result) => {
-                var groupResults = result.reduce(function(r, a) {
-                        r[a.fline] = r[a.fline] || [];
-                        r[a.fline].push(a);
-                        return r;
-                    }, Object.create(null))
-                    // var groupResultsProb = result[1].reduce(function(r, a) {
-                    //     r[a.fline] = r[a.fline] || [];
-                    //     r[a.fline].push(a);
-                    //     return r;
-                    // }, Object.create(null))
-                    // console.log(groupResultsProb);
+                let groupResults = result.reduce(function (r, a) {
+                    r[a.fline] = r[a.fline] || [];
+                    r[a.fline].push(a);
+                    return r;
+                }, Object.create(null))
+                // let groupResultsProb = result[1].reduce(function(r, a) {
+                //     r[a.fline] = r[a.fline] || [];
+                //     r[a.fline].push(a);
+                //     return r;
+                // }, Object.create(null))
+                // console.log(groupResultsProb);
                 let arrRes = []
                 for (let key in groupResults) {
                     console.log(groupResults[key]);
@@ -66,9 +66,9 @@ order by fstart_time ASC;`
     },
     insertOeeLine: (req, res) => {
         let { fline, fdate, fshift, fvalue } = req.body
-            // if (fvalue.includes('.')) {
-            //     console.log(fvalue);
-            // }
+        // if (fvalue.includes('.')) {
+        //     console.log(fvalue);
+        // }
         fvalue = (fvalue * 10)
         let q = `INSERT INTO tb_oee_log 
             (fline, fdate, fshift, fvalue, fmanual)

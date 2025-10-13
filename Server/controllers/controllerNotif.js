@@ -1,15 +1,15 @@
 const cmdQuery = require('../config/MysqlConnection');
-var axios = require("axios");
-var qs = require("qs");
+let axios = require("axios");
+let qs = require("qs");
 const cmdMultipleQuery = require('../config/MultipleQueryConnection');
 
 function configWa(msg, receiverNo, res) {
-    var data = qs.stringify({
+    let data = qs.stringify({
         token: "nRRMT4Jomzf5vyn4DU1p4ywDuZ7pdYwDnULfGTlrAsVAMWcpeT",
         number: receiverNo,
         message: msg,
     });
-    var config = {
+    let config = {
         method: "post",
         url: "https://app.ruangwa.id/api/send_express",
         headers: {},
@@ -83,7 +83,7 @@ function sendNotif(data, cb, res) {
             isPushNotif = false;
         }
     }
-    var message = `===SMART NOTIFICATION=== \n\n${messageInfo}\n\nhttps://smartandonsys.web.app \n\nTolong di save nomer ini jadi \n\nSMART ANDON`
+    let message = `===SMART NOTIFICATION=== \n\n${messageInfo}\n\nhttps://smartandonsys.web.app \n\nTolong di save nomer ini jadi \n\nSMART ANDON`
     // console.log(data[4] > );
     let qSelectNotif = `SELECT * FROM tb_notif WHERE line LIKE '%${data[0]}%'`
     cmdQuery(qSelectNotif)
@@ -204,7 +204,7 @@ function getCurrentStop(cb) {
 const { getAllCountermeasure, getNotifLeader } = require('../functions/notification/countermeasure')
 module.exports = {
     sendNotifWhatsapp: (req, res) => {
-        var containerFalse = []
+        let containerFalse = []
         getCurrentStop((result) => {
             console.log('THIS RES NOTIF');
             if (result.length > 0) {
@@ -217,7 +217,7 @@ module.exports = {
                         // console.log(resProblem[0].fstart_time);
                         let d = new Date(resProblem[0].fstart_time)
                         Number.prototype.padLeft = function (base, chr) {
-                            var len = (String(base || 10).length - String(this).length) + 1;
+                            let len = (String(base || 10).length - String(this).length) + 1;
                             return len > 0 ? new Array(len).join(chr || '0') + this : this;
                         }
                         let dformat = [d.getDate().padLeft(),
@@ -306,12 +306,12 @@ module.exports = {
                 if (result.length > 1) {
                     for (let j = 0; j < result.length; j++) {
                         const element = result[j];
-                        var data = qs.stringify({
+                        let data = qs.stringify({
                             token: "nRRMT4Jomzf5vyn4DU1p4ywDuZ7pdYwDnULfGTlrAsVAMWcpeT",
                             number: element.fwa_no,
                             message: `${req.body.message} \n - Pak ${element.fname}`,
                         });
-                        var config = {
+                        let config = {
                             method: "post",
                             url: "https://app.ruangwa.id/api/send_express",
                             headers: {},
@@ -335,12 +335,12 @@ module.exports = {
                         })
                     }
                 } else {
-                    var data = qs.stringify({
+                    let data = qs.stringify({
                         token: "nRRMT4Jomzf5vyn4DU1p4ywDuZ7pdYwDnULfGTlrAsVAMWcpeT",
                         number: result[0].fwa_no,
                         message: `${req.body.message} \n - Pak ${result[0].fname}`,
                     });
-                    var config = {
+                    let config = {
                         method: "post",
                         url: "https://app.ruangwa.id/api/send_express",
                         headers: {},

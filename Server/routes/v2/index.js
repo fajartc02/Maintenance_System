@@ -1,4 +1,4 @@
-var router = require("express").Router();
+let router = require("express").Router();
 
 const problemRoute = require("./problemRoute");
 const { getLtbHistory } = require("../../controllers/v2/LTBHistory");

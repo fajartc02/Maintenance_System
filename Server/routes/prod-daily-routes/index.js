@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
 
 let reportRoutes = require('./report')
 let lineRoutes = require('./line')

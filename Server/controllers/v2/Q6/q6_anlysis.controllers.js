@@ -2,7 +2,7 @@ const cmdMultipleQuery = require("../../../config/MultipleQueryConnection");
 const response = require("../../../helpers/response");
 
 async function dataMap(data, is_abnormal = "false", is_freq = "false") {
-  var randomColor = require("randomcolor");
+  let randomColor = require("randomcolor");
   /* 
                                                                             series: [{
                                                                                     name: 'Problem Name',

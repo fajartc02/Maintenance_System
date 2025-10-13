@@ -11,8 +11,8 @@ module.exports = {
                     let qNewHenkaten = `INSERT INTO tb_henkaten (fdate, fline, fmc, fproblem, fchanges_item, fpart_type, fpic, fwork_no, fnote, fstatus) VALUES `
                     let idx = 0;
                     qNewHenkaten += `(`
-                    Object.size = function(obj) {
-                        var size = 0,
+                    Object.size = function (obj) {
+                        let size = 0,
                             key;
                         for (key in obj) {
                             if (obj.hasOwnProperty(key)) size++;
@@ -29,7 +29,7 @@ module.exports = {
                             qNewHenkaten += `'${req.body[key]}'`
                         }
                         qNewHenkaten += ``
-                        if (idx == size) {} else {
+                        if (idx == size) { } else {
                             qNewHenkaten += ','
                         }
                     }
@@ -104,7 +104,7 @@ module.exports = {
     editHenkaten: (req, res) => {
         let q = `UPDATE tb_henkaten SET`
         console.log(req.body);
-        var count = 0
+        let count = 0
         for (let key in req.body) {
             console.log(key);
 

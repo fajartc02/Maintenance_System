@@ -1,9 +1,9 @@
 require("dotenv").config();
 
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
+let express = require("express");
+let path = require("path");
+let cookieParser = require("cookie-parser");
+let logger = require("morgan");
 const cors = require("cors");
 const moment = require('moment')
 
@@ -96,7 +96,7 @@ cron.schedule("*/1 * * * *", async () => {
                 let userData = await cmdMultipleQuery(
                     `SELECT * FROM v_user_notification`
                 );
-                var message = `
+                let message = `
 ===SMART NOTIFICATION===
 *LINE* :
 ${problem.fline}
@@ -187,11 +187,11 @@ Tolong di save nomer ini jadi
     }
 });
 
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
+let indexRouter = require("./routes/index");
+let usersRouter = require("./routes/users");
 const cmdMultipleQuery = require("./config/MultipleQueryConnection");
 
-var app = express();
+let app = express();
 
 app.use(cors());
 app.use(logger("dev"));

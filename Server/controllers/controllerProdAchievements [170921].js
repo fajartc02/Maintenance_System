@@ -24,7 +24,7 @@ const cmdMultipleQuery = require('../config/MultipleQueryConnection');
 
 
 function formatDate(date) {
-    var d = new Date(date),
+    let d = new Date(date),
         month = '' + (d.getMonth() + 1),
         day = '' + d.getDate(),
         year = d.getFullYear();
@@ -37,72 +37,72 @@ function formatDate(date) {
     return [year, month, day].join('-');
 }
 module.exports = {
-    getColorDash: async(req, res) => {
+    getColorDash: async (req, res) => {
         console.log("MASUK FN GETCOLORDASH")
-            // let arrLines = [{
-            //             fline: 'ASSY LINE',
-            //             falias: 'ASSY',
-            //             isStop: 0,
-            //             durCurrentStop: 0,
-            //             output: '0/0',
-            //             oee: 0,
-            //             durMtCall: 0
-            //         },
-            //         {
-            //             fline: 'LPDC',
-            //             falias: 'LP',
-            //             isStop: 0,
-            //             durCurrentStop: 0,
-            //             output: '0/0',
-            //             oee: 100,
-            //             durMtCall: 0
-            //         },
-            //         {
-            //             fline: 'CYLINDER BLOCK',
-            //             falias: 'CB',
-            //             isStop: 0,
-            //             durCurrentStop: 0,
-            //             output: '0/0',
-            //             oee: 100,
-            //             durMtCall: 0
-            //         },
-            //         {
-            //             fline: 'CAM SHAFT',
-            //             falias: 'CAM',
-            //             isStop: 0,
-            //             durCurrentStop: 0,
-            //             output: '0/0',
-            //             oee: 100,
-            //             durMtCall: 0
-            //         },
-            //         {
-            //             fline: 'CRANK SHAFT',
-            //             falias: 'CR',
-            //             isStop: 0,
-            //             durCurrentStop: 0,
-            //             output: '0/0',
-            //             oee: 100,
-            //             durMtCall: 0
-            //         },
-            //         {
-            //             fline: 'CYLINDER HEAD',
-            //             falias: 'CH',
-            //             isStop: 0,
-            //             durCurrentStop: 0,
-            //             output: '0/0',
-            //             oee: 100,
-            //             durMtCall: 0
-            //         },
-            //         {
-            //             fline: 'HPDC',
-            //             falias: 'DC',
-            //             isStop: 0,
-            //             durCurrentStop: 0,
-            //             output: '0/0',
-            //             oee: 100,
-            //             durMtCall: 0
-            //         },
-            //     ]
+        // let arrLines = [{
+        //             fline: 'ASSY LINE',
+        //             falias: 'ASSY',
+        //             isStop: 0,
+        //             durCurrentStop: 0,
+        //             output: '0/0',
+        //             oee: 0,
+        //             durMtCall: 0
+        //         },
+        //         {
+        //             fline: 'LPDC',
+        //             falias: 'LP',
+        //             isStop: 0,
+        //             durCurrentStop: 0,
+        //             output: '0/0',
+        //             oee: 100,
+        //             durMtCall: 0
+        //         },
+        //         {
+        //             fline: 'CYLINDER BLOCK',
+        //             falias: 'CB',
+        //             isStop: 0,
+        //             durCurrentStop: 0,
+        //             output: '0/0',
+        //             oee: 100,
+        //             durMtCall: 0
+        //         },
+        //         {
+        //             fline: 'CAM SHAFT',
+        //             falias: 'CAM',
+        //             isStop: 0,
+        //             durCurrentStop: 0,
+        //             output: '0/0',
+        //             oee: 100,
+        //             durMtCall: 0
+        //         },
+        //         {
+        //             fline: 'CRANK SHAFT',
+        //             falias: 'CR',
+        //             isStop: 0,
+        //             durCurrentStop: 0,
+        //             output: '0/0',
+        //             oee: 100,
+        //             durMtCall: 0
+        //         },
+        //         {
+        //             fline: 'CYLINDER HEAD',
+        //             falias: 'CH',
+        //             isStop: 0,
+        //             durCurrentStop: 0,
+        //             output: '0/0',
+        //             oee: 100,
+        //             durMtCall: 0
+        //         },
+        //         {
+        //             fline: 'HPDC',
+        //             falias: 'DC',
+        //             isStop: 0,
+        //             durCurrentStop: 0,
+        //             output: '0/0',
+        //             oee: 100,
+        //             durMtCall: 0
+        //         },
+        //     ]
         let arrLines = ['LPDC', 'HPDC', 'CAM SHAFT', 'CRANK SHAFT', 'CYLINDER HEAD', 'CYLINDER BLOCK', 'ASSY LINE']
 
         // total 0 ~ 15
@@ -294,7 +294,7 @@ module.exports = {
             })
     },
     getLines: (req, res) => {
-        var q = `select * from tb_line`;
+        let q = `select * from tb_line`;
         cmdQuery(q)
             .then((results) => {
                 res.status(200).json({
@@ -309,7 +309,7 @@ module.exports = {
             });
     },
     getMachines: (req, res) => {
-        var q = `select * from tb_mc`;
+        let q = `select * from tb_mc`;
         if (req.query.line) {
             q += ` where fline = '${req.query.line}'`
         }
@@ -446,7 +446,7 @@ module.exports = {
                 fdur > 3 ${fline} 
             GROUP BY fmc_name 
             ORDER BY fdur desc LIMIT 5`
-            // console.log(qProblem);
+        // console.log(qProblem);
         cmdQuery(qProblem)
             .then((results) => {
                 res.status(200).json({
@@ -556,12 +556,12 @@ module.exports = {
                 })
             });
     },
-    editProblem: async(req, res) => {
+    editProblem: async (req, res) => {
         let containerQuery = []
         let qEditProb = `UPDATE tb_error_log_2 set`
         let idx = 0
-        Object.size = function(obj) {
-            var size = 0,
+        Object.size = function (obj) {
+            let size = 0,
                 key;
             for (key in obj) {
                 if (obj.hasOwnProperty(key)) size++;
@@ -580,12 +580,12 @@ module.exports = {
             } else {
                 qEditProb += ` ${key}='${req.body[key]}'`
             }
-            if (idx == size) {} else {
+            if (idx == size) { } else {
                 qEditProb += ','
             }
         }
         qEditProb += ` where fid = ${req.params.v_}`
-            // console.log(qEditProb);
+        // console.log(qEditProb);
         containerQuery.push(qEditProb)
         if (req.query.isFinished) {
             let qUpdateColDash = `update tb_status set fstatus = 0, ferror_start = NULL, ferror_end = NULL where fid = ${req.query.isFinished}`
@@ -628,8 +628,8 @@ module.exports = {
         let containerQuery = []
         let qEditProb = `UPDATE tb_error_log_2 set`
         let idx = 0
-        Object.size = function(obj) {
-            var size = 0,
+        Object.size = function (obj) {
+            let size = 0,
                 key;
             for (key in obj) {
                 if (obj.hasOwnProperty(key)) size++;
@@ -637,7 +637,7 @@ module.exports = {
             return size;
         };
         let size = Object.size(req.body)
-            // console.log(size);
+        // console.log(size);
         console.log(req.body);
         for (key in req.body) {
             console.log(idx);
@@ -649,7 +649,7 @@ module.exports = {
             } else {
                 qEditProb += ` ${key}='${req.body[key]}'`
             }
-            if (idx == size) {} else {
+            if (idx == size) { } else {
                 qEditProb += ','
             }
         }

@@ -1,7 +1,7 @@
-var router = require("express").Router();
+let router = require("express").Router();
 
 const problemRoute = require("./problemRoute");
-const {getLtbHistory} = require("../../controllers/v2/LTBHistory");
+const { getLtbHistory } = require("../../controllers/v2/LTBHistory");
 const {
     getGraphQ6,
 } = require("../../controllers/v2/Q6/q6_anlysis.controllers");
@@ -34,8 +34,8 @@ router.get("/download-report", async (req, res) => {
         const XLSXChart = require("xlsx-chart");
         const moment = require("moment");
 
-        var fs = require("fs");
-        const {fid} = req.query;
+        let fs = require("fs");
+        const { fid } = req.query;
         // check availablity report
         // no, get template, get db data insert into excel
         // yes, fetch report /<fid>_<problem>/<machine>_<problem>.xlsx
@@ -123,8 +123,8 @@ router.get("/download-report", async (req, res) => {
                 const row = 21; // Specify the row number
                 const colIndex = worksheet.getColumn(column).number;
                 worksheet.addImage(chartImageIdGeneral, {
-                    tl: {col: colIndex, row: row},
-                    ext: {width: 280, height: 180},
+                    tl: { col: colIndex, row: row },
+                    ext: { width: 280, height: 180 },
                 });
             }
 
@@ -144,8 +144,8 @@ router.get("/download-report", async (req, res) => {
                 const row2 = 17; // Specify the row number
                 const colIndex2 = worksheet.getColumn(col2).number;
                 worksheet.addImage(chartImageIdStd, {
-                    tl: {col: colIndex2, row: row2},
-                    ext: {width: 200, height: 150},
+                    tl: { col: colIndex2, row: row2 },
+                    ext: { width: 200, height: 150 },
                 });
             }
             if (
@@ -166,8 +166,8 @@ router.get("/download-report", async (req, res) => {
                 const colIndex3 = worksheet.getColumn(col3).number;
 
                 worksheet.addImage(chartImageIdAct, {
-                    tl: {col: colIndex3, row: row3},
-                    ext: {width: 200, height: 150},
+                    tl: { col: colIndex3, row: row3 },
+                    ext: { width: 200, height: 150 },
                 });
             }
 
@@ -274,7 +274,7 @@ router.get("/download-report", async (req, res) => {
                     const highestGap = Math.max(
                         ...group.map((step) => step.actualTime - step.idealTime)
                     );
-                    return {quick6: key, steps: group, highestGap: highestGap};
+                    return { quick6: key, steps: group, highestGap: highestGap };
                 });
 
                 // Sort groups by highest gap in descending order
@@ -328,8 +328,8 @@ router.get("/download-report", async (req, res) => {
                 });
 
                 worksheet.addImage(imageSave, {
-                    tl: {col: colIndex1, row: row1},
-                    ext: {width: 250, height: 200},
+                    tl: { col: colIndex1, row: row1 },
+                    ext: { width: 250, height: 200 },
                 });
             }
 
@@ -350,8 +350,8 @@ router.get("/download-report", async (req, res) => {
                     extension: "jpeg",
                 });
                 worksheet.addImage(imageSave, {
-                    tl: {col: colIndex1, row: row1},
-                    ext: {width: 250, height: 200},
+                    tl: { col: colIndex1, row: row1 },
+                    ext: { width: 250, height: 200 },
                 });
             }
 
@@ -364,8 +364,8 @@ router.get("/download-report", async (req, res) => {
                     extension: "jpeg",
                 });
                 worksheet.addImage(imageSave, {
-                    tl: {col: colIndex1, row: row1},
-                    ext: {width: 250, height: 200},
+                    tl: { col: colIndex1, row: row1 },
+                    ext: { width: 250, height: 200 },
                 });
             }
 
@@ -378,8 +378,8 @@ router.get("/download-report", async (req, res) => {
                     extension: "jpeg",
                 });
                 worksheet.addImage(imageSave, {
-                    tl: {col: colIndex1, row: row1},
-                    ext: {width: 250, height: 200},
+                    tl: { col: colIndex1, row: row1 },
+                    ext: { width: 250, height: 200 },
                 });
             }
             let cm_lama = isNotEmpty(problemData.fpermanet_cm_lama) ?
@@ -428,7 +428,7 @@ router.get("/download-report", async (req, res) => {
                 });
             }
 
-            var dirFile = `./reports/ltb/${problemData.fid}_${problemData.ferror_name}`;
+            let dirFile = `./reports/ltb/${problemData.fid}_${problemData.ferror_name}`;
 
             if (!fs.existsSync(dirFile)) {
                 fs.mkdirSync(dirFile);

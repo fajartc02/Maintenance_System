@@ -1,5 +1,5 @@
 function YYYYMMDD(date) {
-    var d = new Date(date),
+    let d = new Date(date),
         month = "" + (d.getMonth() + 1),
         day = "" + d.getDate(),
         year = d.getFullYear();
@@ -11,7 +11,7 @@ function YYYYMMDD(date) {
 }
 const formatDate = {
     YYYYMMDD: (date) => {
-        var d = new Date(date),
+        let d = new Date(date),
             month = "" + (d.getMonth() + 1),
             day = "" + d.getDate(),
             year = d.getFullYear();
@@ -30,7 +30,7 @@ const formatDate = {
             pad(date.getMinutes())
     },
     YYYYMMDD_HHMM: (date) => {
-        var d = new Date(date),
+        let d = new Date(date),
             month = "" + (d.getMonth() + 1),
             day = "" + d.getDate(),
             year = d.getFullYear();
@@ -46,7 +46,7 @@ const formatDate = {
         return `${[year, month, day].join("-")} ${hhmmss}`;
     },
     YYYYMM: (date) => {
-        var d = new Date(date),
+        let d = new Date(date),
             month = "" + (d.getMonth() + 1),
             day = "" + d.getDate(),
             year = d.getFullYear();

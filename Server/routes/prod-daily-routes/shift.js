@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
 
 const { getShifts } = require('../../controllers/daily-prod-report/controllerShift')
 

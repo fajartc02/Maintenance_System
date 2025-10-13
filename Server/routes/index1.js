@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
 
 router.get('/', (req, res) => {
     res.send('Hello from express')
@@ -105,7 +105,7 @@ router.get('/test-update', (req, res) => {
 
 router.use('/v1/prod-daily', prodDailyRoutes)
 
-router.get('/image', async(req, res) => {
+router.get('/image', async (req, res) => {
     let pathImage = `${req.query.path}`
     const r = fs.createReadStream(pathImage) // or any other way to get a readable stream
     const ps = new stream.PassThrough() // <---- this makes a trick with stream error handling
@@ -120,16 +120,16 @@ router.get('/image', async(req, res) => {
         })
     ps.pipe(res) // <---- this makes a trick with stream error handling
 });
-router.get('/', function(req, res) {
+router.get('/', function (req, res) {
     // // res.setHeader('Content-Type', 'application/pdf')
     // // res.setHeader('Content-Disposition', 'inline;filename=doc1.pdf')
     // // res.send()
-    // var data = fs.readFileSync('./doc1.pdf');
+    // let data = fs.readFileSync('./doc1.pdf');
     // res.contentType("application/pdf");
     // res.send(data);
 
-    // var file = fs.createReadStream('./documents/doc1.pdf');
-    // var stat = fs.statSync('./documents/doc1.pdf');
+    // let file = fs.createReadStream('./documents/doc1.pdf');
+    // let stat = fs.statSync('./documents/doc1.pdf');
     // res.setHeader('Content-Length', stat.size);
     // res.setHeader('Content-Type', 'application/pdf');
     // // res.setHeader('Content-Disposition', 'attachment; filename=quote.pdf');
@@ -141,7 +141,7 @@ router.get('/', function(req, res) {
         fs.createReadStream(path).pipe(res)
     } else {
         res.status(500)
-            // console.log('File not found')
+        // console.log('File not found')
         res.send('File not found')
     }
 })
@@ -256,7 +256,7 @@ router.post('/addCmQuality', addCmQuality)
 getProblemByCategory
 router.post('/problemCategory', getProblemByCategory)
 router.get('/delayProblemCm', getSummaryWeekly)
-    // CYCLE TIME MACHINE
+// CYCLE TIME MACHINE
 router.get('/ctMachines', getAllCtMachines)
 router.get('/ctMachinesDashboard', getCtMcDashboard)
 router.get('/ctOneMachine', getOneCtMachine)
@@ -313,45 +313,45 @@ const newUpload = require("../functions/newUpload")
 
 router.put('/editProblem/:v_', newUpload.fields(
     [{
-            name: 'fimage_problem',
-            maxCount: 1
-        },
-        {
-            name: 'std_img',
-            maxCount: 1
-        },
-        {
-            name: 'act_img',
-            maxCount: 1
-        },
-        {
-            name: 'why1_img',
-            maxCount: 1
-        },
-        {
-            name: 'why2_img',
-            maxCount: 1
-        },
-        {
-            name: 'fimage2_problem',
-            maxCount: 1
-        },
-        {
-            name: 'std2_img',
-            maxCount: 1
-        },
-        {
-            name: 'act2_img',
-            maxCount: 1
-        },
-        {
-            name: 'why12_img',
-            maxCount: 1
-        },
-        {
-            name: 'why22_img',
-            maxCount: 1
-        },
+        name: 'fimage_problem',
+        maxCount: 1
+    },
+    {
+        name: 'std_img',
+        maxCount: 1
+    },
+    {
+        name: 'act_img',
+        maxCount: 1
+    },
+    {
+        name: 'why1_img',
+        maxCount: 1
+    },
+    {
+        name: 'why2_img',
+        maxCount: 1
+    },
+    {
+        name: 'fimage2_problem',
+        maxCount: 1
+    },
+    {
+        name: 'std2_img',
+        maxCount: 1
+    },
+    {
+        name: 'act2_img',
+        maxCount: 1
+    },
+    {
+        name: 'why12_img',
+        maxCount: 1
+    },
+    {
+        name: 'why22_img',
+        maxCount: 1
+    },
 
     ]
 ), editProblem)

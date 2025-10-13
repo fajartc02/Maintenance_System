@@ -1,14 +1,14 @@
 function problemNotification(msg, receiverNo, category) {
     const cmdMultipleQuery = require("../../config/MultipleQueryConnection");
-    var axios = require("axios");
-    var qs = require("qs");
+    let axios = require("axios");
+    let qs = require("qs");
 
-    var data = qs.stringify({
+    let data = qs.stringify({
         token: "nRRMT4Jomzf5vyn4DU1p4ywDuZ7pdYwDnULfGTlrAsVAMWcpeT",
         number: receiverNo,
         message: msg,
     });
-    var config = {
+    let config = {
         method: "post",
         url: "https://app.ruangwa.id/api/send_express",
         headers: {},
@@ -16,11 +16,11 @@ function problemNotification(msg, receiverNo, category) {
     };
 
     axios(config)
-        .then(function(response) {
+        .then(function (response) {
             console.log(JSON.stringify(response.data));
             return true
         })
-        .catch(function(error) {
+        .catch(function (error) {
             console.log(error);
             return error
         });

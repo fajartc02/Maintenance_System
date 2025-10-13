@@ -1,4 +1,4 @@
-var router = require('express').Router();
+let router = require('express').Router();
 const problemCont = require('../../controllers/v2/problemCont')
 
 

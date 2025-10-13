@@ -1,14 +1,14 @@
 const cmdMultipleQuery = require('../config/MultipleQueryConnection');
 
 function configWa(msg, receiverNo) {
-    var axios = require('axios');
-    var FormData = require('form-data');
-    var data = new FormData();
+    let axios = require('axios');
+    let FormData = require('form-data');
+    let data = new FormData();
     data.append('token', 'BfsLoRiDyDU4MJfzCZEZDNbubWob7OIjvo2un9TDwCbF4Lt5OP');
     data.append('phone', receiverNo);
     data.append('message', msg);
 
-    var config = {
+    let config = {
         method: 'post',
         url: 'http://ruangwa.com/v2/api/send-message.php',
         headers: {
@@ -18,10 +18,10 @@ function configWa(msg, receiverNo) {
     };
 
     axios(config)
-        .then(function(response) {
+        .then(function (response) {
             console.log(JSON.stringify(response.data));
         })
-        .catch(function(error) {
+        .catch(function (error) {
             console.log(error);
         });
 }

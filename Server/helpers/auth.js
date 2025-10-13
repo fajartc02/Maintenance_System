@@ -3,11 +3,11 @@ const response = require('./response')
 
 
 module.exports = {
-    generateToken: async(payload) => {
-        var token = await jwt.sign(payload, process.env.SECRET_KEY);
+    generateToken: async (payload) => {
+        let token = await jwt.sign(payload, process.env.SECRET_KEY);
         return token
     },
-    verifyToken: async(req, res, next) => {
+    verifyToken: async (req, res, next) => {
         try {
             let authorization = req.headers["authorization"];
 

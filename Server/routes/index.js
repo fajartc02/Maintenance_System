@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
 
 router.get('/', (req, res) => {
     res.send('Hello from express')
@@ -126,12 +126,12 @@ router.get('/', function (req, res) {
     // // res.setHeader('Content-Type', 'application/pdf')
     // // res.setHeader('Content-Disposition', 'inline;filename=doc1.pdf')
     // // res.send()
-    // var data = fs.readFileSync('./doc1.pdf');
+    // let data = fs.readFileSync('./doc1.pdf');
     // res.contentType("application/pdf");
     // res.send(data);
 
-    // var file = fs.createReadStream('./documents/doc1.pdf');
-    // var stat = fs.statSync('./documents/doc1.pdf');
+    // let file = fs.createReadStream('./documents/doc1.pdf');
+    // let stat = fs.statSync('./documents/doc1.pdf');
     // res.setHeader('Content-Length', stat.size);
     // res.setHeader('Content-Type', 'application/pdf');
     // // res.setHeader('Content-Disposition', 'attachment; filename=quote.pdf');

@@ -1,7 +1,7 @@
 // QCC FORUM PATH
-var router = require('express').Router();
+let router = require('express').Router();
 const fs = require('fs')
-// var router = express.Router();
+// let router = express.Router();
 
 const security = require('../../helpers/security');
 const cmdMultipleQuery = require('../../config/MultipleQueryConnection');
@@ -18,8 +18,8 @@ async function lastId(table, col) {
     return await cmdMultipleQuery(q)
         .then((result) => {
             console.log(result);
-            
-            if(result.length > 0) {
+
+            if (result.length > 0) {
                 return result[0][col] + 1
             }
             return 0
@@ -29,7 +29,7 @@ async function lastId(table, col) {
         });
 }
 
-router.post('/register', async(req, res) => {
+router.post('/register', async (req, res) => {
     let id = await lastId(`${process.env.QCC_PREFIX}_m_users`, 'id')
     let encPass = await security.encryptPassword(req.body.password)
     let q = `INSERT INTO 
@@ -52,11 +52,11 @@ router.post('/register', async(req, res) => {
         });
 })
 
-router.get('/verify', async(req,res) => {
+router.get('/verify', async (req, res) => {
     try {
         let userDataVerify = jwt.verify(req.query.uid, process.env.SECRET_KEY)
         console.log(userDataVerify);
-        if(userDataVerify.is_admin === 1) {
+        if (userDataVerify.is_admin === 1) {
             response.success(res, 'Kamu adalah admin =)')
             return
         }
@@ -66,11 +66,11 @@ router.get('/verify', async(req,res) => {
     }
 })
 
-router.post('/login', async(req, res) => {
+router.post('/login', async (req, res) => {
     try {
         let q = `SELECT * FROM ${process.env.QCC_PREFIX}_m_users WHERE noreg = '${req.body.noreg}'`
         await cmdMultipleQuery(q)
-            .then(async(result) => {
+            .then(async (result) => {
                 let user = result[0]
                 const is_pass_correct = await security.decryptPassword(req.body.password, user.password)
                 console.log(is_pass_correct);
@@ -87,19 +87,19 @@ router.post('/login', async(req, res) => {
     }
 })
 
-router.get('/types', async(req, res) => {
+router.get('/types', async (req, res) => {
     try {
         let q = `SELECT * FROM ${process.env.QCC_PREFIX}_m_types`
         await cmdMultipleQuery(q)
-        .then(result => {
-            response.success(res, 'success to get types', result)
-        })
+            .then(result => {
+                response.success(res, 'success to get types', result)
+            })
     } catch (error) {
         response.failed(res, `Failed to get types`)
     }
 })
 
-router.get('/img', async(req, res) => {
+router.get('/img', async (req, res) => {
     const path = req.query.path
     if (fs.existsSync(path)) {
         // res.contentType("images");
@@ -111,7 +111,7 @@ router.get('/img', async(req, res) => {
     }
 })
 
-router.get('/dashboard', async(req, res) => {
+router.get('/dashboard', async (req, res) => {
     try {
         let q = `SELECT * FROM ${process.env.QCC_PREFIX}_r_posts WHERE type_id = ${req.query.type_id}`
         const posts = await cmdMultipleQuery(q)
@@ -130,9 +130,9 @@ router.get('/dashboard', async(req, res) => {
     }
 })
 
-router.get('/submission/detail', async(req, res) => {
+router.get('/submission/detail', async (req, res) => {
     try {
-        const {post_id} = req.query
+        const { post_id } = req.query
         let q = `SELECT post_id,title,pdf_file,type_id FROM ${process.env.QCC_PREFIX}_r_posts WHERE post_id = ${post_id} LIMIT 1`
         let post = await cmdMultipleQuery(q)
         let qComments = `SELECT qrpc.*, qmu.name, qmu.instance FROM qcc_r_post_comments qrpc
@@ -142,26 +142,26 @@ router.get('/submission/detail', async(req, res) => {
         let comments = await cmdMultipleQuery(qComments)
         post[0].comments = comments
         console.log(comments);
-        
+
         response.success(res, 'Success', post[0])
     } catch (error) {
         response.failed(res, `Failed to post submission`)
     }
 })
 
-router.post('/submission/comment', async(req, res) => {
+router.post('/submission/comment', async (req, res) => {
     try {
         // CHECK LIKE USER ID ALREADY LIKE WITH THE SAME TYPE?
-        let {uid, tid} = req.query
-        let {post_id, comment} = req.body
+        let { uid, tid } = req.query
+        let { post_id, comment } = req.body
         let userDataVerify = jwt.verify(uid, process.env.SECRET_KEY)
         console.log('mass');
-        
+
         let checkQLike = `SELECT id FROM ${process.env.QCC_PREFIX}_r_post_comments WHERE user_id = '${userDataVerify.id}' AND type_id = ${tid}`
         let user = await cmdMultipleQuery(checkQLike)
         const userNotYetLike = user.length === 0
-        
-        if(userNotYetLike && userDataVerify) {
+
+        if (userNotYetLike && userDataVerify) {
             let id = await lastId(`${process.env.QCC_PREFIX}_r_post_comments`, 'id')
             let instQ = `INSERT INTO ${process.env.QCC_PREFIX}_r_post_comments
             (id, user_id, post_id, type_id, comments)
@@ -169,7 +169,7 @@ router.post('/submission/comment', async(req, res) => {
             (${id}, ${userDataVerify.id}, ${post_id}, ${tid}, '${comment}')`
             await cmdMultipleQuery(instQ)
             response.success(res, 'success to comment post')
-            return 
+            return
         } else {
             throw 'User already comment'
         }
@@ -178,24 +178,24 @@ router.post('/submission/comment', async(req, res) => {
     }
 })
 
-router.post('/submission/like', async(req, res) => {
+router.post('/submission/like', async (req, res) => {
     try {
         // CHECK LIKE USER ID ALREADY LIKE WITH THE SAME TYPE?
-        let {uid, tid, pid} = req.query
+        let { uid, tid, pid } = req.query
         let userDataVerify = jwt.verify(uid, process.env.SECRET_KEY)
 
         let checkQLike = `SELECT id FROM ${process.env.QCC_PREFIX}_r_post_likes WHERE user_id = '${userDataVerify.id}' AND type_id = ${tid}`
         let user = await cmdMultipleQuery(checkQLike)
         const userNotYetLike = user.length === 0
-        
-        if(userNotYetLike && userDataVerify) {
+
+        if (userNotYetLike && userDataVerify) {
             let id = await lastId(`${process.env.QCC_PREFIX}_r_post_likes`, 'id')
             let instQ = `INSERT INTO ${process.env.QCC_PREFIX}_r_post_likes
             (id, user_id,post_id, type_id)
             VALUES
             (${id}, ${userDataVerify.id}, ${pid}, ${tid})`
             let succes = await cmdMultipleQuery(instQ)
-            if(succes) {
+            if (succes) {
                 return response.success(res, 'success to like post')
             }
             throw 'USer already like'
@@ -207,12 +207,12 @@ router.post('/submission/like', async(req, res) => {
     }
 })
 
-router.post('/submission', upload.array('attach'), async(req, res) => {
+router.post('/submission', upload.array('attach'), async (req, res) => {
     try {
-        if(req.files.length > 0) {
-            let {type_id, title} = req.body
+        if (req.files.length > 0) {
+            let { type_id, title } = req.body
             console.log(req.files);
-            
+
             let id = await lastId(`${process.env.QCC_PREFIX}_r_posts`, 'post_id')
             const banner = `uploads/${req.files[0].filename}`
             const pdf_file = `uploads/${req.files[1].filename}`
@@ -220,9 +220,9 @@ router.post('/submission', upload.array('attach'), async(req, res) => {
             (post_id, type_id, title, banner, pdf_file) VALUES
             (${id}, '${type_id}', '${title}', '${banner}', '${pdf_file}')`
             await cmdMultipleQuery(q)
-            .then(result => {
-                response.success(res, 'success to post submission', result)
-            })
+                .then(result => {
+                    response.success(res, 'success to post submission', result)
+                })
         }
     } catch (error) {
         response.failed(res, `Failed to post submission`)

@@ -5,7 +5,7 @@ const cmdMultipleQuery = require("../config/MultipleQueryConnection");
 const upload = require("../functions/upload");
 
 function formatDate(date) {
-  var d = new Date(date),
+  let d = new Date(date),
     month = "" + (d.getMonth() + 1),
     day = "" + d.getDate(),
     year = d.getFullYear();
@@ -215,7 +215,7 @@ module.exports = {
       });
   },
   getLines: (req, res) => {
-    var q = `select * from tb_line where parent_id is null`;
+    let q = `select * from tb_line where parent_id is null`;
     dbSingleQuery(q)
       .then((results) => {
         res.status(200).json({
@@ -231,7 +231,7 @@ module.exports = {
       });
   },
   getMachines: (req, res) => {
-    var q = `select * from tb_mc WHERE fid IS NOT NULL`;
+    let q = `select * from tb_mc WHERE fid IS NOT NULL`;
     if (req.query.line) {
       q += ` AND fline = '${req.query.line}'`;
     }
@@ -820,10 +820,10 @@ module.exports = {
     console.log(qEditProb);
     containerQuery.push(qEditProb);
     if (req.query.isFinished) {
-      var qUpdateColDash = `update tb_status set fstatus = 0, ferror_start = NULL, ferror_end = NULL where fid = ${req.query.isFinished}`;
+      let qUpdateColDash = `update tb_status set fstatus = 0, ferror_start = NULL, ferror_end = NULL where fid = ${req.query.isFinished}`;
       containerQuery.push(qUpdateColDash);
       if (req.query.line) {
-        var qCloseNotif = `UPDATE tb_notif SET isSentLh = false, isSentSh = false, isSentAm = false, isSentDiv = false WHERE line LIKE '%${req.query.line}%'`;
+        let qCloseNotif = `UPDATE tb_notif SET isSentLh = false, isSentSh = false, isSentAm = false, isSentDiv = false WHERE line LIKE '%${req.query.line}%'`;
         containerQuery.push(qCloseNotif);
       }
       let qUpdateEndJob = `UPDATE tb_jobdesk SET 
@@ -976,7 +976,7 @@ module.exports = {
       console.log(req);
     }
     Object.size = function (obj) {
-      var size = 0,
+      let size = 0,
         key;
       for (key in obj) {
         if (obj.hasOwnProperty(key)) size++;
