@@ -41,7 +41,7 @@ module.exports = {
     },
     getProblemFreq: (req, res) => {
         let fline = ""
-        fmc_name = ""
+        let fmc_name = ""
         startDate = ""
         endDate = ""
         if (req.query.startDate) {
@@ -80,7 +80,7 @@ module.exports = {
     },
     getProblemLtb: (req, res) => {
         let fline = ""
-        fmc_name = ""
+        let fmc_name = ""
         startDate = ""
         endDate = ""
         if (req.query.startDate) {

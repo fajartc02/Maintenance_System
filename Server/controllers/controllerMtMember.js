@@ -75,33 +75,33 @@ module.exports = {
     },
     getOnemember: (req, res) => {
         let arrLine = [{
-                fline: 'CAM SHAFT',
-                query: 'CAM'
-            },
-            {
-                fline: 'CRANK SHAFT',
-                query: 'CR'
-            },
-            {
-                fline: 'CYLINDER HEAD',
-                query: 'CH'
-            },
-            {
-                fline: 'CYLINDER BLOCK',
-                query: 'CB'
-            },
-            {
-                fline: 'ASSY LINE',
-                query: 'ASSY'
-            },
-            {
-                fline: 'LPDC',
-                query: 'LP'
-            },
-            {
-                fline: 'HPDC',
-                query: 'DC'
-            }
+            fline: 'CAM SHAFT',
+            query: 'CAM'
+        },
+        {
+            fline: 'CRANK SHAFT',
+            query: 'CR'
+        },
+        {
+            fline: 'CYLINDER HEAD',
+            query: 'CH'
+        },
+        {
+            fline: 'CYLINDER BLOCK',
+            query: 'CB'
+        },
+        {
+            fline: 'ASSY LINE',
+            query: 'ASSY'
+        },
+        {
+            fline: 'LPDC',
+            query: 'LP'
+        },
+        {
+            fline: 'HPDC',
+            query: 'DC'
+        }
         ]
         let searchLine = arrLine.filter(line => {
             if (line.fline === req.query.targetLine.toUpperCase()) {
@@ -115,18 +115,18 @@ module.exports = {
                 fline LIKE '%${selectedLine}%' AND
                 fshift LIKE '%${req.query.targetShift}%' AND
                 frole = 'GH'`
-        let qLh = `SELECT fname, fshift, frole FROM 
-            tb_mt_member
-            WHERE
-                fline LIKE '%${selectedLine}%' AND
-                fshift LIKE '%${req.query.targetShift}%' AND
-                frole = 'LH'`
-        let qSh = `SELECT fname, fshift, frole FROM 
-            tb_mt_member
-            WHERE
-                fline LIKE '%${selectedLine}%' AND
-                fshift LIKE '%${req.query.targetShift}%' AND
-                frole = 'SH'`
+        // let qLh = `SELECT fname, fshift, frole FROM 
+        //     tb_mt_member
+        //     WHERE
+        //         fline LIKE '%${selectedLine}%' AND
+        //         fshift LIKE '%${req.query.targetShift}%' AND
+        //         frole = 'LH'`
+        // let qSh = `SELECT fname, fshift, frole FROM 
+        //     tb_mt_member
+        //     WHERE
+        //         fline LIKE '%${selectedLine}%' AND
+        //         fshift LIKE '%${req.query.targetShift}%' AND
+        //         frole = 'SH'`
         cmdMultipleQuery(qGh)
             .then((result) => {
                 res.status(200).json({

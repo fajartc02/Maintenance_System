@@ -41,7 +41,7 @@ module.exports = {
     },
     getProblemFreq: (req, res) => {
         let fline = ""
-        fmc_name = ""
+        let fmc_name = ""
         startDate = ""
         endDate = ""
         if (req.query.startDate) {
@@ -80,7 +80,7 @@ module.exports = {
     },
     getProblemLtb: (req, res) => {
         let fline = ""
-        fmc_name = ""
+        let fmc_name = ""
         startDate = ""
         endDate = ""
         if (req.query.startDate) {
@@ -169,8 +169,8 @@ module.exports = {
             (fline = 'LPDC' OR fline = 'HPDC') AND
             fpermanet_cm LIKE '%[{%' AND
             fdur >= 30`
-            // (fdur >= 30 AND MONTH(fstart_time) <= MONTH(NOW())))
-            // (fdur >= 120 AND(MONTH(fstart_time) - MONTH(NOW())) <= 3))
+        // (fdur >= 30 AND MONTH(fstart_time) <= MONTH(NOW())))
+        // (fdur >= 120 AND(MONTH(fstart_time) - MONTH(NOW())) <= 3))
         let qGetAll = `SELECT * FROM v_current_error_2 WHERE
             fshift <> '-' AND
             fshift <> '' AND
