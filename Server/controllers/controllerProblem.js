@@ -43,7 +43,7 @@ module.exports = {
         let fline = ""
         let fmc_name = ""
         let startDate = ""
-        endDate = ""
+        let endDate = ""
         if (req.query.startDate) {
             startDate = `${req.query.startDate}`
         }
@@ -82,7 +82,7 @@ module.exports = {
         let fline = ""
         let fmc_name = ""
         let startDate = ""
-        endDate = ""
+        let endDate = ""
         if (req.query.startDate) {
             startDate = `${req.query.startDate}`
         }
