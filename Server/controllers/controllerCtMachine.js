@@ -37,7 +37,6 @@ module.exports = {
                         strMcTemp += ' OR '
                     }
                     q += `${strMcTemp}`
-                    strMcTemp = ''
                 }
                 q += `) ORDER BY fupdate DESC`
                 console.log(q);
@@ -54,7 +53,6 @@ module.exports = {
                         strMcTemp += ' OR '
                     }
                     q += `${strMcTemp}`
-                    strMcTemp = ''
                 }
                 q += `) ORDER BY fupdate DESC LIMIT`
                 console.log(q);
