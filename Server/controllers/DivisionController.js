@@ -15,9 +15,9 @@ const divisionAttributes = [
 ];
 
 exports.index = async (req, res) => {
-	const { offset, limit } = req.query;
+	let { offset, limit } = req.query;
 
-	const validationErrors = [];
+	let validationErrors = [];
 
 	if (!offset) validationErrors.push('Offset must be defined.');
 	if (!limit) validationErrors.push('Limit must be defined.');
@@ -32,8 +32,8 @@ exports.index = async (req, res) => {
 		});
 	}
 
-	const divisions = await Division.findAll({ 
-		offset: parseInt(offset), 
+	const divisions = await Division.findAll({
+		offset: parseInt(offset),
 		limit: parseInt(limit),
 		order: [
 			['name', 'ASC'],
@@ -67,7 +67,7 @@ exports.show = async (req, res) => {
 
 	if (!uuid) validationErrors.push('UUID must be defined.');
 
-	const division = await Division.findOne({ 
+	const division = await Division.findOne({
 		where: { uuid: uuid },
 		attributes: divisionAttributes
 	});
@@ -91,8 +91,8 @@ exports.store = async (req, res) => {
 	try {
 		const data = {
 			uuid: req.body.uuid,
-            name: req.body.name,
-            sname: req.body.sname,
+			name: req.body.name,
+			sname: req.body.sname,
 			description: req.body.description,
 		};
 
@@ -212,16 +212,16 @@ exports.dropdown = async (req, res) => {
 		});
 	}
 
-	const divisions = await Division.findAll({ 
-		offset: parseInt(offset), 
+	const divisions = await Division.findAll({
+		offset: parseInt(offset),
 		limit: parseInt(limit),
 		order: [
 			['name', 'ASC'],
 		],
 		attributes: [
-				['uuid', 'id'],
-				['name', 'label'],
-			]
+			['uuid', 'id'],
+			['name', 'label'],
+		]
 	});
 
 	const totalDivisions = await Division.count({

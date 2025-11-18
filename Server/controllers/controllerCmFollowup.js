@@ -37,15 +37,15 @@ module.exports = {
         let fshift = ''
         let isFullCap = false // TASKFORCE AND FULLCAP PROBLEM THERE IS NO LIMIT DURATION (ALL DURATION CAN FETCH)
         let isFT = false // for focus theme id_m_problem_member
-        let isLtb = `(
-                fdur >= 120 AND (
-                    fline = 'Cylinder Head' OR fline = 'Cylinder Block' OR fline = 'Crank shaft' OR fline = 'Cam Shaft' OR fline = 'HPDC' OR fline = 'LPDC'
-                )
-            ) OR (
-                fdur >= 15 AND (
-                    fline = 'ASSY LINE'
-                )
-            )`
+        // let isLtb = `(
+        //         fdur >= 120 AND (
+        //             fline = 'Cylinder Head' OR fline = 'Cylinder Block' OR fline = 'Crank shaft' OR fline = 'Cam Shaft' OR fline = 'HPDC' OR fline = 'LPDC'
+        //         )
+        //     ) OR (
+        //         fdur >= 15 AND (
+        //             fline = 'ASSY LINE'
+        //         )
+        //     )`
 
 
 
@@ -61,14 +61,14 @@ module.exports = {
             endDate = `${req.query.endDate}`
         }
         if (req.query.fline) {
-            isLtb = `(
-                fdur >= 120 AND (
-                    fline = '${req.query.fline}'
-                )
-            )`
-            if (req.query.fline == 'ASSY LINE') isLtb = `fdur >= 15 AND (
-                fline = 'ASSY LINE'
-            )`
+            // isLtb = `(
+            //     fdur >= 120 AND (
+            //         fline = '${req.query.fline}'
+            //     )
+            // )`
+            // if (req.query.fline == 'ASSY LINE') isLtb = `fdur >= 15 AND (
+            //     fline = 'ASSY LINE'
+            // )`
             fline = ` AND fline LIKE '%${req.query.fline}%'`
         }
         if (req.query.fmc) {
@@ -181,7 +181,4 @@ module.exports = {
                 })
             });
     },
-    notifCm: (req, res) => {
-        let q = `SELECT * FROM tb_notif`;
-    }
 }
