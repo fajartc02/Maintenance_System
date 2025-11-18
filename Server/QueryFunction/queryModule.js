@@ -7,8 +7,8 @@ function insertData(table_name, colsName, vals) {
             VALUES
         (${vals.join(',')})`
     console.log(q);
-    return new Promise(async(resolve, reject) => {
-        await cmdMultipleQuery(q)
+    return new Promise((resolve, reject) => {
+        cmdMultipleQuery(q)
             .then(result => {
                 resolve(result)
             })
@@ -24,8 +24,8 @@ function bulkInsertData(table_name, colsName, vals) {
             VALUES
         ${vals.join(',')}`
     console.log(q);
-    return new Promise(async(resolve, reject) => {
-        await cmdMultipleQuery(q)
+    return new Promise((resolve, reject) => {
+        cmdMultipleQuery(q)
             .then(result => {
                 resolve(result)
             })
@@ -35,7 +35,8 @@ function bulkInsertData(table_name, colsName, vals) {
     })
 }
 
-function getData(table_name, someCols = false, filterQuery) {
+function getData(table_name, someCols, filterQuery) {
+    if (!someCols) someCols = false
     let q = `SELECT`
     let containerCols = []
     if (someCols) {
@@ -52,8 +53,8 @@ function getData(table_name, someCols = false, filterQuery) {
         q += ` ${filterQuery}`
     }
     console.log(q);
-    return new Promise(async(resolve, reject) => {
-        await cmdMultipleQuery(q)
+    return new Promise((resolve, reject) => {
+        cmdMultipleQuery(q)
             .then(result => {
                 resolve(result)
             })
@@ -66,8 +67,8 @@ function getData(table_name, someCols = false, filterQuery) {
 function deleteQuery(table_name, colName, operator = '', valueName = '') {
     let q = `DELETE FROM ${table_name} WHERE ${colName} ${operator} ${valueName}`
 
-    return new Promise(async(resolve, reject) => {
-        await cmdMultipleQuery(q)
+    return new Promise((resolve, reject) => {
+        cmdMultipleQuery(q)
             .then(result => {
                 resolve(result)
             })
