@@ -57,16 +57,6 @@ module.exports = {
                 q += `) ORDER BY fupdate DESC LIMIT`
                 console.log(q);
             }
-            // console.log(req.query.searchMc);
-        } else {
-            // q = `SELECT * FROM tb_cycletime_mc_log 
-            // WHERE DATE(fupdate) = DATE('2021-06-18') AND
-            // (fMachine = 'IMSP-0011'
-            //     OR fMachine = 'IMSP-0012'
-            //     OR fMachine = 'IMSP-0013'
-            //     OR fMachine = 'IMSP-0014'
-            //     OR fMachine = 'IMSP-0015'
-            // ) ORDER BY fupdate DESC`;
         }
         cmdMultipleQuery(q)
             .then((result) => {
@@ -164,7 +154,7 @@ module.exports = {
         cmdMultipleQuery(containerQuery.join(';'))
             .then((result) => {
                 console.log('THIS CELL MACHINE');
-                // console.log(result);
+
                 let mapResult = result.map((item, i) => {
                     if (item.length == 1) {
                         return item[0]
